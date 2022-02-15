@@ -234,7 +234,7 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python=supported_pythons)
+@session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "tests", "docs/source/conf.py"]
