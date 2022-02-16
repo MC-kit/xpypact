@@ -32,8 +32,10 @@ nox.options.sessions = (
     "isort",
     "black",
     "pre-commit",
-    "lint",
-    "mypy",
+    # TODO dvp: enable default runs with  lint and mypy when code matures and
+    #           if these checks are not already enabled in pre-commit
+    # "lint",
+    # "mypy",
     "xdoctest",
     "tests",
     "docs-build",
