@@ -46,8 +46,10 @@ jobs:
         run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
       - name: Install poetry
         run: pip install --constraint=.github/workflows/constraints.txt poetry
+      - name: Check files
+        run: ls -a .pre-commit-config.yaml
       - name: Run nox tests
-        run: nox  --force-color --python ${{ matrix.python-version }}
+        run: nox  --no-color --python ${{ matrix.python-version }}
       - name: Upload coverage data
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
         uses: "actions/upload-artifact@v2.2.4"
@@ -96,11 +98,11 @@ jobs:
 
       - name: Combine coverage data and display human readable report
         run: |
-          nox --force-color --session=coverage
+          nox --no-color --session=coverage
 
       - name: Create coverage report
         run: |
-          nox --force-color --session=coverage -- xml
+          nox --no-color --session=coverage -- xml
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v2.1.0
