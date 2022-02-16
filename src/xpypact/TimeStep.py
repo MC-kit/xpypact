@@ -8,7 +8,6 @@ import numpy as np
 
 from numpy import ndarray as array
 
-from .Extractable import Extractable
 from .Nuclide import Nuclide
 
 
@@ -49,7 +48,7 @@ class GammaSpectrum:
 
 
 @dataclass
-class TimeStep(Extractable):
+class TimeStep:
     """Time step attributes.
 
     All names must be the same as in FISPACT JSON file.
@@ -79,8 +78,9 @@ class TimeStep(Extractable):
     gamma_spectrum: GammaSpectrum = None
 
     def __post_init__(self) -> None:
-        if 0.0 == self.total_mass:  # workaround for FISPACT 4.0
+        if 0.0 == self.total_mass:  # workaround for FISPACT v.4
             # Mass of all nuclides in the TimeStep (kg)
+            # TODO dvp: check for FISPACT v.5
             self.total_mass = 1e-3 * sum(map(lambda x: x.grams, self.nuclides))
 
     @property
@@ -102,34 +102,34 @@ class TimeStep(Extractable):
         """
         return self.dose_rate.type, self.dose_rate.distance
 
-    def key(self):
-        return self.number
-
-    def properties(self) -> array:
-        return np.array(
-            [
-                self.irradiation_time,
-                self.cooling_time,
-                self.duration,
-                self.elapsed_time,
-                self.flux,
-                self.total_atoms,
-                self.total_activity,
-                self.alpha_activity,
-                self.beta_activity,
-                self.gamma_activity,
-                self.total_mass,
-                self.total_heat,
-                self.alpha_heat,
-                self.beta_heat,
-                self.gamma_heat,
-                self.ingestion_dose,
-                self.inhalation_dose,
-                # TODO dvp: don't see use case for the "dose_rate.mass" parameter, check if it's needed at all.
-                self.dose_rate.dose,
-            ],
-            dtype=float,
-        )
+    # def key(self):
+    #     return self.number
+    #
+    # def properties(self) -> array:
+    #     return np.array(
+    #         [
+    #             self.irradiation_time,
+    #             self.cooling_time,
+    #             self.duration,
+    #             self.elapsed_time,
+    #             self.flux,
+    #             self.total_atoms,
+    #             self.total_activity,
+    #             self.alpha_activity,
+    #             self.beta_activity,
+    #             self.gamma_activity,
+    #             self.total_mass,
+    #             self.total_heat,
+    #             self.alpha_heat,
+    #             self.beta_heat,
+    #             self.gamma_heat,
+    #             self.ingestion_dose,
+    #             self.inhalation_dose,
+    #             # TODO dvp: don't see use case for the "dose_rate.mass" parameter, check if it's needed at all.
+    #             self.dose_rate.dose,
+    #         ],
+    #         dtype=float,
+    #     )
 
     @classmethod
     def from_json(cls, json_dict: Dict) -> "TimeStep":

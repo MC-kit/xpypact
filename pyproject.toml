@@ -43,6 +43,8 @@ numpy = "^1.21.4"
 orjson = "^3.6.7"
 xarray = "^0.21.1"
 h5netcdf = "^0.13.1"
+multipledispatch = "^0.6.0"
+mckit-nuclides = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
@@ -161,7 +163,7 @@ source = ["xpypact"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-fail_under = 100
+fail_under = 80  # TODO dvp: increase limit to 100 with code maturing
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma

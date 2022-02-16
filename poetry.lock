@@ -501,6 +501,31 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "mckit-nuclides"
+version = "0.1.1"
+description = "\"Python tools to work with elements and isotopes\""
+category = "main"
+optional = false
+python-versions = ">=3.8,<3.11"
+
+[package.dependencies]
+multipledispatch = ">=0.6.0,<0.7.0"
+numpy = ">=1.21.4,<2.0.0"
+openpyxl = ">=3.0.9,<4.0.0"
+pandas = ">=1.3.4,<2.0.0"
+
+[[package]]
+name = "multipledispatch"
+version = "0.6.0"
+description = "Multiple dispatch"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "mypy"
 version = "0.931"
 description = "Optional static typing for Python"
@@ -1305,7 +1330,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "89e50143078287e7495e816259c0e139b5abc5a843e72aab63cf7c126a192a39"
+content-hash = "ce0bf646793d31598596edfef3b45a326d1dfeeb5ca2168b3bee2eb2b429b73f"
 
 [metadata.files]
 alabaster = [
@@ -1623,6 +1648,15 @@ markupsafe = [
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
+]
+mckit-nuclides = [
+    {file = "mckit-nuclides-0.1.1.tar.gz", hash = "sha256:0f6c7def58ab35c8e18e54d99dc174e8af1cfba1897c2382c636f5f55b44f2ab"},
+    {file = "mckit_nuclides-0.1.1-py3-none-any.whl", hash = "sha256:5db52876e99a59aac2298017ed8ccf15197c0901811a6f6d6c79b7acf402f1c6"},
+]
+multipledispatch = [
+    {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
+    {file = "multipledispatch-0.6.0-py3-none-any.whl", hash = "sha256:a55c512128fb3f7c2efd2533f2550accb93c35f1045242ef74645fc92a2c3cba"},
+    {file = "multipledispatch-0.6.0.tar.gz", hash = "sha256:a7ab1451fd0bf9b92cab3edbd7b205622fb767aeefb4fb536c2e3de9e0a38bea"},
 ]
 mypy = [
     {file = "mypy-0.931-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3c5b42d0815e15518b1f0990cff7a705805961613e701db60387e6fb663fe78a"},
