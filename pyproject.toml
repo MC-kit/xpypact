@@ -142,7 +142,6 @@ minversion = "6.0"
 norecursedirs = ".* build dist *.egg-info data"
 python_functions = "test_*  profile_*"
 addopts = "-ra -q --tb=short --doctest-modules --strict-markers --ignore setup.py --failed-first"
-# coverage doesn't allow to work with PyCharm debugger, run run-coverage script to update coverage
 doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
 testpaths = ["tests"]
 markers = [
