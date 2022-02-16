@@ -1,0 +1,106 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - "master"
+      - "devel"
+      - "main"
+    paths:
+      - "**.py"
+      - "**.yaml"
+      - "**.yml"
+      - "**.toml"
+  pull_request:
+    branches:
+      - "master"
+      - "devel"
+      - "main"
+    paths:
+      - "**.py"
+      - "**.yaml"
+      - "**.yml"
+      - "**.toml"
+jobs:
+  tests:
+    name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    if: |
+      !startsWith(github.event.head_commit.message, 'bump:') &&
+      !contains(github.event.head_commit.message, '[skip_ci]')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Checkout submodules
+        run: git submodule update --init --recursive --depth=1
+      - name: Install nox and nox-poetry
+        run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
+      - name: Install poetry
+        run: pip install --constraint=.github/workflows/constraints.txt poetry
+      - name: Run nox tests
+        run: nox  --no-color --python ${{ matrix.python-version }}
+      - name: Upload coverage data
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
+        uses: "actions/upload-artifact@v2.2.4"
+        with:
+          name: coverage-data
+          path: ".coverage.*"
+      - name: Upload documentation
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: docs
+          path: docs/_build
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2.4.0
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.10'
+
+      - name: Upgrade pip
+        run: |
+          pip install --constraint=.github/workflows/constraints.txt pip
+          pip --version
+
+      - name: Install Poetry
+        run: |
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          poetry --version
+
+      - name: Install Nox
+        run: |
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt nox
+          pipx inject --pip-args=--constraint=.github/workflows/constraints.txt nox nox-poetry
+          nox --version
+
+      - name: Download coverage data
+        uses: actions/download-artifact@v2.0.10
+        with:
+          name: coverage-data
+
+      - name: Combine coverage data and display human readable report
+        run: |
+          nox --no-color --session=coverage
+
+      - name: Create coverage report
+        run: |
+          nox --no-color --session=coverage -- xml
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v2.1.0

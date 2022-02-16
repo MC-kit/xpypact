@@ -6,19 +6,17 @@ from pathlib import Path
 
 import numpy as np
 import orjson as json
-import pandas as pd
 
 from multipledispatch import dispatch
 from numpy import ndarray as array
 
-from .Extractable import total_extractor
 from .RunData import RunData
 from .TimeStep import TimeStep
 
 
 @dataclass
 class RunDataCorrected:
-    timestamp: pd.Timestamp
+    timestamp: str
     run_name: str
     flux_name: str
     dose_rate_type: str
@@ -81,8 +79,8 @@ class Inventory:
             dose_rate_distance,
         )
 
-    def as_array(self, time_step_extractor=total_extractor) -> array:
-        return np.vstack(list(map(time_step_extractor, self.inventory_data)))
+    # def as_array(self, time_step_extractor=total_extractor) -> array:
+    #     return np.vstack(list(map(time_step_extractor, self.inventory_data)))
 
     def __iter__(self) -> Iterable[TimeStep]:
         return iter(self.inventory_data)

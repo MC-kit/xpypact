@@ -70,9 +70,9 @@ def test_elapsed_time(inventory):
     assert int(elapsed_time[-1]) == 0.631152e8
 
 
-def test_inventory_as_array(inventory):
-    actual = inventory.as_array()
-    assert actual.shape == (2, 18)
+# def test_inventory_as_array(inventory):
+#     actual = inventory.as_array()
+#     assert actual.shape == (2, 18)
 
 
 # TODO dvp: move to benchmarks
