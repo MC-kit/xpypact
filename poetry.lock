@@ -1330,7 +1330,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "ce0bf646793d31598596edfef3b45a326d1dfeeb5ca2168b3bee2eb2b429b73f"
+content-hash = "0ca4ea1df187bf664d542bc47871e3b906d8009d7ef69366a13ac137826db95c"
 
 [metadata.files]
 alabaster = [
