@@ -371,14 +371,14 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
 #     return result
 
 
-def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=7):
+def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5):
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
-        column = print_cols(sequence, fid, max_columns, fmt="{:e}")
+        column = print_cols(sequence, fid, max_columns, fmt="{:.6e}")
         if column != 0:
             print(file=fid)
     sequence = fluxes.fluxes[::-1]
-    column = print_cols(sequence, fid, max_columns)
+    column = print_cols(sequence, fid, max_columns, fmt="{:.5e}")
     if column != 0:
         print(file=fid)
     print(fluxes.norm, file=fid)
@@ -391,7 +391,7 @@ def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=7):
 #     print_fluxes(fluxes, fid, False, max_columns)
 
 
-def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7) -> None:
+def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=5) -> None:
     """Print fluxes in FISPACT arbitrary flux format.
 
     Args:
