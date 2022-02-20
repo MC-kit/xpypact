@@ -374,7 +374,7 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
 def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=7):
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
-        column = print_cols(sequence, fid, max_columns, fmt="{:g}")
+        column = print_cols(sequence, fid, max_columns, fmt="{:e}")
         if column != 0:
             print(file=fid)
     sequence = fluxes.fluxes[::-1]
