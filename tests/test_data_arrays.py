@@ -91,10 +91,41 @@ def test_scale_by_flux(ds):
     )
 
 
+def test_scale_by_flux_on_dose_rate(ds):
+    actual = da.scale_by_flux(ds, 0.5)
+    actual_values, expected_values = map(lambda x: x.total_dose_rate, [actual, ds])
+    assert actual_values.size == 2
+    assert expected_values.size == 2
+    assert (
+        actual_values[0] == expected_values[0]
+    ), "Initial value  shouldn't change on scaling by flux"
+    actual_diff = np.diff(actual_values).item()
+    expected_diff = 0.5 * np.diff(expected_values).item()
+    assert_equal(
+        actual_diff,
+        expected_diff,
+        "The difference with initial value should be scaled by flux",
+    )
+    assert_equal(actual.attrs, ds.attrs)
+
+
 def test_net_cdf_writing(cd_tmpdir, ds):
+    assert ds.total_dose_rate is not None
     da.save_nc(ds, "Ag-1.nc")
     actual = da.load_nc("Ag-1.nc")
     assert_equal(actual, ds, "The loaded dataset should be equal to thw written one.")
+    assert np.array_equal(actual.total_dose_rate, ds.total_dose_rate)
+    assert actual.total_dose_rate.attrs["units"] == "Sv/h"
+
+
+def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
+    group = "some-group"
+    assert ds.total_dose_rate is not None
+    da.save_nc(ds, "Ag-1.nc", mode="a", group=group)
+    actual = da.load_nc("Ag-1.nc", group=group)
+    assert_equal(actual, ds, "The loaded dataset should be equal to thw written one.")
+    assert np.array_equal(actual.total_dose_rate, ds.total_dose_rate)
+    assert actual.total_dose_rate.attrs["units"] == "Sv/h"
 
 
 if __name__ == "__main__":
