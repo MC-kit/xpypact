@@ -1,1 +1,1 @@
-"""The `mckit_nuclides` package utility subpackages."""
+"""The package utilities."""

@@ -16,6 +16,7 @@
 
 from typing import TextIO, Tuple, Union
 
+from copy import deepcopy
 from functools import reduce
 from pathlib import Path
 
@@ -32,6 +33,7 @@ from .TimeStep import TimeStep
 SCALABLE_COLUMNS = [
     "total_mass",
     "total_heat",
+    "total_dose_rate",
     "total_alpha_heat",
     "total_beta_heat",
     "total_gamma_heat",
@@ -188,7 +190,7 @@ def create_dataset(inventory: Inventory) -> xr.Dataset:
 
     ds.total_ingest1ion_dose.attrs["units"] = "Sv"
     ds.total_inhalation_dose.attrs["units"] = "Sv"
-    ds.total_dose_rate.attrs["units"] = "Sv/hr"
+    ds.total_dose_rate.attrs["units"] = "Sv/h"
 
     ds.nuclide_half_life.attrs["units"] = "s"
     # ds.nuclide_atomic_mass.attrs["units"] = "au"
@@ -262,16 +264,20 @@ def scale_by_flux(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
     """
     initial = ds.sel(time_step_number=1).fillna(0.0)
 
-    ds = scale_by_mass(ds - initial, scale, columns) + initial
+    result = scale_by_mass(ds - initial, scale, columns) + initial
+    result.attrs.update(ds.attrs)
 
-    return ds
+    return result
 
 
 def scale_by_mass(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
     """All the activation values including initial can be scaled to actual weight."""
     if columns is None:
         columns = SCALABLE_COLUMNS
-    return ds[columns] * scale
+    result = deepcopy(ds)
+    result[columns] *= scale
+    result.attrs.update(ds.attrs)
+    return result
 
     # TODO dvp: check if the dose rate is not always computed for 1g in v.5
     # "time_step_ingestion_dose",
