@@ -42,7 +42,7 @@ numpy = "^1.21.4"
 # multipledispatch = "^0.6.0"
 orjson = "^3.6.7"
 xarray = "^0.21.1"
-h5netcdf = "^0.13.1"
+h5netcdf = ">=0.13.1,<0.15.0"
 multipledispatch = "^0.6.0"
 mckit-nuclides = {version = "^0.1.1", allow-prereleases = true}
 
