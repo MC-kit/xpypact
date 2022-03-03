@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Fix timeout error
-        run:  git config --global --list
-
       - name: Check out the repository
         uses: actions/checkout@v3
 
