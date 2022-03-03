@@ -13,10 +13,10 @@ jobs:
     steps:
 
       - name: Fix timeout error
-        run:  git config --global --unset https.proxy
+        run:  git config --global --list
 
       - name: Check out the repository
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Run Labeler
         uses: crazy-max/ghaction-github-labeler@v3.1.1
