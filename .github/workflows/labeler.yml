@@ -11,6 +11,10 @@ jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Fix timeout error
+        run:  git config --global --unset https.proxy
+
       - name: Check out the repository
         uses: actions/checkout@v2.4.0
 
