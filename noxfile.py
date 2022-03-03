@@ -192,7 +192,7 @@ def isort(s: Session) -> None:
     s.install("isort")
     search_patterns = [
         "*.py",
-        "xpypact/*.py",
+        "src/xpypact/*.py",
         "tests/*.py",
         "benchmarks/*.py",
         "profiles/*.py",
