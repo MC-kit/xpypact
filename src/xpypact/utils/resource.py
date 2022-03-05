@@ -59,6 +59,7 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
 
 class PackageNotDefined(ValueError):
     """Exception to raise on failure to define package."""
+
     def __init__(self):
         super().__init__("Cannot define package")
 
