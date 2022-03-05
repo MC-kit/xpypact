@@ -215,7 +215,7 @@ module = [
 ignore_missing_imports = true
 
 
-[tool.tryceratops]
+# [tool.tryceratops]
 # exclude = ["samples"]
 # ignore = ["TC002", "TC200", "TC300"]
-experimental = true
+# experimental = true
