@@ -213,3 +213,10 @@ module = [
     "multipledispatch",
 ]
 ignore_missing_imports = true
+
+
+[tool.tryceratops]
+# exclude = ["samples"]
+# ignore = ["TC002", "TC200", "TC300"]
+experimental = true
+
