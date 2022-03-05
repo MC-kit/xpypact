@@ -50,6 +50,9 @@ Contributing
    :target: https://github.com/guilatrova/tryceratops
    :alt: try/except style: tryceratops
 
+https://www.conventionalcommits.org/en/v1.0.0/#summary
+https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelinesi
+
 
 References
 ----------
