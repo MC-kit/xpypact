@@ -232,6 +232,7 @@ def lint(s: Session) -> None:
         "flake8-rst-docstrings",
         "flake8-import-order",
         "darglint",
+        "tryceratops",
     )
     s.run("flake8", *args)
 
