@@ -383,7 +383,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "h5netcdf"
-version = "0.14.1"
+version = "1.0.0"
 description = "netCDF4 via h5py"
 category = "main"
 optional = false
@@ -1369,8 +1369,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "ffddf01bffc1ab9216dc50b4af40f8ee7925610146fe2efb0d14e6217387acfa"
+python-versions = "^3.8,<3.11"
+content-hash = "1ed97aa7e8a0a56ab42ce6e8bac9dd7bcf38ee704a76daf3d11206dd09e2e42a"
 
 [metadata.files]
 alabaster = [
@@ -1566,8 +1566,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 h5netcdf = [
-    {file = "h5netcdf-0.14.1-py2.py3-none-any.whl", hash = "sha256:161ccdb511f36efe1cdbab2d973f41e85e86f5ef727d836ea0ead261b6eea130"},
-    {file = "h5netcdf-0.14.1.tar.gz", hash = "sha256:ba4c960797df817a304f9a79353f2ecbde90ba902078193f6d2f1ef3d5ca2213"},
+    {file = "h5netcdf-1.0.0-py2.py3-none-any.whl", hash = "sha256:97c619b3e199d2b799bbf97e03387c68787ffbdef910c924d0fd36037680108f"},
+    {file = "h5netcdf-1.0.0.tar.gz", hash = "sha256:4bf07ac545e6e4ee372a8505ffcee5c83f2db8b9a5c4a510b9336d92c3d50fa6"},
 ]
 h5py = [
     {file = "h5py-3.6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a5320837c60870911645e9a935099bdb2be6a786fcf0dac5c860f3b679e2de55"},
