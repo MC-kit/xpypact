@@ -81,7 +81,7 @@ sphinx-autorun = "^1.1.1"
 sphinx-click = "^3.0.2"
 sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
-xdoctest = {extras = ["colors"], version = "^0.15.10"}
+xdoctest = {extras = ["colors"], version = "^1.0.0"}
 typeguard = "^2.13.0"
 rstcheck = "^3.3.1"
 isort = "^5.9.3"
