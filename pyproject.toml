@@ -53,7 +53,7 @@ pytest-cov = "^3.0.0"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 nox = "^2022.1.7"
 Pygments = "^2.10.0"
-black = "^22.1.0"
+black = "^22.3.0"
 codecov = "^2.1.12"
 darglint = "^1.8.1"
 flake8 = "^4.0.1"
