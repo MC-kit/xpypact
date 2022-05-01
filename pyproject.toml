@@ -47,7 +47,7 @@ multipledispatch = "^0.6.0"
 mckit-nuclides = {version = "^0.1.1", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
+pytest = "^7.1.2"
 pytest-cache = "^1.0"
 pytest-cov = "^3.0.0"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
