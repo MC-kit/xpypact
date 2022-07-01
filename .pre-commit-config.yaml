@@ -28,11 +28,11 @@ repos:
         entry: poetry run black
         language: system
         types: [python]
-    -   id: tryceratops
-        name: tryceratops
-        entry: poetry run tryceratops
-        language: system
-        types: [python]
+    # -   id: tryceratops
+        # name: tryceratops
+        # entry: poetry run tryceratops
+        # language: system
+        # types: [python]
 
 #    -   id: flake8
 #        name: flake8
