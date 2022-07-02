@@ -384,7 +384,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "h5netcdf"
-version = "0.14.1"
+version = "1.0.1"
 description = "netCDF4 via h5py"
 category = "main"
 optional = false
@@ -1006,7 +1006,7 @@ python-versions = "*"
 
 [[package]]
 name = "sphinx"
-version = "4.5.0"
+version = "5.0.2"
 description = "Python documentation generator"
 category = "dev"
 optional = false
@@ -1016,7 +1016,7 @@ python-versions = ">=3.6"
 alabaster = ">=0.7,<0.8"
 babel = ">=1.3"
 colorama = {version = ">=0.3.5", markers = "sys_platform == \"win32\""}
-docutils = ">=0.14,<0.18"
+docutils = ">=0.14,<0.19"
 imagesize = "*"
 importlib-metadata = {version = ">=4.4", markers = "python_version < \"3.10\""}
 Jinja2 = ">=2.3"
@@ -1033,8 +1033,8 @@ sphinxcontrib-serializinghtml = ">=1.1.5"
 
 [package.extras]
 docs = ["sphinxcontrib-websupport"]
-lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.931)", "docutils-stubs", "types-typed-ast", "types-requests"]
-test = ["pytest", "pytest-cov", "html5lib", "cython", "typed-ast"]
+lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.950)", "docutils-stubs", "types-typed-ast", "types-requests"]
+test = ["pytest (>=4.6)", "html5lib", "cython", "typed-ast"]
 
 [[package]]
 name = "sphinx-autobuild"
@@ -1370,8 +1370,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "ffddf01bffc1ab9216dc50b4af40f8ee7925610146fe2efb0d14e6217387acfa"
+python-versions = "^3.8,<3.11"
+content-hash = "d93b15d8fc39ad4b3e2c683020ebae71227b85a3caedbb017c35ba72d190e4f7"
 
 [metadata.files]
 alabaster = [
@@ -1567,8 +1567,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 h5netcdf = [
-    {file = "h5netcdf-0.14.1-py2.py3-none-any.whl", hash = "sha256:161ccdb511f36efe1cdbab2d973f41e85e86f5ef727d836ea0ead261b6eea130"},
-    {file = "h5netcdf-0.14.1.tar.gz", hash = "sha256:ba4c960797df817a304f9a79353f2ecbde90ba902078193f6d2f1ef3d5ca2213"},
+    {file = "h5netcdf-1.0.1-py2.py3-none-any.whl", hash = "sha256:4a4762dbfcec871c43455e3b3ae599d2ecbf7a3698069fd73f511d0038676ccc"},
+    {file = "h5netcdf-1.0.1.tar.gz", hash = "sha256:776704facd8b82246d6d4068c505c389b3b70b9bf9920ccfbac7f35cdc634dac"},
 ]
 h5py = [
     {file = "h5py-3.7.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d77af42cb751ad6cc44f11bae73075a07429a5cf2094dfde2b1e716e059b3911"},
@@ -1960,8 +1960,8 @@ snowballstemmer = [
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
 ]
 sphinx = [
-    {file = "Sphinx-4.5.0-py3-none-any.whl", hash = "sha256:ebf612653238bcc8f4359627a9b7ce44ede6fdd75d9d30f68255c7383d3a6226"},
-    {file = "Sphinx-4.5.0.tar.gz", hash = "sha256:7bf8ca9637a4ee15af412d1a1d9689fec70523a68ca9bb9127c2f3eeb344e2e6"},
+    {file = "Sphinx-5.0.2-py3-none-any.whl", hash = "sha256:d3e57663eed1d7c5c50895d191fdeda0b54ded6f44d5621b50709466c338d1e8"},
+    {file = "Sphinx-5.0.2.tar.gz", hash = "sha256:b18e978ea7565720f26019c702cd85c84376e948370f1cd43d60265010e1c7b0"},
 ]
 sphinx-autobuild = [
     {file = "sphinx-autobuild-2021.3.14.tar.gz", hash = "sha256:de1ca3b66e271d2b5b5140c35034c89e47f263f2cd5db302c9217065f7443f05"},
