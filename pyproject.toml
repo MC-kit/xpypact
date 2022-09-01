@@ -36,7 +36,7 @@ python = ">=3.8,<4.0"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 multipledispatch = ">=0.6.0"
-numpy = ">=1.21.4"
+numpy = ">=1.23.2"
 openpyxl = ">=3.0.9"
 orjson = ">=3.6.7"
 pandas = ">=1.3.4"
@@ -50,17 +50,17 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn
 darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"
-# TODO dvp: unpin the following  when flake8-bandit is updated
-# bandit = "1.7.2"
-# eoc
-# flake8-bandit = ">=2.1.2"
-# for bandit >= 1.7.3
-# https://github.com/PyCQA/bandit/issues/841
 flake8-bandit = ">=2.1.2"
 flake8-bugbear = ">=22.1.11"
+flake8-builtins = ">=1.5.3"
+flake8-colors = ">=0.1.9"
+flake8-commas = ">=2.1.0"
+flake8-comprehensions = "^3.10.0"
 flake8-docstrings = ">=1.6.0"
 flake8-import-order = ">=0.18.1"
+flake8-print = ">=5.0.0"
 flake8-rst-docstrings = ">=0.2.3"
+flake8-use-fstring = ">=1.4"
 isort = ">=5.9.3"
 mypy = ">=0.931"
 nox = ">=2022.1.7"
@@ -87,7 +87,6 @@ typeguard = ">=2.13.0"
 types-setuptools = ">=57.4.2"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 yappi = ">=1.3.2"
-
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -154,7 +153,10 @@ markers = [
 ]
 # xfail tests that pass should fail the test suite
 xfail_strict = true
-
+filterwarnings = [
+    # TODO dvp: check on xarray updates
+    "ignore:Deleting a single level of a MultiIndex is deprecated"
+]
 
 # [tool.coverage]
 [tool.coverage.paths]
@@ -219,7 +221,8 @@ module = [
 ignore_missing_imports = true
 
 
-# [tool.tryceratops]
-# exclude = ["samples"]
-# ignore = ["TC002", "TC200", "TC300"]
-# experimental = true
+[tool.tryceratops]
+include = ["src/mapstp", "tests"]
+exclude = [".nox"]
+#ignore = ["TC002", "TC200", "TC300"]
+experimental = true
