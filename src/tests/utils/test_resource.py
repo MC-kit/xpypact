@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from xpypact.utils.resource import Path, filename_resolver, path_resolver

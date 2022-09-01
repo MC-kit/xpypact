@@ -210,9 +210,9 @@ def create_dataset(inventory: Inventory) -> xr.Dataset:
     ds.nuclide_ingestion.attrs["units"] = "Sv"
     ds.nuclide_inhalation.attrs["units"] = "Sv"
 
-    # Restore int type after all merges.
+    # Restore int type for 'zai', which became float after the merges.
     # see https://xarray.pydata.org/en/stable/user-guide/combining.html
-    # Note that  due  to the underlying representation of
+    # ...  due  to the underlying representation of
     # missing values as floating point numbers(NaN),
     # variable  data type is not always  preserved when merging in this manner.
     ds.coords["zai"] = ("nuclide", np.asarray(ds.coords["zai"].values, dtype=int))
@@ -225,10 +225,22 @@ def get_timestamp(ds: xr.Dataset):
 
 
 def get_atomic_numbers(ds: xr.Dataset) -> np.ndarray:
+    """Create column of atomic numbers (Z) corresponding to `nuclide` coordinate.
+
+    Args:
+        ds: dataset with the 'nuclides' coordinate
+
+    Returns:
+        ndarray: Z values for the nuclides
+
+    """
+
     def mapper(x):
         return SYMBOL_2_ATOMIC_NUMBER[x.item()[0]]
 
-    return np.fromiter(map(mapper, ds.nuclide), dtype=int)
+    return np.fromiter(
+        map(mapper, ds.nuclide), dtype=int
+    )  # TODO use generator comprehension
 
 
 def add_atomic_number_coordinate(
@@ -289,22 +301,42 @@ def scale_by_mass(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
     #     ds.dose *= scale
 
 
+def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:
+    coordinate = ds.indexes[idx_name].to_frame().reset_index(drop=True)
+    columns = coordinate.columns.values
+    columns_to_drop = (idx_name, *columns)
+    encoded = ds.reset_index(columns_to_drop).reset_coords(columns_to_drop, drop=True)
+    encoded.attrs[idx_name + "_columns"] = columns
+    for c in columns:
+        encoded.attrs[idx_name + f"_{c}"] = coordinate[c].values
+    return encoded
+
+
+def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
+    columns = encoded.attrs[idx_name + "_columns"]
+    mi_columns = [encoded.attrs.pop(idx_name + f"_{c}") for c in columns]
+    mi = pd.MultiIndex.from_arrays(mi_columns, names=columns)
+    encoded.coords[idx_name] = mi
+    return encoded
+
+
 def save_nc(ds: xr.Dataset, cn: Union[str, Path], **kwargs) -> None:
     """Save a dataset with nuclide index converted.
 
     See: https://github.com/pydata/xarray/issues/1077
     """
-    to_save = ds.reset_index("nuclide")
+    encoded = _encode_multiindex(ds, "nuclide")
     if "engine" not in kwargs:
         kwargs["engine"] = "h5netcdf"
-    to_save.to_netcdf(cn, **kwargs)
+    encoded.to_netcdf(cn, **kwargs)
 
 
 def load_nc(cn: Union[str, Path], **kwargs) -> xr.Dataset:
     if "engine" not in kwargs:
         kwargs["engine"] = "h5netcdf"
-    ds = xr.load_dataset(cn, **kwargs)
-    ds = ds.set_index(nuclide=["element", "mass_number", "state"])
+    encoded = xr.load_dataset(cn, **kwargs)
+    # encoded = encoded.set_index(nuclide=["element", "mass_number", "state"])
+    ds = _decode_to_multiindex(encoded, "nuclide")
     return ds
 
 

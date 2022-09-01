@@ -45,10 +45,9 @@ def test_access_by_z(ds: xr.Dataset) -> None:
     assert argentum.nuclide.size == 14
     argentum2 = ds.sel(element="Ag")
     assert argentum2.nuclide.size == 14
-    with pytest.raises(AttributeError):
-        print(
-            argentum2.element
-        )  # The 'element' level should be dropped on the selection above
+    # in xarray since version 2022.6.2 the element coordinate is preserved
+    # even there's only one item in the coordinate
+    assert "Ag" == argentum2.element.item(), " the element coordinate is preserved"
 
     # argentum_atoms = argentum.atoms.sel(time_step_number=1)
     # argentum_atoms2 = argentum2.atoms.sel(time_step_number=1)

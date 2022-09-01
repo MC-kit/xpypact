@@ -32,64 +32,62 @@ Chnagelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-# tomli = "^2.0.0"
-# click = "^8.0.1"
-pandas = "^1.3.4"
-openpyxl = "^3.0.9"
-numpy = "^1.21.4"
-# loguru = "^0.6.0"
-# multipledispatch = "^0.6.0"
-orjson = "^3.6.7"
-xarray = "^2022.3.0"
-h5netcdf = ">=0.13.1,<0.15.0"
-multipledispatch = "^0.6.0"
-mckit-nuclides = {version = "^0.1.1", allow-prereleases = true}
+python = ">=3.8,<4.0"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
+h5netcdf = ">=0.13.1"
+mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
+multipledispatch = ">=0.6.0"
+numpy = ">=1.21.4"
+openpyxl = ">=3.0.9"
+orjson = ">=3.6.7"
+pandas = ">=1.3.4"
+xarray = ">=2022.3.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
-pytest-cache = "^1.0"
-pytest-cov = "^3.0.0"
-coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
-nox = "^2022.1.7"
-Pygments = "^2.10.0"
-black = "^22.1.0"
-codecov = "^2.1.12"
-darglint = "^1.8.1"
-flake8 = "^4.0.1"
-flake8-annotations = "^2.6.2"
+Pygments = ">=2.10.0"
+black = ">=22.1.0"
+codecov = ">=2.1.12"
+coverage = { version = ">=6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
+darglint = ">=1.8.1"
+flake8 = ">=4.0.1"
+flake8-annotations = ">=2.6.2"
 # TODO dvp: unpin the following  when flake8-bandit is updated
+# bandit = "1.7.2"
+# eoc
+# flake8-bandit = ">=2.1.2"
 # for bandit >= 1.7.3
 # https://github.com/PyCQA/bandit/issues/841
-# flake8-bandit = "^2.1.2"
-flake8-bandit = "2.1.2"
-bandit = "1.7.2"
-# eoc
-flake8-bugbear = "^22.1.11"
-flake8-docstrings = "^1.6.0"
-flake8-rst-docstrings = "^0.2.3"
-flake8-import-order = "^0.18.1"
-mypy = "^0.931"
-pep8-naming = "^0.12.1"
-pre-commit = "^2.15.0"
-pytest-benchmark = "^3.4.1"
-pytest-mock = "^3.6.1"
-safety = "^1.10.3"
-sphinx = "^5.0.2"
-sphinx-autodoc-typehints = "^1.12.0"
-sphinx-autobuild = "^2021.3.14"
-sphinx-autorun = "^1.1.1"
-sphinx-click = "^3.0.2"
-sphinx-rtd-theme = "^1.0.0"
-sphinxcontrib-napoleon = "^0.7"
-xdoctest = {extras = ["colors"], version = "^0.15.10"}
-typeguard = "^2.13.0"
-rstcheck = "^3.3.1"
-isort = "^5.9.3"
-yappi = "^1.3.2"
-types-setuptools = "^57.4.2"
-nox-poetry = "^0.9.0"
-tryceratops = "^1.0.1"
+flake8-bandit = ">=2.1.2"
+flake8-bugbear = ">=22.1.11"
+flake8-docstrings = ">=1.6.0"
+flake8-import-order = ">=0.18.1"
+flake8-rst-docstrings = ">=0.2.3"
+isort = ">=5.9.3"
+mypy = ">=0.931"
+nox = ">=2022.1.7"
+nox-poetry = ">=0.9.0"
+pep8-naming = ">=0.12.1"
+pre-commit = ">=2.15.0"
+pytest = ">=7.0.1"
+pytest-benchmark = ">=3.4.1"
+pytest-cache = ">=1.0"
+pytest-cov = ">=3.0.0"
+pytest-mock = ">=3.6.1"
+rstcheck = ">=3.3.1"
+safety = ">=1.10.3"
+sphinx = ">=5.0.2"
+sphinx-autobuild = ">=2021.3.14"
+sphinx-autodoc-typehints = ">=1.12.0"
+sphinx-autorun = ">=1.1.1"
+sphinx-click = ">=3.0.2"
+sphinx-rtd-theme = ">=1.0.0"
+sphinxcontrib-napoleon = ">=0.7"
+tomli = ">=2.0.1"
+tryceratops = ">=1.0.1"
+typeguard = ">=2.13.0"
+types-setuptools = ">=57.4.2"
+xdoctest = {extras = ["colors"], version = ">=0.15.10"}
+yappi = ">=1.3.2"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -150,7 +148,7 @@ norecursedirs = ".* build dist *.egg-info data"
 python_functions = "test_*  profile_*"
 addopts = "-ra -q --tb=short --doctest-modules --strict-markers --ignore setup.py --failed-first"
 doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
-testpaths = ["tests"]
+testpaths = ["src/tests"]
 markers = [
     "slow: too slow tests"
 ]
