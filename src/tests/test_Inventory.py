@@ -53,7 +53,7 @@ def test_first_time_step(inventory):
     first_time_step = inventory.inventory_data[0]
     assert (
         first_time_step.dose_rate.mass == 1.0e-3
-    ), "FISPACT value 0.0 for the the dose_rate.mass in the first time step is to be fixed to 1.0e-3"
+    ), "FISPACT value for the the dose_rate.mass in the first time step is to be 1.0e-3"
 
 
 def test_inventory_get_meta_info(inventory):
@@ -65,7 +65,7 @@ def test_inventory_get_meta_info(inventory):
 
 
 def test_elapsed_time(inventory):
-    elapsed_time = list(map(lambda x: x.elapsed_time, inventory.inventory_data))
+    elapsed_time = [x.elapsed_time for x in inventory.inventory_data]
     assert elapsed_time[0] == 0
     assert int(elapsed_time[-1]) == 0.631152e8
 

@@ -10,6 +10,7 @@ except ImportError:
     Avogadro = 6.02214075999999987023872e23
 
 from mckit_nuclides.elements import Element
+from mckit_nuclides.nuclides import get_nuclide_mass
 
 __all__ = ["Avogadro", "Nuclide"]
 
@@ -39,15 +40,17 @@ class Nuclide:
 
     def __post_init__(self) -> None:
         """Make the values consistent in data from old FISPACT."""
+        e = Element(self.element)
         if self.zai == 0:
             # TODO dvp: when mckit-nuclides updates, switch to direct z() method.
             #           There's no need to construct Element accessor here.
-            e = Element(self.element)
             self.zai = e.z * 10000 + self.isotope * 10
             if self.state != "":
                 self.zai += 1
         if self.atoms == 0.0 and 0.0 < self.grams:
-            self.atoms = Avogadro * self.grams / self.isotope
+            self.atoms = (
+                Avogadro * self.grams / get_nuclide_mass(int(e.z), self.isotope)
+            )
 
     @classmethod
     def from_json(cls, json_dict: Dict) -> "Nuclide":
@@ -63,5 +66,5 @@ class Nuclide:
 
     @property
     def a(self) -> int:
-        """Atomic mass."""
+        """Mass number."""
         return self.isotope

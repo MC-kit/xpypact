@@ -56,9 +56,9 @@ def test_access_by_z(ds: xr.Dataset) -> None:
 
 def test_scale_by_mass(ds):
     actual = da.scale_by_mass(ds, 2)
-    actual_atoms, expected_atoms = map(
-        lambda x: x.nuclide_atoms.sel(element="Ag", mass_number=107, state=""),
-        [actual, ds],
+    actual_atoms, expected_atoms = (
+        x.nuclide_atoms.sel(element="Ag", mass_number=107, state="")
+        for x in [actual, ds]
     )
     assert actual_atoms.size == 2
     assert expected_atoms.size == 2
@@ -66,7 +66,8 @@ def test_scale_by_mass(ds):
 
 
 def test_time_stamp(ds):
-    assert ds.timestamp[0] == pd.Timestamp("23:01:19 12 July 2020")  # noqa
+    # noinspection PyTypeChecker
+    assert ds.timestamp[0] == pd.Timestamp("23:01:19 12 July 2020")
     actual = da.get_timestamp(ds)
     assert actual.year == 2020
     assert actual.month == 7
@@ -75,7 +76,7 @@ def test_time_stamp(ds):
 
 def test_scale_by_flux(ds):
     actual = da.scale_by_flux(ds, 2)
-    actual_values, expected_values = map(lambda x: x.total_heat, [actual, ds])
+    actual_values, expected_values = (x.total_heat for x in [actual, ds])
     assert actual_values.size == 2
     assert expected_values.size == 2
     assert (
@@ -92,7 +93,7 @@ def test_scale_by_flux(ds):
 
 def test_scale_by_flux_on_dose_rate(ds):
     actual = da.scale_by_flux(ds, 0.5)
-    actual_values, expected_values = map(lambda x: x.total_dose_rate, [actual, ds])
+    actual_values, expected_values = (x.total_dose_rate for x in [actual, ds])
     assert actual_values.size == 2
     assert expected_values.size == 2
     assert (

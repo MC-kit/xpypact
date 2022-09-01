@@ -124,15 +124,15 @@ def assert_bin(
     assert actual_flux == expected_flux
 
 
-def assert_fluxes_text_equal(a: str, b: str):
-    lines1, lines2 = map(lambda i: i.split("\n"), [a, b])
+def assert_fluxes_text_equal(a: str, b: str) -> None:
+    lines1, lines2 = (i.split("\n") for i in [a, b])
     assert lines1[-1] == lines2[-1], "Comments should be the same"
     assert float(lines1[-2]) == float(lines2[-2]), "Norms should be the same"
-    lines1, lines2 = map(lambda i: " ".join(i[:-2]), [lines1, lines2])
-    array1, array2 = map(
-        lambda i: np.fromiter(i.split(), dtype=np.double), [lines1, lines2]
+    s_lines1, s_lines2 = (" ".join(i[:-2]) for i in [lines1, lines2])
+    array1, array2 = (
+        np.fromiter(i.split(), dtype=np.double) for i in [s_lines1, s_lines2]
     )
-    assert_array_equal(array1, array2), "Bins and fluxes should be equal"
+    assert_array_equal(array1, array2, err_msg="Bins and fluxes should be equal")
 
 
 if __name__ == "__main__":

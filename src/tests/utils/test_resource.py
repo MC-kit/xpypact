@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from xpypact.utils.resource import Path, filename_resolver, path_resolver
+from xpypact.utils.resource import filename_resolver, path_resolver
 
 THIS_FILENAME = Path(__file__).name
 

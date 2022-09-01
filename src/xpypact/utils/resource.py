@@ -61,7 +61,7 @@ class PackageNotFoundError(ValueError):
     """Error when package is not specified and cannot be found."""
 
     def __init__(self) -> None:
-        super().__init__(self, "Cannot define package.")  # pragma: no cover
+        super().__init__("Cannot define package.")  # pragma: no cover
 
 
 def _resolve_package(package: Optional[str] = None) -> str:

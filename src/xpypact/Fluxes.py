@@ -256,13 +256,15 @@ def are_fluxes_close(
 ) -> bool:
     """Compare data of fluxes approximately.
 
-    Check if fluxes are equivalent by data with some tolerance, disregarding differences in comment and norm.
+    Check if fluxes are equivalent by data with some tolerance,
+    disregarding differences in comment and norm.
 
     Args:
         a: the first flux to compare
         b: the second flux to compare
         rtol: relative tolerance
         atol: absolute tolerance
+        equal_nan: see :py:func:`numpy.allclose()`
 
     Returns:
         bool: True, if the fluxes are equivalent by data
@@ -275,6 +277,15 @@ def are_fluxes_close(
 def read_fluxes(
     stream: TextIO, define_bins_and_fluxes: Callable[[array], Tuple[array, array]]
 ) -> Fluxes:
+    """Load Fluxes from a stream.
+
+    Args:
+        stream: IO to load from
+        define_bins_and_fluxes: strategy to extract bins and values
+
+    Returns:
+        Fluxes: the loaded
+    """
     lines = stream.readlines()
     comment = lines[-1].strip()
     norm = float(lines[-2])
@@ -288,17 +299,41 @@ def read_fluxes(
 def read_arb_fluxes(
     stream: TextIO,
 ) -> Fluxes:
+    """Read arbitrary fluxes from stream.
+
+    Args:
+        stream: IO to read from
+
+    Returns:
+        Fluxes: the loaded
+    """
     return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
 @dispatch(Path)
-def read_arb_fluxes(path: Path) -> Fluxes:
+def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
+    """Read arbitrary fluxes from Path.
+
+    Args:
+        path: Path to read from
+
+    Returns:
+        Fluxes: the loaded
+    """
     with path.open() as stream:
         return read_arb_fluxes(stream)
 
 
 @dispatch(str)
-def read_arb_fluxes(text: str) -> Fluxes:
+def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
+    """Read arbitrary fluxes from text.
+
+    Args:
+        text: the text to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with StringIO(text) as stream:
         return read_fluxes(stream, define_arb_bins_and_fluxes)
 
@@ -307,24 +342,69 @@ def read_arb_fluxes(text: str) -> Fluxes:
 def read_709_fluxes(
     stream: TextIO,
 ) -> Fluxes:
+    """Read 709-group fluxes from stream.
+
+    Args:
+        stream: the stream to read from
+
+    Returns:
+        Fluxes: the read
+    """
     return read_fluxes(stream, define_709_bins_and_fluxes)
 
 
 @dispatch(Path)
-def read_709_fluxes(path: Path) -> Fluxes:
+def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
+    """Read 709-group fluxes from path.
+
+    Args:
+        path: the path to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with path.open() as stream:
         return read_709_fluxes(stream)
 
 
 @dispatch(str)
-def read_709_fluxes(text: str) -> Fluxes:
+def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
+    """Read 709-group fluxes from text.
+
+    Args:
+        text: the text to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with StringIO(text) as stream:
         return read_709_fluxes(stream)
 
 
+class FluxesDataSizeError(ValueError):
+    pass
+
+
+class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
+    def __init__(self):
+        super().__init__("The number of float values from arb_flux file should be odd")
+
+
 def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
+    """Extract energy bins and values of arbitrary flux.
+
+    Args:
+        data: the array containing both bins and values
+
+    Returns:
+        Tuple: energy bins, values
+
+    Raises:
+        ArbitraryFluxesDataSizeError: if size of data is not odd.
+    """
     sz = data.size
-    assert sz & 1, "The number of float values from arb_flux file should be odd"
+    if sz & 1 == 0:
+        raise ArbitraryFluxesDataSizeError()
     bins_end = sz // 2 + 1
     energy_bins = data[:bins_end]
     fluxes = data[bins_end:]
@@ -333,8 +413,25 @@ def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
     return energy_bins, fluxes
 
 
+class StandardFluxesDataSizeError(FluxesDataSizeError):
+    def __init__(self):
+        super().__init__("Invalid data for standard FISPACT 709-group fluxes")
+
+
 def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
-    assert data.size == 709, "Invalid data for FISPACT fluxes"
+    """Strategy to define energy bins and values of standard 709 group flux.
+
+    Args:
+        data: the array containing values only
+
+    Returns:
+        Tuple: predefined energy bins, values
+
+    Raises:
+        StandardFluxesDataSizeError: if size of data is not 709.
+    """
+    if data.size != 709:
+        raise StandardFluxesDataSizeError()
     return FISPACT_709_BINS, data[::-1]
 
 
@@ -371,7 +468,16 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
 #     return result
 
 
-def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5):
+def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) -> None:
+    """Print fluxes for FISPACT.
+
+    Args:
+        fluxes: to print
+        fid: a stream to print to
+        arbitrary: if True - arbitrary, otherwise 709
+        max_columns: max columns in output
+
+    """
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
         column = print_cols(sequence, fid, max_columns, fmt="{:.6e}")

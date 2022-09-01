@@ -30,8 +30,8 @@ nox.options.sessions = (
     # "isort",
     # "black",
     # "lint",
-    "mypy",
-    "xdoctest",
+    # "mypy",
+    # "xdoctest",
     "tests",
     "docs-build",
 )
@@ -137,9 +137,9 @@ def precommit(s: Session) -> None:
         "pre-commit",
         "pre-commit-hooks",
         "isort",
-        "mypy",
-        "types-setuptools",
-        *FLAKE8_DEPS,
+        # "mypy",
+        # "types-setuptools",
+        # *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
