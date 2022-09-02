@@ -167,7 +167,7 @@ def create_dataset(inventory: Inventory) -> xr.Dataset:
         _ds = xr.merge([_ds, tsr])
         return _ds
 
-    ds = reduce(_add_time_step_record, inventory, xr.Dataset())
+    ds = reduce(_add_time_step_record, iter(inventory), xr.Dataset())
 
     meta_info = inventory.meta_info
 

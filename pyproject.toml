@@ -204,7 +204,7 @@ warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
 files = "src/xpypact/**/*.py"
-
+plugins = [ "numpy.typing.mypy_plugin" ]
 
 [[tool.mypy.overrides]]
 module = [
@@ -217,12 +217,13 @@ module = [
     "loguru",
     "numpy.testing",
     "multipledispatch",
+    "scipy.constants"
 ]
 ignore_missing_imports = true
 
 
 [tool.tryceratops]
-include = ["src/mapstp", "tests"]
+include = ["src/mapstp", "src/tests"]
 exclude = [".nox"]
 #ignore = ["TC002", "TC200", "TC300"]
 experimental = true

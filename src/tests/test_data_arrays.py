@@ -1,3 +1,5 @@
+from typing import cast
+
 from copy import deepcopy
 
 import numpy as np
@@ -12,7 +14,7 @@ from xpypact.Inventory import Inventory, from_json
 
 @pytest.fixture(scope="module")
 def inventory(data) -> Inventory:
-    return from_json(data / "Ag-1.json")
+    return cast(Inventory, from_json(data / "Ag-1.json"))
 
 
 @pytest.fixture(scope="module")

@@ -1,6 +1,5 @@
 """The Class to represent FISPACT fluxes file content."""
-
-from typing import Callable, TextIO, Tuple
+from typing import Callable, TextIO, Tuple, cast
 
 from dataclasses import dataclass
 from io import StringIO, TextIOWrapper
@@ -145,7 +144,7 @@ def compute_709_bins() -> np.ndarray:
     """
     template = np.logspace(0, 1, 51)
     res = np.hstack([template[1:] * 10**i for i in range(-5, 7)] + [LAST_TWO_DECADES])
-    return np.insert(res, 0, 1e-5)
+    return cast(np.ndarray, np.insert(res, 0, 1e-5))
 
 
 FISPACT_709_BINS = compute_709_bins()
@@ -179,7 +178,7 @@ class Fluxes:
         Returns:
             float: flux total
         """
-        return np.sum(self.fluxes).item()
+        return cast(float, np.sum(self.fluxes))
 
     def __hash__(self) -> int:
         """Use available information for hash.
@@ -189,7 +188,7 @@ class Fluxes:
         """
         return hash((self.energy_bins.size, self.fluxes.size, self.comment, self.norm))
 
-    def __eq__(self, other: "Fluxes") -> bool:
+    def __eq__(self, other) -> bool:
         """Compare fluxes.
 
         Args:
@@ -199,13 +198,14 @@ class Fluxes:
             bool: True, if the fluxes are equal, otherwise - False
         """
         return self is other or (
-            array_equal(self.energy_bins, other.energy_bins)
+            isinstance(other, Fluxes)
+            and array_equal(self.energy_bins, other.energy_bins)
             and array_equal(self.fluxes, other.fluxes)
             and self.comment == other.comment
             and self.norm == other.norm
         )
 
-    def __ne__(self, other: "Fluxes") -> bool:
+    def __ne__(self, other) -> bool:
         """Compare fluxes.
 
         Args:
@@ -310,7 +310,7 @@ def read_arb_fluxes(
     return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(Path)
+@dispatch(Path)  # type: ignore[no-redef]
 def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
     """Read arbitrary fluxes from Path.
 
@@ -324,7 +324,7 @@ def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
         return read_arb_fluxes(stream)
 
 
-@dispatch(str)
+@dispatch(str)  # type: ignore[no-redef]
 def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
     """Read arbitrary fluxes from text.
 
@@ -353,7 +353,7 @@ def read_709_fluxes(
     return read_fluxes(stream, define_709_bins_and_fluxes)
 
 
-@dispatch(Path)
+@dispatch(Path)  # type: ignore[no-redef]
 def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
     """Read 709-group fluxes from path.
 
@@ -367,7 +367,7 @@ def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
         return read_709_fluxes(stream)
 
 
-@dispatch(str)
+@dispatch(str)  # type: ignore[no-redef]
 def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
     """Read 709-group fluxes from text.
 
@@ -382,12 +382,19 @@ def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
 
 
 class FluxesDataSizeError(ValueError):
-    pass
+    """Base Fluxes read Exception."""
+
+    def __str__(self) -> str:
+        """Use an exception class __doc__ as an error msg.
+
+        Returns:
+            an exception class __doc__
+        """
+        return cast(str, self.__class__.__doc__)
 
 
 class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
-    def __init__(self):
-        super().__init__("The number of float values from arb_flux file should be odd")
+    """The number of float values from arb_flux file should be odd."""
 
 
 def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
@@ -414,8 +421,7 @@ def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
 
 
 class StandardFluxesDataSizeError(FluxesDataSizeError):
-    def __init__(self):
-        super().__init__("Invalid data for standard FISPACT 709-group fluxes")
+    """Invalid data for standard FISPACT 709-group fluxes."""
 
 
 def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:

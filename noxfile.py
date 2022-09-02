@@ -30,14 +30,14 @@ nox.options.sessions = (
     # "isort",
     # "black",
     # "lint",
-    # "mypy",
+    "mypy",
     # "xdoctest",
     "tests",
     "docs-build",
 )
 
 package = "xpypact"
-locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
+locations = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
 
 supported_pythons = "3.8", "3.9", "3.10", "3.11"
 black_pythons = "3.10"

@@ -1,6 +1,7 @@
 """Classes to read a FISPACT time step attributes from JSON."""
+from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Optional
 
 from dataclasses import dataclass, field
 
@@ -21,7 +22,7 @@ class DoseRate:
     dose: float = 0.0
 
     def __post_init__(self) -> None:
-        """Correct wrong value coming from FISPACT"""
+        """Correct wrong value coming from FISPACT."""
         # TODO dvp: check behaviour with FISPACT v.5 and try to correct scenarios.
         if self.mass == 0.0:
             # According to FISPACT manual (v.4)
@@ -40,10 +41,18 @@ class GammaSpectrum:
     """Gamma emission intensity."""  # TODO dvp: identify units.
 
     @classmethod
-    def from_json(cls, data: Dict) -> "GammaSpectrum":
+    def from_json(cls, json: dict) -> "GammaSpectrum":
+        """Construct GammaSpectrum instance from JSON dictionary.
+
+        Args:
+            json: dictionary
+
+        Returns:
+            The new GammaSpectrum instance with loaded boundaries and values.
+        """
         return cls(
-            boundaries=np.array(data["boundaries"], dtype=float),
-            values=np.array(data["values"], dtype=float),
+            boundaries=np.array(json["boundaries"], dtype=float),
+            values=np.array(json["values"], dtype=float),
         )
 
 
@@ -74,10 +83,11 @@ class TimeStep:
     ingestion_dose: float = 0.0
     inhalation_dose: float = 0.0
     dose_rate: DoseRate = field(default_factory=DoseRate)
-    nuclides: List[Nuclide] = field(default_factory=list)
-    gamma_spectrum: GammaSpectrum = None
+    nuclides: list[Nuclide] = field(default_factory=list)
+    gamma_spectrum: Optional[GammaSpectrum] = None
 
     def __post_init__(self) -> None:
+        """Correct data missed in FISPACT-4."""
         # TODO dvp: check for FISPACT v.5
         # workarounds for FISPACT v.4
         if 0.0 == self.total_mass:
@@ -95,25 +105,33 @@ class TimeStep:
 
     @property
     def nuclides_mass(self) -> float:
-        """Synonym for total mass."""
+        """Synonym for total mass.
+
+        Returns:
+            Total mass of the nuclides in kg.
+        """
         return self.total_mass
 
     @property
     def is_cooling(self) -> bool:
-        """Is the time step for cooling?"""
+        """Is the time step for cooling?
+
+        Returns:
+            Is the irradiation flux zero?
+        """
         return self.flux == 0.0
 
-    @property
-    def dose_rate_type_and_distance(self) -> Tuple[str, float]:
-        """Get Dose rate type and distance.
-
-        These two properties are duplicated over all the TimeSteps (lack of normalization?).
-        The attributes are moved to RunData on postprocessing.
-        """
-        return self.dose_rate.type, self.dose_rate.distance
-
     @classmethod
-    def from_json(cls, json_dict: Dict) -> "TimeStep":
+    def from_json(cls, json_dict: dict) -> "TimeStep":
+        """Construct TimeStep instance from JSON dictionary.
+
+        Args:
+            json_dict: source dictionary
+
+        Returns:
+            The new TimeStep instance.
+
+        """
         json_dose_rate = json_dict.pop("dose_rate")
         dose_rate = DoseRate(**json_dose_rate)
         json_nuclides = json_dict.pop("nuclides", None)

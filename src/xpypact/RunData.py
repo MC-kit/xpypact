@@ -1,5 +1,5 @@
 """FISPACT run title data class."""
-from typing import Dict
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -13,6 +13,13 @@ class RunData:
     flux_name: str
 
     @classmethod
-    def from_json(cls, json_dict: Dict) -> "RunData":
-        """Retrieve data from JSON."""
+    def from_json(cls, json_dict: dict) -> "RunData":
+        """Construct RunData instance from JSON.
+
+        Args:
+            json_dict: source dictionary
+
+        Returns:
+            The loaded instance of RunData
+        """
         return cls(**json_dict)

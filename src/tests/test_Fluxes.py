@@ -14,7 +14,7 @@ from xpypact.Fluxes import Fluxes, print_arbitrary_fluxes, read_arb_fluxes
 @pytest.fixture(scope="module")
 def arb_flux_1(data) -> Fluxes:
     path = data / "arb_flux_1"
-    arb_fluxes = read_arb_fluxes(path)
+    arb_fluxes: Fluxes = read_arb_fluxes(path)
     assert arb_fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
     assert arb_fluxes.norm == 1.0
     assert arb_fluxes.energy_bins.size == 3
