@@ -48,9 +48,9 @@ repos:
   rev: "v1.4.0"
   hooks:
   - id: yesqa
-    additional_dependencies: &flake8_dependencies
-    - flake8-bugbear
-    - pep8-naming
+#    additional_dependencies: &flake8_dependencies
+#    - flake8-bugbear
+#    - pep8-naming
 
 # TODO dvp: return rstcheck, fix docs files for that
 #-   repo: https://github.com/rstcheck/rstcheck
