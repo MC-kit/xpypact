@@ -138,8 +138,8 @@ def precommit(s: Session) -> None:
         "pre-commit-hooks",
         "isort",
         # "mypy",
-        # "types-setuptools",
-        # *FLAKE8_DEPS,
+        "types-setuptools",
+        *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
