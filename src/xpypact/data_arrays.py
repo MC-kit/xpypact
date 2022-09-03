@@ -15,7 +15,7 @@ the difference with initial state is scaled with a given factor.
 """
 from __future__ import annotations
 
-from typing import Dict, Literal, TextIO, Tuple, Union, cast
+from typing import Any, Hashable, Iterable, Literal, Mapping, TextIO, Tuple, Union, cast
 
 from copy import deepcopy
 from functools import reduce
@@ -389,38 +389,67 @@ def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
     return encoded
 
 
+# noinspection PyShadowingBuiltins
 def save_nc(
     ds: xr.Dataset,
-    cn: Union[str, Path],
+    path: str | Path | None = None,
+    mode: Literal["w", "a"] = "w",
+    format: Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_64BIT", "NETCDF3_CLASSIC"]
+    | None = None,
+    group: str | None = None,
     engine: Literal["netcdf4", "scipy", "h5netcdf"] | None = "h5netcdf",
-    **kwargs: Dict,
-) -> None:
-    """Save a dataset with nuclide index converted.
+    encoding: Mapping[Hashable, Mapping[str, Any]] | None = None,
+    unlimited_dims: Iterable[Hashable] | None = None,
+    compute: bool = True,
+    invalid_netcdf: bool = False,
+) -> bytes | None:
+    """Save a dataset with nuclide index.
+
+    Encodes MultiIndex instance in a dataset and saves the result.
+    See: https://github.com/pydata/xarray/issues/1077
 
     Args:
         ds: FISPACT output as dataset
-        cn: path to dataset file
-        engine: netcdf engine to use
-        **kwargs: arguments for :py:meth:`to_netcdf()`
+        path: see :py:meth:`xarray.Dataset.to_netcdf()`
+        mode: ...
+        format: ...
+        group: ...
+        engine: ...
+        encoding: ...
+        unlimited_dims: ...
+        compute: ...
+        invalid_netcdf: ...
+
+    Returns:
+        see :py:meth:`xarray.Dataset.to_netcdf()`
     """
-    # See: https://github.com/pydata/xarray/issues/1077
     encoded = _encode_multiindex(ds, "nuclide")
-    encoded.to_netcdf(cn, engine=engine, **kwargs)
+    return encoded.to_netcdf(  # type: ignore[no-any-return]
+        path,
+        mode,
+        format,
+        group,
+        engine,
+        encoding,
+        unlimited_dims,
+        compute,
+        invalid_netcdf,
+    )
 
 
 def load_nc(
     cn: str | Path,
     engine: Literal["netcdf4", "scipy", "h5netcdf"] | None = "h5netcdf",
-    **kwargs: Dict,
+    **kwargs: Any,
 ) -> xr.Dataset:
-    """Load a dataset from netcdf file.
+    """Load a dataset from a netcdf file.
 
     The nuclide index is restored.
 
     Args:
         cn: path to dataset file
         engine: netcdf engine to use
-        **kwargs: arguments for :py:meth:`load_dataset()`
+        **kwargs: arguments for :py:meth:`xarray.Dataset.load_dataset()`
 
     Returns:
         The loaded dataset

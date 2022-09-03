@@ -147,7 +147,7 @@ class Inventory:
         """
         return len(self.inventory_data)
 
-    def __getitem__(self, item) -> TimeStep:
+    def __getitem__(self, item):
         """List interface delegated to the time steps.
 
         Args:

@@ -63,7 +63,11 @@ jobs:
       - name: Run pre commit checks
         run: |
           nox --force-color --session=pre-commit
-          # this includes pycln, isort, black, flake8 and mypy checks
+          # this includes pycln, isort, black, flake8 checks
+
+      - name: Run mypy static type checks
+        run: |
+          nox --force-color --session=mypy
 
   docs:
     runs-on: ubuntu-latest

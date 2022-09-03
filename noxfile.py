@@ -2,7 +2,7 @@
 
 See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-03-linting>`_
 """
-from typing import List
+from typing import Final, List
 
 import shutil
 import sys
@@ -25,26 +25,24 @@ except ImportError:
     raise SystemExit(dedent(message)) from None
 
 nox.options.sessions = (
-    "pre-commit",
     "safety",
-    # "isort",
-    # "black",
-    # "lint",
+    "pre-commit",
     "mypy",
-    # "xdoctest",
     "tests",
     "docs-build",
 )
 
-package = "xpypact"
-locations = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
+package: Final = "xpypact"
+locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
 
-supported_pythons = "3.8", "3.9", "3.10", "3.11"
-black_pythons = "3.10"
-mypy_pythons = "3.10"
-lint_pythons = "3.10"
+supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
+black_pythons: Final = "3.10"
+mypy_pythons: Final = "3.10"
+lint_pythons: Final = "3.10"
 
-FLAKE8_DEPS = [
+MYPY_DEPS: Final = ["mypy", "types-setuptools", "numpy"]
+
+FLAKE8_DEPS: Final = [
     "flake8",
     "flake8-annotations",
     "flake8-bandit",
@@ -64,7 +62,7 @@ FLAKE8_DEPS = [
     "tryceratops",
 ]
 
-SPHINX_DEPS = [
+SPHINX_DEPS: Final = [
     "sphinx",
     "sphinx-click",
     "sphinx-rtd-theme",
@@ -134,11 +132,9 @@ def precommit(s: Session) -> None:
     s.install(
         "black",
         "darglint",
+        "isort",
         "pre-commit",
         "pre-commit-hooks",
-        "isort",
-        # "mypy",
-        "types-setuptools",
         *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
@@ -250,7 +246,7 @@ def mypy(s: Session) -> None:
         "--no-dev",
         external=True,
     )
-    s.install("mypy", "pytest", "types-setuptools")
+    s.install(*MYPY_DEPS)
     s.run("mypy", *args)
     if not s.posargs:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")

@@ -209,16 +209,16 @@ plugins = [ "numpy.typing.mypy_plugin" ]
 
 [[tool.mypy.overrides]]
 module = [
-    "nox",
-    "nox_poetry",
-    "pandas",
-    "pytest",
     "click",
     "click.testing",
     "loguru",
-    "numpy.testing",
     "multipledispatch",
-    "scipy.constants"
+    "nox",
+    "nox_poetry",
+    "numpy.testing",
+    "pandas",
+    "pytest",
+    "scipy.constants",
 ]
 ignore_missing_imports = true
 
