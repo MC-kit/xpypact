@@ -156,7 +156,7 @@ class Inventory:
         Returns:
             Selected item or items.
         """
-        return self.inventory_data[item]  # type: ignore[no-any-return]
+        return self.inventory_data[item]
 
 
 def extract_times(time_steps: Iterable[TimeStep]) -> array:

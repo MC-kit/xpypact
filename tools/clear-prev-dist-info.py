@@ -56,7 +56,7 @@ def get_project_name() -> str:
             f"from current directory: {Path.cwd()}"
         )
     pyproject = tomli.loads(pyproject_path.read_text())
-    name = pyproject["tool"]["poetry"]["name"].replace("-", "_")
+    name: str = pyproject["tool"]["poetry"]["name"].replace("-", "_")
     print(f"Package {name} is found in {pyproject_path.absolute()}")
     return name
 
