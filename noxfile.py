@@ -135,6 +135,7 @@ def precommit(s: Session) -> None:
         "isort",
         "pre-commit",
         "pre-commit-hooks",
+        "pycln",
         *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
