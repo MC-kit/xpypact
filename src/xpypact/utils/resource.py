@@ -1,6 +1,6 @@
 """Utility methods to access a package data."""
 
-from typing import Callable, cast
+from typing import Callable, Optional, cast
 
 import inspect
 
@@ -9,7 +9,7 @@ from pathlib import Path
 import pkg_resources as pkg
 
 
-def filename_resolver(package: str = None) -> Callable[[str], str]:
+def filename_resolver(package: Optional[str] = None) -> Callable[[str], str]:
     """Create method to find data file name.
 
     Uses resource manager to handle all the cases of the deployment.
@@ -32,10 +32,10 @@ def filename_resolver(package: str = None) -> Callable[[str], str]:
     return func
 
 
-def path_resolver(package: str = None) -> Callable[[str], Path]:
+def path_resolver(package: Optional[str] = None) -> Callable[[str], Path]:
     """Create method to find data path.
 
-    Uses :meth:`file_resolver`.
+    Uses :py:func:`file_resolver`.
 
     Args:
         package: the package below which the data is stored.
@@ -57,10 +57,17 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
     return func
 
 
-def _resolve_package(package: str = None) -> str:
+class PackageNotFoundError(ValueError):
+    """Error when package is not specified and cannot be found."""
+
+    def __init__(self) -> None:
+        super().__init__("Cannot define package.")  # pragma: no cover
+
+
+def _resolve_package(package: Optional[str] = None) -> str:
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
         if module is None:
-            raise ValueError("Cannot define package.")  # pragma: no cover
+            raise PackageNotFoundError()  # pragma: no cover
         package = module.__name__
     return package

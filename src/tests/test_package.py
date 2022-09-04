@@ -8,7 +8,7 @@ from xpypact import __version__
 
 
 def find_version_from_project_toml():
-    toml_path = Path(__file__).parent.parent / "pyproject.toml"
+    toml_path = Path(__file__).parent.parent.parent / "pyproject.toml"
     assert toml_path.exists()
     pyproject = tomli.loads(toml_path.read_text())
     version = pyproject["tool"]["poetry"]["version"]
@@ -27,4 +27,4 @@ def test_package():
     version = find_version_from_project_toml()
     assert __version__ == normalize_version(
         version
-    ), "Run 'poetry install' and, if this doesn't help, run `dev/clear-prev-dist-info.py`"
+    ), "Run 'poetry install' and, if this doesn't help, run `tools/clear-prev-dist-info.py`"

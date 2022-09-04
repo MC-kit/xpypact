@@ -46,6 +46,13 @@ Contributing
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
+.. image:: https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black
+   :target: https://github.com/guilatrova/tryceratops
+   :alt: try/except style: tryceratops
+
+https://www.conventionalcommits.org/en/v1.0.0/#summary
+https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelinesi
+
 
 References
 ----------

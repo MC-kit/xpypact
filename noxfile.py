@@ -2,9 +2,8 @@
 
 See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-03-linting>`_
 """
-from typing import List
+from typing import Final, List
 
-import platform
 import shutil
 import sys
 
@@ -14,7 +13,6 @@ from textwrap import dedent
 
 import nox
 
-# from nox.sessions import Session
 try:
     from nox_poetry import Session, session  # mypy: ignore
 except ImportError:
@@ -26,30 +24,55 @@ except ImportError:
     {sys.executable} -m pip install nox-poetry"""
     raise SystemExit(dedent(message)) from None
 
-# TODO dvp: uncomment when code and docs are more mature
 nox.options.sessions = (
     "safety",
-    "isort",
-    "black",
     "pre-commit",
-    # TODO dvp: enable default runs with  lint and mypy when code matures and
-    #           if these checks are not already enabled in pre-commit
-    # "lint",
-    # "mypy",
-    "xdoctest",
+    "mypy",
     "tests",
     "docs-build",
 )
 
-package = "xpypact"
-locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
+package: Final = "xpypact"
+locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
 
-supported_pythons = ["3.8", "3.9", "3.10"]
-black_pythons = "3.10"
-mypy_pythons = "3.10"
-lint_pythons = "3.10"
+supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
+black_pythons: Final = "3.10"
+mypy_pythons: Final = "3.10"
+lint_pythons: Final = "3.10"
 
-on_windows = platform.system() == "Windows"
+MYPY_DEPS: Final = ["mypy", "types-setuptools", "numpy"]
+
+FLAKE8_DEPS: Final = [
+    "flake8",
+    "flake8-annotations",
+    "flake8-bandit",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-colors",
+    "flake8-commas",
+    "flake8-comprehensions",
+    "flake8-docstrings",
+    "flake8-import-order",
+    "flake8-print",
+    "flake8-rst-docstrings",
+    "flake8-use-fstring",
+    "mccabe",
+    "pep8-naming",
+    "pydocstyle",
+    "tryceratops",
+]
+
+SPHINX_DEPS: Final = [
+    "sphinx",
+    "sphinx-click",
+    "sphinx-rtd-theme",
+    # "sphinxcontrib-htmlhelp",
+    # "sphinxcontrib-jsmath",
+    "sphinxcontrib-napoleon",
+    # "sphinxcontrib-qthelp",
+    "sphinx-autodoc-typehints",
+    # "sphinx_autorun",
+]
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -62,8 +85,6 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
     Args:
         s: The Session object.
     """
-    assert s.bin is not None  # noqa: S101
-
     virtualenv = s.env.get("VIRTUAL_ENV")
     if virtualenv is None:
         return
@@ -111,17 +132,11 @@ def precommit(s: Session) -> None:
     s.install(
         "black",
         "darglint",
-        "flake8",
-        "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "flake8-rst-docstrings",
-        "pep8-naming",
+        "isort",
         "pre-commit",
         "pre-commit-hooks",
-        "isort",
-        "mypy",
-        "types-setuptools",
+        "pycln",
+        *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -131,29 +146,21 @@ def precommit(s: Session) -> None:
 @session(python="3.10")
 def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
-    args = s.posargs or ["--ignore", "44715"]
-    # TODO dvp: remove the 'ignore' option above on numpy updating to
-    #      1.22.1 and above
-    #      safety reports:
-    #      -> numpy, installed 1.22.1, affected >0, id 44715
-    #      All versions of Numpy are affected by CVE-2021-41495:
-    #      A null Pointer Dereference vulnerability exists in numpy.sort,
-    #      in the PyArray_DescrNew function due to missing return-value validation,
-    #      which allows attackers to conduct DoS attacks by
-    #      repetitively creating sort arrays.
-    #      https://github.com/numpy/numpy/issues/19038
-    #      numpy-1.22.2 - still does not work
-
     requirements = s.poetry.export_requirements()
     s.install("safety")
-    s.run("safety", "check", "--full-report", f"--file={requirements}", *args)
+    s.run("safety", "check", "--full-report", f"--file={requirements}", *s.posargs)
 
 
 @session(python=supported_pythons)
 def tests(s: Session) -> None:
     """Run the test suite."""
-    s.install(".")
-    s.install("coverage[toml]", "pytest", "pygments")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
+    s.install("pytest", "pygments", "coverage[toml]")
     try:
         s.run("coverage", "run", "--parallel", "-m", "pytest", *s.posargs)
     finally:
@@ -181,7 +188,12 @@ def coverage(s: Session) -> None:
 @session(python=supported_pythons)
 def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install("pytest", "typeguard", "pygments")
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
@@ -192,14 +204,13 @@ def isort(s: Session) -> None:
     s.install("isort")
     search_patterns = [
         "*.py",
-        "src/xpypact/*.py",
-        "tests/*.py",
+        f"src/{package}/*.py",
+        "src/tests/*.py",
         "benchmarks/*.py",
         "profiles/*.py",
-        #        "adhoc/*.py",
     ]
     files_to_process: List[str] = sum(
-        map(lambda p: glob(p, recursive=True), search_patterns), []
+        (glob(p, recursive=True) for p in search_patterns), []
     )
     s.run(
         "isort",
@@ -222,26 +233,21 @@ def black(s: Session) -> None:
 def lint(s: Session) -> None:
     """Lint using flake8."""
     args = s.posargs or locations
-    s.install(
-        "flake8",
-        "flake8-annotations",
-        "flake8-bandit",
-        "flake8-black",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "flake8-rst-docstrings",
-        "flake8-import-order",
-        "darglint",
-    )
+    s.install(*FLAKE8_DEPS)
     s.run("flake8", *args)
 
 
 @session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or ["src", "tests", "docs/source/conf.py"]
-    s.install(".")
-    s.install("mypy", "pytest", "types-setuptools")
+    args = s.posargs or ["src", "docs/source/conf.py"]
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
+    s.install(*MYPY_DEPS)
     s.run("mypy", *args)
     if not s.posargs:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
@@ -251,28 +257,27 @@ def mypy(s: Session) -> None:
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     args = s.posargs or ["all"]
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install("xdoctest[colors]")
     s.run("python", "-m", "xdoctest", package, *args)
 
 
-# TODO dvp: readthedocs limit python version to 3.8, check later. See .readthedocs.yaml
-@session(name="docs-build", python="3.8")
+@session(name="docs-build", python="3.9")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
-    s.install(".")
-    s.install(
-        "sphinx",
-        "sphinx-click",
-        "sphinx-rtd-theme",
-        # "sphinxcontrib-htmlhelp",
-        # "sphinxcontrib-jsmath",
-        "sphinxcontrib-napoleon",
-        # "sphinxcontrib-qthelp",
-        "sphinx-autodoc-typehints",
-        # "sphinx_autorun",
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
     )
+    s.install(*SPHINX_DEPS)
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():
@@ -285,19 +290,13 @@ def docs_build(s: Session) -> None:
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
-    s.install(".")
-    s.install(
-        "sphinx",
-        "sphinx-autobuild",
-        "sphinx-click",
-        "sphinx-rtd-theme",
-        # "sphinxcontrib-htmlhelp",
-        # "sphinxcontrib-jsmath",
-        # "sphinxcontrib-napoleon",
-        # "sphinxcontrib-qthelp",
-        # "sphinx-autodoc-typehints",
-        # "sphinx_autorun",
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
     )
+    s.install("sphinx-autobuild", *SPHINX_DEPS)
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():

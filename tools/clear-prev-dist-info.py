@@ -10,7 +10,7 @@ from typing import Optional, TypeVar
 
 import shutil
 import site
-import subprocess  # noqa
+import subprocess
 
 from pathlib import Path
 
@@ -56,7 +56,7 @@ def get_project_name() -> str:
             f"from current directory: {Path.cwd()}"
         )
     pyproject = tomli.loads(pyproject_path.read_text())
-    name = pyproject["tool"]["poetry"]["name"].replace("-", "_")
+    name: str = pyproject["tool"]["poetry"]["name"].replace("-", "_")
     print(f"Package {name} is found in {pyproject_path.absolute()}")
     return name
 
@@ -77,7 +77,7 @@ def clear_previous_distributions_info() -> None:
 def run_poetry_install() -> None:
     """Refresh installation of the package."""
     print("Running `poetry install`.")
-    subprocess.run(["poetry", "install"])  # noqa
+    subprocess.run(["poetry", "install"])
 
 
 if __name__ == "__main__":

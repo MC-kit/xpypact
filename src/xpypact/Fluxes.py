@@ -1,9 +1,8 @@
 """The Class to represent FISPACT fluxes file content."""
-
-from typing import Callable, TextIO, Tuple
+from typing import Callable, TextIO, Tuple, cast
 
 from dataclasses import dataclass
-from io import StringIO, TextIOWrapper
+from io import StringIO, TextIOBase
 from pathlib import Path
 
 import numpy as np
@@ -145,7 +144,7 @@ def compute_709_bins() -> np.ndarray:
     """
     template = np.logspace(0, 1, 51)
     res = np.hstack([template[1:] * 10**i for i in range(-5, 7)] + [LAST_TWO_DECADES])
-    return np.insert(res, 0, 1e-5)
+    return cast(np.ndarray, np.insert(res, 0, 1e-5))
 
 
 FISPACT_709_BINS = compute_709_bins()
@@ -179,7 +178,7 @@ class Fluxes:
         Returns:
             float: flux total
         """
-        return np.sum(self.fluxes).item()
+        return cast(float, np.sum(self.fluxes))
 
     def __hash__(self) -> int:
         """Use available information for hash.
@@ -189,7 +188,7 @@ class Fluxes:
         """
         return hash((self.energy_bins.size, self.fluxes.size, self.comment, self.norm))
 
-    def __eq__(self, other: "Fluxes") -> bool:
+    def __eq__(self, other) -> bool:
         """Compare fluxes.
 
         Args:
@@ -199,13 +198,14 @@ class Fluxes:
             bool: True, if the fluxes are equal, otherwise - False
         """
         return self is other or (
-            array_equal(self.energy_bins, other.energy_bins)
+            isinstance(other, Fluxes)
+            and array_equal(self.energy_bins, other.energy_bins)
             and array_equal(self.fluxes, other.fluxes)
             and self.comment == other.comment
             and self.norm == other.norm
         )
 
-    def __ne__(self, other: "Fluxes") -> bool:
+    def __ne__(self, other) -> bool:
         """Compare fluxes.
 
         Args:
@@ -220,7 +220,7 @@ class Fluxes:
 def is_709_fluxes(fluxes: Fluxes) -> bool:
     """Check if fluxes are 709-kind of fluxes.
 
-    This fluxes can be output withou energy bins and
+    This fluxes can be output without energy bins and
     can be used with 'flux' statement in FISPACT run configuration.
 
     Args:
@@ -244,7 +244,11 @@ def are_fluxes_equal(a: Fluxes, b: Fluxes) -> bool:
     Returns:
         bool: True, if the fluxes are equivalent by data
     """
-    return array_equal(a.energy_bins, b.energy_bins) and array_equal(a.fluxes, b.fluxes)
+    return (
+        a.energy_bins.size == b.energy_bins.size
+        and array_equal(a.energy_bins, b.energy_bins)
+        and array_equal(a.fluxes, b.fluxes)
+    )
 
 
 def are_fluxes_close(
@@ -256,25 +260,40 @@ def are_fluxes_close(
 ) -> bool:
     """Compare data of fluxes approximately.
 
-    Check if fluxes are equivalent by data with some tolerance, disregarding differences in comment and norm.
+    Check if fluxes are equivalent by data with some tolerance,
+    disregarding differences in comment and norm.
 
     Args:
         a: the first flux to compare
         b: the second flux to compare
         rtol: relative tolerance
         atol: absolute tolerance
+        equal_nan: see :py:func:`numpy.allclose()`
 
     Returns:
         bool: True, if the fluxes are equivalent by data
     """
-    return allclose(
-        a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
-    ) and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    return (
+        a.energy_bins.size == b.energy_bins.size
+        and allclose(
+            a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
+        )
+        and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    )
 
 
 def read_fluxes(
     stream: TextIO, define_bins_and_fluxes: Callable[[array], Tuple[array, array]]
 ) -> Fluxes:
+    """Load Fluxes from a stream.
+
+    Args:
+        stream: IO to load from
+        define_bins_and_fluxes: strategy to extract bins and values
+
+    Returns:
+        Fluxes: the loaded
+    """
     lines = stream.readlines()
     comment = lines[-1].strip()
     norm = float(lines[-2])
@@ -284,47 +303,123 @@ def read_fluxes(
     return Fluxes(energy_bins, fluxes, comment, norm)
 
 
-@dispatch(TextIOWrapper)
+@dispatch(TextIOBase)
 def read_arb_fluxes(
     stream: TextIO,
 ) -> Fluxes:
+    """Read arbitrary fluxes from stream.
+
+    Args:
+        stream: IO to read from
+
+    Returns:
+        Fluxes: the loaded
+    """
     return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(Path)
-def read_arb_fluxes(path: Path) -> Fluxes:
+@dispatch(Path)  # type: ignore[no-redef]
+def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
+    """Read arbitrary fluxes from Path.
+
+    Args:
+        path: Path to read from
+
+    Returns:
+        Fluxes: the loaded
+    """
     with path.open() as stream:
         return read_arb_fluxes(stream)
 
 
-@dispatch(str)
-def read_arb_fluxes(text: str) -> Fluxes:
+@dispatch(str)  # type: ignore[no-redef]
+def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
+    """Read arbitrary fluxes from text.
+
+    Args:
+        text: the text to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with StringIO(text) as stream:
         return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(TextIOWrapper)
+@dispatch(TextIOBase)
 def read_709_fluxes(
     stream: TextIO,
 ) -> Fluxes:
+    """Read 709-group fluxes from stream.
+
+    Args:
+        stream: the stream to read from
+
+    Returns:
+        Fluxes: the read
+    """
     return read_fluxes(stream, define_709_bins_and_fluxes)
 
 
-@dispatch(Path)
-def read_709_fluxes(path: Path) -> Fluxes:
+@dispatch(Path)  # type: ignore[no-redef]
+def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
+    """Read 709-group fluxes from path.
+
+    Args:
+        path: the path to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with path.open() as stream:
         return read_709_fluxes(stream)
 
 
-@dispatch(str)
-def read_709_fluxes(text: str) -> Fluxes:
+@dispatch(str)  # type: ignore[no-redef]
+def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
+    """Read 709-group fluxes from text.
+
+    Args:
+        text: the text to read from
+
+    Returns:
+        Fluxes: the read
+    """
     with StringIO(text) as stream:
         return read_709_fluxes(stream)
 
 
+class FluxesDataSizeError(ValueError):
+    """Base Fluxes read Exception."""
+
+    def __str__(self) -> str:
+        """Use an exception class __doc__ as an error msg.
+
+        Returns:
+            an exception class __doc__
+        """
+        return cast(str, self.__class__.__doc__)
+
+
+class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
+    """The number of float values from arb_flux file should be odd."""
+
+
 def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
+    """Extract energy bins and values of arbitrary flux.
+
+    Args:
+        data: the array containing both bins and values
+
+    Returns:
+        Tuple: energy bins, values
+
+    Raises:
+        ArbitraryFluxesDataSizeError: if size of data is not odd.
+    """
     sz = data.size
-    assert sz & 1, "The number of float values from arb_flux file should be odd"
+    if sz & 1 == 0:
+        raise ArbitraryFluxesDataSizeError()
     bins_end = sz // 2 + 1
     energy_bins = data[:bins_end]
     fluxes = data[bins_end:]
@@ -333,8 +428,24 @@ def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
     return energy_bins, fluxes
 
 
+class StandardFluxesDataSizeError(FluxesDataSizeError):
+    """Invalid data for standard FISPACT 709-group fluxes."""
+
+
 def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
-    assert data.size == 709, "Invalid data for FISPACT fluxes"
+    """Strategy to define energy bins and values of standard 709 group flux.
+
+    Args:
+        data: the array containing values only
+
+    Returns:
+        Tuple: predefined energy bins, values
+
+    Raises:
+        StandardFluxesDataSizeError: if size of data is not 709.
+    """
+    if data.size != 709:
+        raise StandardFluxesDataSizeError()
     return FISPACT_709_BINS, data[::-1]
 
 
@@ -371,7 +482,16 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
 #     return result
 
 
-def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5):
+def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) -> None:
+    """Print fluxes for FISPACT.
+
+    Args:
+        fluxes: to print
+        fid: a stream to print to
+        arbitrary: if True - arbitrary, otherwise 709
+        max_columns: max columns in output
+
+    """
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
         column = print_cols(sequence, fid, max_columns, fmt="{:.6e}")
@@ -385,10 +505,25 @@ def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5):
     print(fluxes.comment, file=fid, end="")
 
 
-# def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7):
-#     if not is_709_fluxes(fluxes):
-#         fluxes = make_709_fluxes(fluxes)
-#     print_fluxes(fluxes, fid, False, max_columns)
+class NotA709Error(FluxesDataSizeError):
+    """Expected 709-group fluxes."""
+
+
+def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7) -> None:
+    """Print standard 709-group fluxes.
+
+    Args:
+        fluxes: what to print
+        fid: where
+        max_columns: max columns in output
+
+    Raises:
+        NotA709Error: if not a valid 709 group "Fluxes" object is provided.
+
+    """
+    if not is_709_fluxes(fluxes):
+        raise NotA709Error()
+    print_fluxes(fluxes, fid, False, max_columns)
 
 
 def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=5) -> None:

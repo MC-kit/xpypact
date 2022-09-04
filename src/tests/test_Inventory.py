@@ -1,4 +1,6 @@
 """Test loading Inventory from FISPACT JSON file."""
+import bz2
+
 import pytest
 
 from xpypact.Inventory import Inventory, RunDataCorrected, from_json  # extract_times,
@@ -33,6 +35,7 @@ def test_constructors():
 
 
 def test_loading(inventory):
+    assert len(inventory) == 2
     assert len(inventory.inventory_data) == 2
     assert inventory.run_data.timestamp == "23:01:19 12 July 2020"
     ts1, ts2 = inventory.inventory_data
@@ -43,17 +46,24 @@ def test_loading(inventory):
     assert not ts2.is_cooling
     assert ts2.elapsed_time == 0.631152e8
     assert ts2.flux == 0.24452e11
+    assert ts1.nuclides_mass == pytest.approx(1e-3, rel=1e-3)
     # times = extract_times(inventory)
     # assert times.size == 2
     # assert times[0] == ts1.elapsed_time
     # assert times[1] == ts2.elapsed_time
 
 
+def test_loading_from_stream(data, inventory):
+    with (data / "Ag-1.json").open(encoding="utf8") as fid:
+        inv = from_json(fid)
+        assert len(inv) == len(inventory)
+
+
 def test_first_time_step(inventory):
     first_time_step = inventory.inventory_data[0]
     assert (
         first_time_step.dose_rate.mass == 1.0e-3
-    ), "FISPACT value 0.0 for the the dose_rate.mass in the first time step is to be fixed to 1.0e-3"
+    ), "FISPACT value for the the dose_rate.mass in the first time step is to be 1.0e-3"
 
 
 def test_inventory_get_meta_info(inventory):
@@ -65,7 +75,7 @@ def test_inventory_get_meta_info(inventory):
 
 
 def test_elapsed_time(inventory):
-    elapsed_time = list(map(lambda x: x.elapsed_time, inventory.inventory_data))
+    elapsed_time = inventory.extract_times()
     assert elapsed_time[0] == 0
     assert int(elapsed_time[-1]) == 0.631152e8
 
@@ -88,6 +98,12 @@ def test_elapsed_time(inventory):
 #         map(lambda x: 1 if x.nuclides else 0, big_inventory.inventory_data)
 #     )
 #     assert times_steps_with_nuclides == 65
+
+
+def test_inventory_with_gamma(data):
+    with bz2.open(data / "with-gamma.json.bz2") as fid:
+        inventory = from_json(fid.read().decode("utf-8"))
+        assert inventory[1].gamma_spectrum is not None
 
 
 if __name__ == "__main__":
