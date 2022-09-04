@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Callable, Iterable, TextIO, cast
 
 from dataclasses import dataclass
-from io import TextIOWrapper
+from io import TextIOBase
 from pathlib import Path
 
 import numpy as np
@@ -43,7 +43,7 @@ class InventoryError(ValueError):
         Returns:
             The __doc__ of the exception class.
         """
-        return cast(str, self.__class__.__doc__)
+        return cast(str, self.__class__.__doc__)  # pragma: no cover
 
 
 class InventoryNonMonotonicTimesError(InventoryError):
@@ -85,7 +85,7 @@ class Inventory:
                 if 0.0 == duration:
                     duration = ts.cooling_time - prev_cooling_time
                 if duration < 0.0:
-                    raise InventoryNonMonotonicTimesError()
+                    raise InventoryNonMonotonicTimesError()  # pragma: no cover
                 ts.duration = duration
                 prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
                 if duration == 0.0:
@@ -185,7 +185,7 @@ def from_json(text: str) -> Inventory:
     return Inventory.from_json(json_dict)
 
 
-@dispatch(TextIOWrapper)  # type: ignore[no-redef]
+@dispatch(TextIOBase)  # type: ignore[no-redef]
 def from_json(stream: TextIO) -> Inventory:
     """Construct Inventory instance from JSON stream.
 
@@ -208,4 +208,4 @@ def from_json(path: Path) -> Inventory:
     Returns:
         The loaded Inventory instance.
     """
-    return from_json(path.read_text())
+    return from_json(path.read_text(encoding="utf8"))

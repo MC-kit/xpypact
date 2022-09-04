@@ -2,7 +2,7 @@
 from typing import Callable, TextIO, Tuple, cast
 
 from dataclasses import dataclass
-from io import StringIO, TextIOWrapper
+from io import StringIO, TextIOBase
 from pathlib import Path
 
 import numpy as np
@@ -220,7 +220,7 @@ class Fluxes:
 def is_709_fluxes(fluxes: Fluxes) -> bool:
     """Check if fluxes are 709-kind of fluxes.
 
-    This fluxes can be output withou energy bins and
+    This fluxes can be output without energy bins and
     can be used with 'flux' statement in FISPACT run configuration.
 
     Args:
@@ -244,7 +244,11 @@ def are_fluxes_equal(a: Fluxes, b: Fluxes) -> bool:
     Returns:
         bool: True, if the fluxes are equivalent by data
     """
-    return array_equal(a.energy_bins, b.energy_bins) and array_equal(a.fluxes, b.fluxes)
+    return (
+        a.energy_bins.size == b.energy_bins.size
+        and array_equal(a.energy_bins, b.energy_bins)
+        and array_equal(a.fluxes, b.fluxes)
+    )
 
 
 def are_fluxes_close(
@@ -269,9 +273,13 @@ def are_fluxes_close(
     Returns:
         bool: True, if the fluxes are equivalent by data
     """
-    return allclose(
-        a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
-    ) and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    return (
+        a.energy_bins.size == b.energy_bins.size
+        and allclose(
+            a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
+        )
+        and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    )
 
 
 def read_fluxes(
@@ -295,7 +303,7 @@ def read_fluxes(
     return Fluxes(energy_bins, fluxes, comment, norm)
 
 
-@dispatch(TextIOWrapper)
+@dispatch(TextIOBase)
 def read_arb_fluxes(
     stream: TextIO,
 ) -> Fluxes:
@@ -338,7 +346,7 @@ def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
         return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(TextIOWrapper)
+@dispatch(TextIOBase)
 def read_709_fluxes(
     stream: TextIO,
 ) -> Fluxes:
@@ -497,10 +505,25 @@ def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) ->
     print(fluxes.comment, file=fid, end="")
 
 
-# def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7):
-#     if not is_709_fluxes(fluxes):
-#         fluxes = make_709_fluxes(fluxes)
-#     print_fluxes(fluxes, fid, False, max_columns)
+class NotA709Error(FluxesDataSizeError):
+    """Expected 709-group fluxes."""
+
+
+def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7) -> None:
+    """Print standard 709-group fluxes.
+
+    Args:
+        fluxes: what to print
+        fid: where
+        max_columns: max columns in output
+
+    Raises:
+        NotA709Error: if not a valid 709 group "Fluxes" object is provided.
+
+    """
+    if not is_709_fluxes(fluxes):
+        raise NotA709Error()
+    print_fluxes(fluxes, fid, False, max_columns)
 
 
 def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=5) -> None:
