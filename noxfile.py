@@ -4,6 +4,7 @@ See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-0
 """
 from typing import Final, List
 
+import re
 import shutil
 import sys
 
@@ -32,7 +33,37 @@ nox.options.sessions = (
     "docs-build",
 )
 
-package: Final = "xpypact"
+
+NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[_a-zA-Z]*")')
+
+
+def find_my_name() -> str:
+    """Find this package name.
+
+    Search the first row in pyproject.toml in format
+
+        name = "<package>"
+
+    and returns the <package> value.
+    This allows to reuse the noxfile.py in similar projects
+    without any changes.
+
+    Returns:
+        str: Current package found in pyproject.toml
+
+    Raises:
+        ValueError: if the pattern is not found.
+    """
+    with Path("pyproject.toml").open() as fid:
+        for line in fid:
+            res = NAME_RGX.match(line)
+            if res is not None:
+                return res["package"].replace("-", "_")
+    msg = "Cannot find package name"
+    raise ValueError(msg)
+
+
+package: Final = find_my_name()
 locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
