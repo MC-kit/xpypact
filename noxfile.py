@@ -195,13 +195,7 @@ def typeguard(s: Session) -> None:
         external=True,
     )
     s.install("pytest", "typeguard", "pygments")
-    skip_modules = {"resource.py"}
-    modules = [
-        str(m)
-        for m in Path(f"src/{package}").glob("**/*.py")
-        if m.name not in skip_modules
-    ]
-    s.run("pytest", f"--typeguard-packages={','.join(modules)}", *s.posargs)
+    s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
 @session(python="3.10")

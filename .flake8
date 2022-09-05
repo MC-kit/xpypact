@@ -41,6 +41,7 @@ per-file-ignores =
     src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
     src/xpypact/Inventory.py:F811
     src/xpypact/data_arrays.py:ANN401
+    src/xpypact/utils/resource.py:ANN202
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref

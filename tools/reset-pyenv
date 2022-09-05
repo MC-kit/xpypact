@@ -2,11 +2,12 @@
 
 # set -exu
 
-pyenv virtualenv-delete -f  mapstp
-pyenv virtualenv 3.10.6 mapstp
+pyenv virtualenv-delete -f  xpypact
+pyenv virtualenv 3.10.6 xpypact
+pyenv rehash
 poetry install
 pyenv rehash
-mapstp --version
+python -c "import xpypact; print(xpypact.__version__)"
 
 
 # vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :
