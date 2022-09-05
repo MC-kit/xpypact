@@ -134,11 +134,11 @@ class TimeStep:
         """
         json_dose_rate = json_dict.pop("dose_rate")
         dose_rate = DoseRate(**json_dose_rate)
-        json_nuclides = json_dict.pop("nuclides", None)
+        json_nuclides = json_dict.pop("nuclides")
         if json_nuclides:
             nuclides = [Nuclide.from_json(n) for n in json_nuclides]
         else:
-            nuclides = []
+            nuclides = []  # pragma: no cover
         json_gamma_spectrum = json_dict.pop("gamma_spectrum", None)
         if json_gamma_spectrum:
             gamma_spectrum = GammaSpectrum.from_json(json_gamma_spectrum)

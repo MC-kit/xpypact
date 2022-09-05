@@ -63,11 +63,11 @@ jobs:
       - name: Run pre commit checks
         run: |
           nox --force-color --session=pre-commit
+          # this includes pycln, isort, black, flake8 checks
 
-#  TODO dvp: return mypy when code quality allows
-#      - name: Run mypy
-#        run: |
-#          nox --force-color --session=mypy
+      - name: Run mypy static type checks
+        run: |
+          nox --force-color --session=mypy
 
   docs:
     runs-on: ubuntu-latest

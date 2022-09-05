@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 try:
     from scipy.constants import Avogadro
-except ImportError:
+except ImportError:  # pragma: no cover
     Avogadro = 6.02214075999999987023872e23
 
 from mckit_nuclides.elements import Element
@@ -65,7 +65,7 @@ class Nuclide:
 
     @property
     def a(self) -> int:
-        """Mass number.
+        """Synonym to mass number, isotope, A.
 
         Returns:
             A, mass number

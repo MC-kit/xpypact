@@ -15,9 +15,8 @@ the difference with initial state is scaled with a given factor.
 """
 from __future__ import annotations
 
-from typing import Dict, Literal, TextIO, Tuple, Union, cast
+from typing import Any, Hashable, Iterable, Literal, Mapping, TextIO, Tuple, Union, cast
 
-from copy import deepcopy
 from functools import reduce
 from pathlib import Path
 
@@ -53,6 +52,7 @@ SCALABLE_COLUMNS = [
     "nuclide_alpha_heat",
     "nuclide_beta_heat",
     "nuclide_gamma_heat",
+    "gamma",
 ]
 
 
@@ -75,7 +75,7 @@ def create_dataset(inventory: Inventory) -> xr.Dataset:
             return "nuclide", np.fromiter(map(getter, nuclides), dtype=dtype)
 
         nuclide_coordinate = pd.MultiIndex.from_tuples(
-            ((n.element, n.isotope, n.state) for n in x.nuclides),
+            ((n.element, n.a, n.state) for n in x.nuclides),
             names=["element", "mass_number", "state"],
         )
 
@@ -294,9 +294,12 @@ def get_atomic_masses(ds: xr.Dataset) -> np.ndarray:
 
     def mapper(x) -> float:
         element, mass_number, _ = x.item()
-        return cast(float, get_nuclide_mass(element, mass_number))
+        return cast(float, get_nuclide_mass(element, int(mass_number)))
 
-    return cast(np.ndarray, np.fromiter((mapper(x) for x in ds.nuclide), dtype=int))
+    # TODO dvp: in mckit-nuclides add dispatching over int64 in get_nuclide_mass()
+    #           and remove int() conversion above
+
+    return cast(np.ndarray, np.fromiter((mapper(x) for x in ds.nuclide), dtype=float))
 
 
 def add_atomic_masses(ds: xr.Dataset, variable_name="atomic_mass") -> xr.Dataset:
@@ -315,7 +318,7 @@ def add_atomic_masses(ds: xr.Dataset, variable_name="atomic_mass") -> xr.Dataset
     return ds
 
 
-def scale_by_flux(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
+def scale_by_flux(ds: xr.Dataset, scale: float) -> xr.Dataset:
     """Normalize irradiation results for actual flux value.
 
     A FISPACT irradiation scenario may use flux value,
@@ -329,36 +332,31 @@ def scale_by_flux(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
     Args:
         ds: FISPACT output as Dataset
         scale: factor to apply
-        columns: the subset of columns to scale, if not specified :py:obj:`SCALABLE_COLUMNS`
 
     Returns:
         A new dataset with scaled columns.
     """
     initial = ds.sel(time_step_number=1).fillna(0.0)
-    result = scale_by_mass(ds - initial, scale, columns) + initial
+    result = scale_by_mass(ds - initial, scale) + initial
     result.attrs.update(ds.attrs)
 
     return result
 
 
-def scale_by_mass(ds: xr.Dataset, scale: float, columns=None) -> xr.Dataset:
+def scale_by_mass(ds: xr.Dataset, scale: float) -> xr.Dataset:
     """All the activation values including initial can be scaled to actual weight.
 
     Args:
         ds: FISPACT output as Dataset
         scale: factor to apply
-        columns: the subset of columns to scale, if not specified :py:obj:`SCALABLE_COLUMNS`
 
     Returns:
         A new dataset with scaled columns.
 
     """
-    if columns is None:
-        columns = SCALABLE_COLUMNS
-    result = deepcopy(ds)
-    result[columns] *= scale
-    result.attrs.update(ds.attrs)
-    return result
+    columns = [x for x in SCALABLE_COLUMNS if x in ds.variables]
+    scaled = ds.merge(ds[columns] * scale, overwrite_vars=columns, join="exact")
+    return scaled
 
     # TODO dvp: check if the dose rate is not always computed for 1g in v.5
     # "time_step_ingestion_dose",
@@ -389,38 +387,67 @@ def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
     return encoded
 
 
+# noinspection PyShadowingBuiltins
 def save_nc(
     ds: xr.Dataset,
-    cn: Union[str, Path],
+    path: str | Path | None = None,
+    mode: Literal["w", "a"] = "w",
+    format: Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_64BIT", "NETCDF3_CLASSIC"]
+    | None = None,
+    group: str | None = None,
     engine: Literal["netcdf4", "scipy", "h5netcdf"] | None = "h5netcdf",
-    **kwargs: Dict,
-) -> None:
-    """Save a dataset with nuclide index converted.
+    encoding: Mapping[Hashable, Mapping[str, Any]] | None = None,
+    unlimited_dims: Iterable[Hashable] | None = None,
+    compute: bool = True,
+    invalid_netcdf: bool = False,
+) -> bytes | None:
+    """Save a dataset with nuclide index.
+
+    Encodes MultiIndex instance in a dataset and saves the result.
+    See: https://github.com/pydata/xarray/issues/1077
 
     Args:
         ds: FISPACT output as dataset
-        cn: path to dataset file
-        engine: netcdf engine to use
-        **kwargs: arguments for :py:meth:`to_netcdf()`
+        path: see :py:meth:`xarray.Dataset.to_netcdf()`
+        mode: ...
+        format: ...
+        group: ...
+        engine: ...
+        encoding: ...
+        unlimited_dims: ...
+        compute: ...
+        invalid_netcdf: ...
+
+    Returns:
+        see :py:meth:`xarray.Dataset.to_netcdf()`
     """
-    # See: https://github.com/pydata/xarray/issues/1077
     encoded = _encode_multiindex(ds, "nuclide")
-    encoded.to_netcdf(cn, engine=engine, **kwargs)
+    return encoded.to_netcdf(  # type: ignore[no-any-return]
+        path,
+        mode,
+        format,
+        group,
+        engine,
+        encoding,
+        unlimited_dims,
+        compute,
+        invalid_netcdf,
+    )
 
 
 def load_nc(
     cn: str | Path,
     engine: Literal["netcdf4", "scipy", "h5netcdf"] | None = "h5netcdf",
-    **kwargs: Dict,
+    **kwargs: Any,
 ) -> xr.Dataset:
-    """Load a dataset from netcdf file.
+    """Load a dataset from a netcdf file.
 
     The nuclide index is restored.
 
     Args:
         cn: path to dataset file
         engine: netcdf engine to use
-        **kwargs: arguments for :py:meth:`load_dataset()`
+        **kwargs: arguments for :py:meth:`xarray.Dataset.load_dataset()`
 
     Returns:
         The loaded dataset

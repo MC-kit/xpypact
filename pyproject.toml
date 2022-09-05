@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.4"
+version = "0.1.5a0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -87,6 +87,7 @@ typeguard = ">=2.13.0"
 types-setuptools = ">=57.4.2"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 yappi = ">=1.3.2"
+pycln = {version = "^2.1.1", extras = ["click"]}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -169,7 +170,7 @@ source = ["xpypact"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-fail_under = 80  # TODO dvp: increase limit to 100 with code maturing
+fail_under = 100
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma
@@ -208,22 +209,26 @@ plugins = [ "numpy.typing.mypy_plugin" ]
 
 [[tool.mypy.overrides]]
 module = [
-    "nox",
-    "nox_poetry",
-    "pandas",
-    "pytest",
     "click",
     "click.testing",
     "loguru",
-    "numpy.testing",
     "multipledispatch",
-    "scipy.constants"
+    "nox",
+    "nox_poetry",
+    "numpy.testing",
+    "pandas",
+    "pytest",
+    "scipy.constants",
 ]
 ignore_missing_imports = true
 
 
 [tool.tryceratops]
-include = ["src/mapstp", "src/tests"]
-exclude = [".nox"]
+include = ["src"]
+#exclude = [".nox"]
 #ignore = ["TC002", "TC200", "TC300"]
 experimental = true
+
+[tool.pycln]
+path = ["src", "tools"]
+#silence = true
