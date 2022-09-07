@@ -17,6 +17,7 @@ on:
       mustBeGreen:
         description: 'Only combine PRs that are green (status is success)'
         required: true
+        type: boolean
         default: true
       combineBranchName:
         description: 'Name of the branch to combine PRs into'
@@ -87,7 +88,7 @@ jobs:
                   baseBranchSHA = pull['base']['sha'];
                 }
               } else {
-                console.log('Branch didn't match prefix: ' + branch);
+                console.log('Branch did not match prefix: ' + branch);
               }
             }
             if (branchesAndPRStrings.length == 0) {
