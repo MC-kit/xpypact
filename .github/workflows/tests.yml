@@ -55,12 +55,11 @@ jobs:
       - name: Install Nox
         run: |
           pipx install --pip-args=--constraint=.github/constraints.txt nox
-          pipx inject --pip-args=--constraint=.github/constraints.txt nox nox-poetry
           nox --version
 
-      - name: Run safety session
-        run: |
-          nox --force-color --session=safety
+#      - name: Run safety session
+#        run: |
+#          nox --force-color --session=safety
 
       - name: Run pre commit checks
         run: |
@@ -96,7 +95,6 @@ jobs:
       - name: Install Nox
         run: |
           pipx install --pip-args=--constraint=.github/constraints.txt nox
-          pipx inject --pip-args=--constraint=.github/constraints.txt nox nox-poetry
           nox --version
 
       - name: Build documentation
@@ -123,8 +121,8 @@ jobs:
           architecture: x64
       - name: Checkout submodules
         run: git submodule update --init --recursive --depth=1
-      - name: Install nox and nox-poetry
-        run: pip install --constraint=.github/constraints.txt nox nox-poetry
+      - name: Install nox
+        run: pip install --constraint=.github/constraints.txt nox
       - name: Install poetry
         run: pip install --constraint=.github/constraints.txt poetry
       - name: Run nox tests
@@ -160,7 +158,6 @@ jobs:
       - name: Install Nox
         run: |
           pipx install --pip-args=--constraint=.github/constraints.txt nox
-          pipx inject --pip-args=--constraint=.github/constraints.txt nox nox-poetry
           nox --version
 
       - name: Download coverage data
