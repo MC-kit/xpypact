@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.4"
+version = "0.1.5a0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
 homepage = "https://github.com/MC-kit/xpypact"
 repository = "https://github.com/MC-kit/xpypact"
-# documentation = "https://xpypact.readthedocs.io
+documentation = "https://xpypact.readthedocs.io"
 keywords = ["FISPACT", "nuclide", "isotope", "abundance"]
 readme = "README.rst"
 packages = [
@@ -27,12 +27,12 @@ classifiers = [
 # xpypact = "xpypact.cli.runner:xpypact"
 
 [tool.poetry.urls]
-# documentation = "https://xpypact.readthedocs.io"
+documentation = "https://xpypact.readthedocs.io"
 Chnagelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
+python = ">=3.8,<4.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 multipledispatch = ">=0.6.0"
@@ -46,7 +46,7 @@ xarray = ">=2022.3.0"
 Pygments = ">=2.10.0"
 black = ">=22.1.0"
 codecov = ">=2.1.12"
-coverage = { version = ">=6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
+coverage = { version = ">=6.1.2", extras = ["toml"] }
 darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"

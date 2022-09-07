@@ -64,7 +64,14 @@ class PackageNotFoundError(ValueError):
         super().__init__("Cannot define package.")  # pragma: no cover
 
 
-def _resolve_package(package: Optional[str] = None) -> str:
+def _resolve_package(
+    package,
+):
+    # No typing in this function,
+    # otherwise typeguard decorates this and
+    # the frame offset is to be found in a bit
+    # more complex way.
+    # ANN202 is ignored for this file (see .flake8)
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
         if module is None:
