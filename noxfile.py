@@ -121,7 +121,7 @@ def precommit(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "pre_commit,style,flake8",
+        "pre_commit,style,isort,black,flake8",
         external=True,
     )
     s.run("pre-commit", *args)
