@@ -51,6 +51,7 @@ tomli = ">=2.0.1"
 optional = true
 
 [tool.poetry.group.profile.dependencies]
+# TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
 yappi = ">=1.3.2"
 
 [tool.poetry.group.safety.dependencies]

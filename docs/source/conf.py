@@ -18,9 +18,9 @@ from typing import List
 
 # -- Project information -----------------------------------------------------
 
-project = "mckit-nuclides"
-copyright = "2022, dvp"
-author = "dvp"
+project = "xpypact"
+copyright = "2022, dvp2015"
+author = "dvp2015"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
