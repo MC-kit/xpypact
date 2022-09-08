@@ -144,7 +144,7 @@ def tests(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "test,xdoctest,coverage",
+        "main,test,xdoctest,coverage",
         external=True,
     )
     # s.install("pytest", "pygments", "coverage[toml]")
