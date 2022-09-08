@@ -186,8 +186,7 @@ markers = [
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
-    # TODO dvp: check on xarray updates
-    "ignore:Deleting a single level of a MultiIndex is deprecated"
+    "ignore:.*not typechecking multipledispatch.dispatcher.*:UserWarning"
 ]
 
 # [tool.coverage]

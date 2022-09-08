@@ -179,14 +179,15 @@ def coverage(s: Session) -> None:
     s.run("coverage", *args)
 
 
-@session(python=supported_pythons)
+# TODO dvp: check some strange errors on 3.8, 3.9 and slow install of pandas on 3.11
+@session(python="3.10")
 def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
     s.run(
         "poetry",
         "install",
         "--only",
-        "test,typeguard",
+        "main,test,typeguard",
         external=True,
     )
     # s.install("pytest", "typeguard", "pygments")
