@@ -266,7 +266,7 @@ def mypy(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "mypy",
+        "main,mypy",
         external=True,
     )
     # s.install(*MYPY_DEPS)
