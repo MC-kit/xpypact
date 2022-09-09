@@ -1,0 +1,77 @@
+# flake8: ignore
+
+from __future__ import annotations
+
+from typing import Final
+
+import subprocess as sub
+
+STYLE_DEPS: Final = [
+    "black",
+    "isort",
+    "pre-commit",
+    "pre-commit-hooks",
+    "pycln",
+]
+
+MYPY_DEPS: Final = ["mypy", "types-setuptools", "numpy"]
+
+FLAKE8_DEPS: Final = [
+    "darglint",
+    "flake8",
+    "flake8-annotations",
+    "flake8-bandit",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-colors",
+    "flake8-commas",
+    "flake8-comprehensions",
+    "flake8-docstrings",
+    "flake8-import-order",
+    "flake8-print",
+    "flake8-rst-docstrings",
+    "flake8-use-fstring",
+    "mccabe",
+    "pep8-naming",
+    "pydocstyle",
+    "tryceratops",
+]
+
+SPHINX_DEPS: Final = [
+    "sphinx",
+    "sphinx-click",
+    "sphinx-rtd-theme",
+    # "sphinxcontrib-htmlhelp",
+    # "sphinxcontrib-jsmath",
+    "sphinxcontrib-napoleon",
+    # "sphinxcontrib-qthelp",
+    "sphinx-autodoc-typehints",
+    # "sphinx_autorun",
+]
+
+groups = {
+    "style": STYLE_DEPS,
+    "mypy": MYPY_DEPS,
+    "flake8": FLAKE8_DEPS,
+    "docs": SPHINX_DEPS,
+    "docs_auto": ["sphinx-autobuild"],
+    "test": ["pytest", "pygments", "coverage[toml]"],
+    "xdoctest": ["xdoctest[colors]"],
+}
+
+
+def main():
+    for group, deps in groups.items():
+        for dependency in deps:
+            print("Removing", dependency, "from dev")
+            sub.check_output(
+                ["poetry", "remove", "--dev", dependency], stderr=sub.STDOUT
+            )
+            print("Adding dependency to group", group)
+            sub.check_output(
+                ["poetry", "add", "--group", "group", dependency], stderr=sub.STDOUT
+            )
+
+
+if __name__ == "__main__":
+    main()
