@@ -47,12 +47,12 @@ Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
 tomli = ">=2.0.1"
 
-[tool.poetry.group.profile]
-optional = true
+#[tool.poetry.group.profile]
+#optional = true
 
-[tool.poetry.group.profile.dependencies]
+#[tool.poetry.group.profile.dependencies]
 # TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
-yappi = ">=1.3.2"
+#yappi = ">=1.3.2"
 
 [tool.poetry.group.safety.dependencies]
 safety = ">=1.10.3"
@@ -70,7 +70,6 @@ pycln = {version = "^2.1.1", extras = ["click"]}
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.0.1"
-pytest-benchmark = ">=3.4.1"
 pytest-cache = ">=1.0"
 pytest-cov = ">=3.0.0"
 pytest-mock = ">=3.6.1"
@@ -96,7 +95,7 @@ numpy = ">=1.23.2"
 darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"
-flake8-bandit = ">=2.1.2"
+flake8-bandit = ">=3.0.0"
 flake8-bugbear = ">=22.1.11"
 flake8-builtins = ">=1.5.3"
 flake8-colors = ">=0.1.9"
@@ -113,7 +112,7 @@ tryceratops = ">=1.0.1"
 sphinx = ">=5.0.2"
 sphinx-autodoc-typehints = ">=1.12.0"
 sphinx-autorun = ">=1.1.1"
-sphinx-click = ">=3.0.2"
+sphinx-click = ">=4.0.3"
 sphinx-rtd-theme = ">=1.0.0"
 sphinxcontrib-napoleon = ">=0.7"
 
@@ -245,7 +244,6 @@ module = [
     "loguru",
     "multipledispatch",
     "nox",
-    "nox_poetry",
     "numpy.testing",
     "pandas",
     "pytest",

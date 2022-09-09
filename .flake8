@@ -22,6 +22,10 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
+    # import is controlled by isort
+    I100
+    I201
+    I202
 exclude=
     .git
     __pycache__

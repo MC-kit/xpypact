@@ -11,6 +11,7 @@ on:
       - "**.yaml"
       - "**.yml"
       - "**.toml"
+      - "**/data/**"
       - ".github/constraints.txt"
   pull_request:
     branches:
@@ -119,8 +120,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      - name: Checkout submodules
-        run: git submodule update --init --recursive --depth=1
+#      - name: Checkout submodules
+#        run: git submodule update --init --recursive --depth=1
       - name: Install nox
         run: pip install --constraint=.github/constraints.txt nox
       - name: Install poetry
