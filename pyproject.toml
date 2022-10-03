@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.5"
+version = "0.1.6a0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -121,7 +121,7 @@ sphinx-autobuild = ">=2021.3.14"
 
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
@@ -222,9 +222,9 @@ sort = "Cover"
 # MyPy config
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
-python_version = 3.9
+python_version = 3.10
 # strict = true     # TODO dvp: uncomment this to get strict control
-follow_imports = "skip"
+follow_imports = "silent"
 # namespace_packages = true
 warn_return_any = true
 warn_unused_configs = true
