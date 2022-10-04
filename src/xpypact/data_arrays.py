@@ -30,6 +30,7 @@ from xarray.core.accessor_dt import DatetimeAccessor
 from .Inventory import Inventory
 from .Inventory import from_json as inventory_from_json
 from .TimeStep import TimeStep
+from .utils.types import MayBePath
 
 SCALABLE_COLUMNS = [
     "total_mass",
@@ -243,7 +244,7 @@ def get_timestamp(ds: xr.Dataset) -> DatetimeAccessor:
     Returns:
         accessor to timestamp
     """
-    return ds.timestamp[0].dt
+    return ds.timestamp[0].dt  # type: ignore[no-any-return]
 
 
 def get_atomic_numbers(ds: xr.Dataset) -> np.ndarray:
@@ -373,7 +374,6 @@ def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:
     columns = coordinate.columns.values
     columns_to_drop = (idx_name, *columns)
     encoded = ds.reset_index(columns_to_drop, drop=True)
-    # encoded = encoded.reset_coords(columns_to_drop, drop=True)
     encoded.attrs[idx_name + "_columns"] = columns
     for c in columns:
         encoded.attrs[idx_name + f"_{c}"] = coordinate[c].values
@@ -391,7 +391,7 @@ def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
 # noinspection PyShadowingBuiltins
 def save_nc(
     ds: xr.Dataset,
-    path: str | Path | None = None,
+    path: MayBePath = None,
     mode: Literal["w", "a"] = "w",
     format: Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_64BIT", "NETCDF3_CLASSIC"]
     | None = None,
@@ -423,8 +423,8 @@ def save_nc(
         see :py:meth:`xarray.Dataset.to_netcdf()`
     """
     encoded = _encode_multiindex(ds, "nuclide")
-    return encoded.to_netcdf(  # type: ignore[no-any-return]
-        path,
+    return encoded.to_netcdf(  # type: ignore[misc]
+        path,  # type: ignore[arg-type]
         mode,
         format,
         group,
