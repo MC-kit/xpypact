@@ -37,8 +37,9 @@ Contributing
 .. image:: https://github.com/MC-kit/xpypact/workflows/Tests/badge.svg
    :target: https://github.com/MC-kit/xpypact/actions?query=workflow%3ATests
    :alt: Tests
-.. image:: https://codecov.io/gh/MC-kit/xpypact/branch/master/graph/badge.svg?token=wlqoa368k8
-  :target: https://codecov.io/gh/MC-kit/xpypact
+.. image:: https://codecov.io/gh/MC-kit/xpypact/branch/master/graph/badge.svg?token=P6DPGSWM94
+   :target: https://codecov.io/gh/MC-kit/xpypact
+   :alt: Coverage
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
 .. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336

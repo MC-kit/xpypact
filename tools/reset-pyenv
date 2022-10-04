@@ -3,7 +3,7 @@
 # set -exu
 
 pyenv virtualenv-delete -f  xpypact
-pyenv virtualenv 3.10.6 xpypact
+pyenv virtualenv 3.10.7 xpypact
 pyenv rehash
 poetry install
 pyenv rehash

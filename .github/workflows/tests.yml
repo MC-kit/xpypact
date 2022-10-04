@@ -11,6 +11,7 @@ on:
       - "**.yaml"
       - "**.yml"
       - "**.toml"
+      - "**/data/**"
       - ".github/constraints.txt"
   pull_request:
     branches:
@@ -35,7 +36,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.2.0
@@ -75,7 +76,7 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.2.0
@@ -114,13 +115,13 @@ jobs:
         python-version: ['3.8', '3.9', '3.10']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
       - uses: actions/setup-python@v4.2.0
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      - name: Checkout submodules
-        run: git submodule update --init --recursive --depth=1
+#      - name: Checkout submodules
+#        run: git submodule update --init --recursive --depth=1
       - name: Install nox
         run: pip install --constraint=.github/constraints.txt nox
       - name: Install poetry
@@ -138,7 +139,7 @@ jobs:
     needs: tests
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.2.0
