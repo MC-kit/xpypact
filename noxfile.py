@@ -147,7 +147,6 @@ def tests(s: Session) -> None:
         "main,test,xdoctest,coverage",
         external=True,
     )
-    # s.install("pytest", "pygments", "coverage[toml]")
     try:
         s.run("coverage", "run", "--parallel", "-m", "pytest", *s.posargs)
     finally:
@@ -171,7 +170,6 @@ def coverage(s: Session) -> None:
         "coverage",
         external=True,
     )
-    # s.install("coverage[toml]")
 
     if not s.posargs and any(Path().glob(".coverage.*")):
         s.run("coverage", "combine")
@@ -190,7 +188,6 @@ def typeguard(s: Session) -> None:
         "main,test,typeguard",
         external=True,
     )
-    # s.install("pytest", "typeguard", "pygments")
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
@@ -275,10 +272,10 @@ def mypy(s: Session) -> None:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python=supported_pythons)
+@session(python="3.10")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
-    args = s.posargs or ["all"]
+    args = s.posargs or ["--quiet", "-m", package]
     s.run(
         "poetry",
         "install",
@@ -286,7 +283,7 @@ def xdoctest(s: Session) -> None:
         "main,xdoctest",
         external=True,
     )
-    s.run("python", "-m", "xdoctest", package, *args)
+    s.run("python", "-m", "xdoctest", *args)
 
 
 @session(name="docs-build", python="3.10")
