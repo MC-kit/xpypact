@@ -95,12 +95,12 @@ numpy = ">=1.23.2"
 darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"
-flake8-bandit = ">=3.0.0"
+flake8-bandit = ">=4.1.1"
 flake8-bugbear = ">=22.1.11"
 flake8-builtins = ">=1.5.3"
 flake8-colors = ">=0.1.9"
 flake8-commas = ">=2.1.0"
-flake8-comprehensions = "^3.10.0"
+flake8-comprehensions = ">=3.10.0"
 flake8-docstrings = ">=1.6.0"
 flake8-import-order = ">=0.18.1"
 flake8-print = ">=5.0.0"
@@ -254,7 +254,6 @@ ignore_missing_imports = true
 
 [tool.tryceratops]
 include = ["src"]
-#exclude = [".nox"]
 #ignore = ["TC002", "TC200", "TC300"]
 experimental = true
 
