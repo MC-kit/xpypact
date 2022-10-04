@@ -372,7 +372,8 @@ def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:
     coordinate = ds.indexes[idx_name].to_frame().reset_index(drop=True)
     columns = coordinate.columns.values
     columns_to_drop = (idx_name, *columns)
-    encoded = ds.reset_index(columns_to_drop).reset_coords(columns_to_drop, drop=True)
+    encoded = ds.reset_index(columns_to_drop, drop=True)
+    # encoded = encoded.reset_coords(columns_to_drop, drop=True)
     encoded.attrs[idx_name + "_columns"] = columns
     for c in columns:
         encoded.attrs[idx_name + f"_{c}"] = coordinate[c].values
@@ -380,7 +381,7 @@ def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:
 
 
 def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
-    columns = encoded.attrs[idx_name + "_columns"]
+    columns = encoded.attrs.pop(idx_name + "_columns")
     mi_columns = [encoded.attrs.pop(idx_name + f"_{c}") for c in columns]
     mi = pd.MultiIndex.from_arrays(mi_columns, names=columns)
     encoded.coords[idx_name] = mi
