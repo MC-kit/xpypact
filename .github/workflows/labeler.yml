@@ -7,11 +7,13 @@ on:
       - master
       - devel
     paths:
-      - .github/labels.yaml
-      - .github/workflows/repo-labels.yaml
+      - .github/labels.yml
+      - .github/workflows/labeler.yml
   pull_request:
     branches:
-      - trunk
+      - main
+      - master
+      - devel
     paths:
       - .github/labels.yaml
       - .github/workflows/labeler.yml

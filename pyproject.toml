@@ -96,7 +96,7 @@ darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"
 flake8-bandit = ">=4.1.1"
-flake8-bugbear = ">=22.1.11"
+flake8-bugbear = ">=22.3.23"
 flake8-builtins = ">=1.5.3"
 flake8-colors = ">=0.1.9"
 flake8-commas = ">=2.1.0"
@@ -104,7 +104,7 @@ flake8-comprehensions = ">=3.10.0"
 flake8-docstrings = ">=1.6.0"
 flake8-import-order = ">=0.18.1"
 flake8-print = ">=5.0.0"
-flake8-rst-docstrings = ">=0.2.3"
+flake8-rst-docstrings = ">=0.2.7"
 flake8-use-fstring = ">=1.4"
 tryceratops = ">=1.0.1"
 
@@ -121,8 +121,8 @@ sphinx-autobuild = ">=2021.3.14"
 
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.1.0"]
 
 [tool.isort]
 atomic = true
@@ -167,7 +167,7 @@ exclude = '''
   | dist
   | data
   | htmlcov
-  | .egg-info
+  | \.egg-info
   | notebooks
   | wrk
 )
@@ -258,5 +258,5 @@ include = ["src"]
 experimental = true
 
 [tool.pycln]
-path = ["src", "tools"]
+path = "src"
 #silence = true

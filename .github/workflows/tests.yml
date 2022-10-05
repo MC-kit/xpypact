@@ -116,16 +116,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 1
+#      - name: Checkout submodules
+#        run: git submodule update --init --recursive --depth=1
       - uses: actions/setup-python@v4.2.0
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-#      - name: Checkout submodules
-#        run: git submodule update --init --recursive --depth=1
+      - name: Use frozen pip version
+        run: |
+          pip install --constraint=.github/constraints.txt pip virtualenv
+          pip --version
       - name: Install nox
-        run: pip install --constraint=.github/constraints.txt nox
+        run: |
+          pip install --constraint=.github/constraints.txt nox
+          nox --version
       - name: Install poetry
-        run: pip install --constraint=.github/constraints.txt poetry
+        run: |
+          pip install --constraint=.github/constraints.txt poetry
+          poetry --version
       - name: Run nox tests
         run: nox  --force-color --session tests --python ${{ matrix.python-version }}
       - name: Upload coverage data
@@ -146,14 +156,14 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Upgrade pip
+      - name: Use frozen pip version
         run: |
           pip install --constraint=.github/constraints.txt pip
           pip --version
 
       - name: Install Poetry
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt poetry
+          pip install --constraint=.github/constraints.txt poetry
           poetry --version
 
       - name: Install Nox
