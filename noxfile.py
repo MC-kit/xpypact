@@ -288,7 +288,7 @@ def xdoctest(s: Session) -> None:
         "install",
         "--no-root",
         "--only",
-        "xdoctest",
+        "main,xdoctest",
         external=True,
     )
     s.run("python", "-m", "xdoctest", *args)
