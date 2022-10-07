@@ -1,27 +1,42 @@
 name: Release
 
+env:
+  PYTHON_VERSION: '3.10'
+
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
       - master
 
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ci-release-${{ github.ref }}-1
+  cancel-in-progress: true
+
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3.1.0
         with:
-          fetch-depth: 2
+          fetch-depth: 2    # need previous revision to define tag
 
       - name: Set up Python
         uses: actions/setup-python@v4.2.0
         with:
-          python-version: "3.10"
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Upgrade pip
+      - name: Fix pip version
         run: |
           pip install --constraint=.github/constraints.txt pip
           pip --version
