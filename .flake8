@@ -14,6 +14,8 @@ ignore=
     ANN204
     # C812 Missing trailing comma: black compatibility
     C812
+    # D105 Missing docstring in magic method (__hash__, __eq__)
+    D105
     # Missing docstring in __init__
     D107
     # E203: Whitespace before ‘:'

@@ -75,6 +75,7 @@ pytest-cov = ">=3.0.0"
 pytest-mock = ">=3.6.1"
 #codecov = ">=2.1.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
+pytest-doctestplus = ">=0.12.0"
 
 [tool.poetry.group.coverage.dependencies]
 coverage = { version = ">=6.1.2", extras = ["toml"] }
@@ -189,6 +190,10 @@ filterwarnings = [
     "ignore:.*not typechecking multipledispatch.dispatcher.*:UserWarning"
 ]
 
+[tool.xdoctest]
+quiet = true
+options = ""
+
 # [tool.coverage]
 [tool.coverage.paths]
 source = ["src", ".nox/*/site-packages"]
@@ -254,7 +259,6 @@ ignore_missing_imports = true
 
 [tool.tryceratops]
 include = ["src"]
-#ignore = ["TC002", "TC200", "TC300"]
 experimental = true
 
 [tool.pycln]
