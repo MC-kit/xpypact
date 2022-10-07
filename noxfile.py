@@ -271,7 +271,7 @@ def mypy(s: Session) -> None:
         "install",
         "--no-root",
         "--only",
-        "mypy",
+        "main,mypy",
         external=True,
     )
     s.run("mypy", *args)
