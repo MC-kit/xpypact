@@ -27,7 +27,7 @@ nox.options.sessions = (
 )
 
 
-NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z]+)"')
+NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z0-9]+)"')
 
 
 def find_my_name() -> str:
