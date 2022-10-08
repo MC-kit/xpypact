@@ -924,22 +924,6 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
-name = "pytest-doctestplus"
-version = "0.12.1"
-description = "Pytest plugin with advanced doctest features."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-packaging = ">=17.0"
-pytest = ">=4.6"
-setuptools = ">=30.3.0"
-
-[package.extras]
-test = ["numpy", "pytest-remotedata (>=0.3.2)", "sphinx"]
-
-[[package]]
 name = "pytest-mock"
 version = "3.10.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -1553,7 +1537,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "f660e6139162eec636aa0c87ce9449bcafbacd14d39468043f587740c3abacc7"
+content-hash = "615706778772a57a56bb7dbeb5c5c6cdeb0b0e507132ef939ebf34deab308dc0"
 
 [metadata.files]
 alabaster = [
@@ -2157,10 +2141,6 @@ pytest-cache = [
 pytest-cov = [
     {file = "pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},
     {file = "pytest_cov-4.0.0-py3-none-any.whl", hash = "sha256:2feb1b751d66a8bd934e5edfa2e961d11309dc37b73b0eabe73b5945fee20f6b"},
-]
-pytest-doctestplus = [
-    {file = "pytest-doctestplus-0.12.1.tar.gz", hash = "sha256:7a979e4be99d9116e07ac066c5f00d45f387677d7d779f3bef30c6ffa8c79181"},
-    {file = "pytest_doctestplus-0.12.1-py3-none-any.whl", hash = "sha256:1046bac8dad27c3abcf370edf8f353b7f5d748d537296d481b0cad2cbb306052"},
 ]
 pytest-mock = [
     {file = "pytest-mock-3.10.0.tar.gz", hash = "sha256:fbbdb085ef7c252a326fd8cdcac0aa3b1333d8811f131bdcc701002e1be7ed4f"},
