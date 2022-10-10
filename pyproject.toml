@@ -75,7 +75,6 @@ pytest-cov = ">=3.0.0"
 pytest-mock = ">=3.6.1"
 #codecov = ">=2.1.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
-pytest-doctestplus = ">=0.12.0"
 
 [tool.poetry.group.coverage.dependencies]
 coverage = { version = ">=6.1.2", extras = ["toml"] }
