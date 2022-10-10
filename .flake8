@@ -1,6 +1,5 @@
 [flake8]
-# select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,I,S,W
-select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,TC,S,W
 max-complexity=10
 max-line-length=88
 ignore=

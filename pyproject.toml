@@ -234,13 +234,14 @@ follow_imports = "silent"
 warn_return_any = true
 warn_unused_configs = true
 show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 show_error_context = true
 error_summary = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
 files = "src/xpypact/**/*.py"
-plugins = [ "numpy.typing.mypy_plugin" ]
+plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -256,6 +257,18 @@ module = [
 ]
 ignore_missing_imports = true
 
+[tool.check-manifest]
+ignore = [
+    "tests/*",
+    "tools/*",
+    "*.yaml",
+    "noxfile.py",
+]
+
+[tool.ipdb]
+# For debugging in jupyterlab and ipython
+# see https://github.com/gotcha/ipdb
+context=5
 
 [tool.tryceratops]
 include = ["src"]
