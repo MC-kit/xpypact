@@ -1,6 +1,5 @@
 [flake8]
-# select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,I,S,W
-select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,TC,S,W
 max-complexity=10
 max-line-length=88
 ignore=
@@ -14,6 +13,8 @@ ignore=
     ANN204
     # C812 Missing trailing comma: black compatibility
     C812
+    # D105 Missing docstring in magic method (__hash__, __eq__)
+    D105
     # Missing docstring in __init__
     D107
     # E203: Whitespace before ‘:'

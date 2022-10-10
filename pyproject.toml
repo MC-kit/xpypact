@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.6"
+version = "0.1.7"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -96,7 +96,7 @@ darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-annotations = ">=2.6.2"
 flake8-bandit = ">=4.1.1"
-flake8-bugbear = ">=22.1.11"
+flake8-bugbear = ">=22.3.23"
 flake8-builtins = ">=1.5.3"
 flake8-colors = ">=0.1.9"
 flake8-commas = ">=2.1.0"
@@ -104,7 +104,7 @@ flake8-comprehensions = ">=3.10.0"
 flake8-docstrings = ">=1.6.0"
 flake8-import-order = ">=0.18.1"
 flake8-print = ">=5.0.0"
-flake8-rst-docstrings = ">=0.2.3"
+flake8-rst-docstrings = ">=0.2.7"
 flake8-use-fstring = ">=1.4"
 tryceratops = ">=1.0.1"
 
@@ -167,7 +167,7 @@ exclude = '''
   | dist
   | data
   | htmlcov
-  | .egg-info
+  | \.egg-info
   | notebooks
   | wrk
 )
@@ -188,6 +188,10 @@ xfail_strict = true
 filterwarnings = [
     "ignore:.*not typechecking multipledispatch.dispatcher.*:UserWarning"
 ]
+
+[tool.xdoctest]
+quiet = true
+options = ""
 
 # [tool.coverage]
 [tool.coverage.paths]
@@ -229,13 +233,14 @@ follow_imports = "silent"
 warn_return_any = true
 warn_unused_configs = true
 show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 show_error_context = true
 error_summary = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
 files = "src/xpypact/**/*.py"
-plugins = [ "numpy.typing.mypy_plugin" ]
+plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -251,12 +256,23 @@ module = [
 ]
 ignore_missing_imports = true
 
+[tool.check-manifest]
+ignore = [
+    "tests/*",
+    "tools/*",
+    "*.yaml",
+    "noxfile.py",
+]
+
+[tool.ipdb]
+# For debugging in jupyterlab and ipython
+# see https://github.com/gotcha/ipdb
+context=5
 
 [tool.tryceratops]
 include = ["src"]
-#ignore = ["TC002", "TC200", "TC300"]
 experimental = true
 
 [tool.pycln]
-path = ["src", "tools"]
+path = "src"
 #silence = true
