@@ -1479,16 +1479,16 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 
 [[package]]
 name = "xarray"
-version = "2022.9.0"
+version = "2022.10.0"
 description = "N-D labeled arrays and datasets in Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 
 [package.dependencies]
-numpy = ">=1.19"
-packaging = ">=20.0"
-pandas = ">=1.2"
+numpy = ">=1.20"
+packaging = ">=21.0"
+pandas = ">=1.3"
 
 [package.extras]
 accel = ["bottleneck", "flox", "numbagg", "scipy"]
@@ -2393,8 +2393,8 @@ virtualenv = [
     {file = "virtualenv-20.16.5.tar.gz", hash = "sha256:227ea1b9994fdc5ea31977ba3383ef296d7472ea85be9d6732e42a91c04e80da"},
 ]
 xarray = [
-    {file = "xarray-2022.9.0-py3-none-any.whl", hash = "sha256:baa7c1a9135198435a2cfb2c68e8b1fdd100d8a44ddaece6031116f585734da7"},
-    {file = "xarray-2022.9.0.tar.gz", hash = "sha256:a2a5b48ec0a3890b71ef48853fe9d5107d2f75452722f319cb8ed6ff8e72e883"},
+    {file = "xarray-2022.10.0-py3-none-any.whl", hash = "sha256:e4e574820ff8eb7dbc119c5089d30860b73160bd587cc045ae37a128b8eb4fc2"},
+    {file = "xarray-2022.10.0.tar.gz", hash = "sha256:b39ff3475f73eaacdf831b0ab7eb6930e7b5933e46dcf71b9327f4c4bb941793"},
 ]
 xdoctest = [
     {file = "xdoctest-1.1.0-py3-none-any.whl", hash = "sha256:da330c4dacee51f3c785820bc743188fb6f7c64c5fa1c54bff8836b3cf23d69b"},
