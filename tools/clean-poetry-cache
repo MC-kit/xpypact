@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# Sometimes poetry update becames too slow.
+# Use this script to clean cashe, this fixes the issue.
+#
+
+clean_poetry_cache() {
+    local cache_list="$@"
+    if [[ 0 == "$#" ]]; then
+        cache_list=($(poetry cache list))
+    fi
+    for f in "${cache_list[@]}"; do
+        echo "Cleaning $f"
+        poetry cache clear -n --all $f
+    done
+}
+
+clean_poetry_cache "$@"
+
+# vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :
