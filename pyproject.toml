@@ -7,7 +7,14 @@ license = "MIT"
 homepage = "https://github.com/MC-kit/xpypact"
 repository = "https://github.com/MC-kit/xpypact"
 documentation = "https://xpypact.readthedocs.io"
-keywords = ["FISPACT", "nuclide", "isotope", "abundance"]
+keywords = [
+    "element",
+    "nuclide",
+    "isotope",
+    "abundance",
+    "FISPACT",
+    "activation"
+]
 readme = "README.rst"
 packages = [
     { include = "xpypact", from = "src" },
@@ -28,7 +35,7 @@ classifiers = [
 
 [tool.poetry.urls]
 documentation = "https://xpypact.readthedocs.io"
-Chnagelog = "https://github.com/MC-kit/xpypact/releases"
+Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
@@ -45,7 +52,7 @@ xarray = ">=2022.3.0"
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
-tomli = ">=2.0.1"
+tomli = { version = ">=2.0.1", python="<3.11" }
 
 #[tool.poetry.group.profile]
 #optional = true
