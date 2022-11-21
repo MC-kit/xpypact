@@ -568,7 +568,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mckit-nuclides"
-version = "0.1.5"
+version = "0.1.6"
 description = "\"Python tools to work with elements and isotopes\""
 category = "main"
 optional = false
@@ -1487,7 +1487,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "2d76f40cb27700a8f2ae01d8d146ae5010f13bd9dff8caa6e5b22b36ee79e62e"
+content-hash = "416c8b80fddf24e502bbdfbc32954993b5f1d43806fd091a333a63737a5fb2b0"
 
 [metadata.files]
 alabaster = [
@@ -1836,8 +1836,8 @@ mccabe = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 mckit-nuclides = [
-    {file = "mckit-nuclides-0.1.5.tar.gz", hash = "sha256:0a726b57ba31071f61b0e7b4acf685dffffcc8a4acc98094f600b35c132e4dad"},
-    {file = "mckit_nuclides-0.1.5-py3-none-any.whl", hash = "sha256:98771b133a4bca66e2183e92a03a4105b4f7679d4135a1b1ecbf8ea61f5d9bee"},
+    {file = "mckit_nuclides-0.1.6-py3-none-any.whl", hash = "sha256:0666ebf00a8ffbea8d633baf4fd4fef158928b2287a04585f13f7e8575a8a50a"},
+    {file = "mckit_nuclides-0.1.6.tar.gz", hash = "sha256:d2ce6769bcc1542cde9c2302d9709f4d6ad80e28b0ee8c02bcf132fb07ff7749"},
 ]
 multipledispatch = [
     {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
