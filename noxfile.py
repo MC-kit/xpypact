@@ -57,7 +57,7 @@ def find_my_name() -> str:
 
 
 package: Final = find_my_name()
-locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
+locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
 black_pythons: Final = "3.10"
