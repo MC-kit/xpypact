@@ -112,6 +112,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11']
+        exclude:
+          - os: windows-latest
+            python-version: 3.11
+          - os: macos-latest
+            python-version: 3.11
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.1.0
@@ -125,7 +130,7 @@ jobs:
           architecture: x64
       - name: Use frozen pip version
         run: |
-          pip install --constraint=.github/constraints.txt pip virtualenv
+          pip install --constraint=.github/constraints.txt pip virtualenv wheel
           pip --version
       - name: Install nox
         run: |
@@ -135,6 +140,9 @@ jobs:
         run: |
           pip install --constraint=.github/constraints.txt poetry
           poetry --version
+      - name: Install hdf5-devel   # needed for Python3.11 on all OS.
+        if: ${{ matrix.python-version == '3.11'  &&  matrix.os == 'macos-latest' }}
+        run: sudo apt install hdf5-devel
       - name: Run nox tests
         run: nox  --force-color --session tests --python ${{ matrix.python-version }}
       - name: Upload coverage data
