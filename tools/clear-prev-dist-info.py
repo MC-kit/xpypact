@@ -11,10 +11,13 @@ from typing import Optional, TypeVar
 import shutil
 import site
 import subprocess
-
+import sys
 from pathlib import Path
 
-import tomli
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 PathLike = TypeVar("PathLike", str, Path)
 
@@ -55,7 +58,7 @@ def get_project_name() -> str:
             "Illegal directory: cannot find file pyproject.toml "
             f"from current directory: {Path.cwd()}"
         )
-    pyproject = tomli.loads(pyproject_path.read_text())
+    pyproject = tomllib.loads(pyproject_path.read_text())
     name: str = pyproject["tool"]["poetry"]["name"].replace("-", "_")
     print(f"Package {name} is found in {pyproject_path.absolute()}")
     return name
