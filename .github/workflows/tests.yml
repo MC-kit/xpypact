@@ -141,8 +141,11 @@ jobs:
           pip install --constraint=.github/constraints.txt poetry
           poetry --version
       - name: Install hdf5-devel   # needed for Python3.11 on all OS.
-        if: ${{ matrix.python-version == '3.11'  &&  matrix.os == 'macos-latest' }}
-        run: sudo apt install hdf5-devel
+        if: ${{ matrix.python-version == '3.11'  &&  matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo add-apt-repository universe
+          sudo apt-get update
+          sudo apt-get install -y libhdf5-serial-dev
       - name: Run nox tests
         run: nox  --force-color --session tests --python ${{ matrix.python-version }}
       - name: Upload coverage data
