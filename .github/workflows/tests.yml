@@ -139,7 +139,8 @@ jobs:
           pip install --constraint=.github/constraints.txt poetry
           poetry --version
 # The following step fixes failure to install h5py (required by h5netcdf)
-# This is needed for Python3.11 on all OS.
+# Reason: for 3.7.0 there still no 3.11 wheels on PyPI.
+# The installation goes from source and fails to build with libhdf5 installed.
       - name: Install hdf5-devel
         if: ${{ matrix.python-version == '3.11'  &&  matrix.os == 'ubuntu-latest' }}
         run: |
