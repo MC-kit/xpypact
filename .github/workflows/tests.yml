@@ -36,7 +36,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.2.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.3.1
@@ -75,7 +75,7 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.2.0
 
       - name: Set up Python 3.9  # TODO dvp: switch to 3.10 when sphinxcontrib.napoleon allows
         uses: actions/setup-python@v4.3.1
@@ -119,7 +119,7 @@ jobs:
             python-version: 3.11
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.2.0
         with:
           fetch-depth: 1
       - uses: actions/setup-python@v4.3.1
@@ -159,7 +159,7 @@ jobs:
     needs: tests
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.2.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.3.1
