@@ -1,5 +1,5 @@
 ==============================================================================
-*xpypact*: FISPACT wrapper and output to datasets converter
+*xpypact*: FISPACT output to datasets converter
 ==============================================================================
 
 
@@ -15,13 +15,30 @@ Note:
 Description
 -----------
 
-The module configures and runs FISPACT, converts FISPACT output to xarray datasets.
+The module loads FISPACT JSON output as xarray dataset.
+This allows efficient data extraction and aggregation.
+
+.. configures and runs FISPACT, converts FISPACT output to xarray datasets.
 
 .. TODO dvp: apply FISPACT v.5 API and describe here.
 
 
 Installation
 ------------
+
+::
+
+    pip install xpypact
+
+.. warning:: Install the hdf5 before installing xpypact for Python3.11.
+
+    Reason:
+
+    We depend on h5py through h5netcdf.
+    The h5py package as for recent version 3.7.0 doesn't provide wheels for Python3.11.
+    So, for python 3.11 pip tries to build the h5py package from sources. This fails, if hdf5 library is not preinstalled.
+
+
 
 .. TODO dvp: check and report all possible ways to install (pip, poetry)
 
