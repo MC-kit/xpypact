@@ -1,8 +1,12 @@
 import re
+import sys
 
 from pathlib import Path
 
-import tomli
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from xpypact import __version__
 
@@ -10,7 +14,7 @@ from xpypact import __version__
 def find_version_from_project_toml():
     toml_path = Path(__file__).parent.parent.parent / "pyproject.toml"
     assert toml_path.exists()
-    pyproject = tomli.loads(toml_path.read_text())
+    pyproject = tomllib.loads(toml_path.read_text())
     version = pyproject["tool"]["poetry"]["version"]
     return version
 
