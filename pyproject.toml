@@ -262,8 +262,18 @@ module = [
     "pandas",
     "pytest",
     "scipy.constants",
+    "tomllib",
+    "tomli"
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tomllib",
+    "tomli"
+]
+allow_redefinition = true
+disable_error_code = "no-redef"
 
 [tool.check-manifest]
 ignore = [
