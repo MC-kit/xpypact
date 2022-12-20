@@ -60,9 +60,9 @@ package: Final = find_my_name()
 locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.11"
-lint_pythons: Final = "3.11"
-mypy_pythons: Final = "3.11"
+black_pythons: Final = "3.10"  # TODO dvp: waith for h5py updates to 3.11
+lint_pythons: Final = "3.10"
+mypy_pythons: Final = "3.10"
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -280,7 +280,7 @@ def mypy(s: Session) -> None:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.11")
+@session(python="3.10")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     args = s.posargs or ["--quiet", "-m", f"src/{package}"]
@@ -295,7 +295,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
-@session(name="docs-build", python="3.11")
+@session(name="docs-build", python="3.10")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -314,7 +314,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.11")
+@session(python="3.10")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
