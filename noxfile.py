@@ -302,7 +302,6 @@ def docs_build(s: Session) -> None:
     s.run(
         "poetry",
         "install",
-        "--no-root",
         "--only",
         "docs",
         external=True,
@@ -321,7 +320,6 @@ def docs(s: Session) -> None:
     s.run(
         "poetry",
         "install",
-        "--no-root",
         "--only",
         "docs,docs_auto",
         external=True,
