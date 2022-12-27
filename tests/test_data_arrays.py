@@ -92,8 +92,7 @@ def test_atomic_masses_column(ds: xr.Dataset) -> None:
 def test_scale_by_mass(ds):
     actual = da.scale_by_mass(ds, 2)
     actual_atoms, expected_atoms = (
-        x.nuclide_atoms.sel(element="Ag", mass_number=107, state="")
-        for x in [actual, ds]
+        x.nuclide_atoms.sel(element="Ag", mass_number=107, state="") for x in [actual, ds]
     )
     assert actual_atoms.size == 2
     assert expected_atoms.size == 2
@@ -112,8 +111,7 @@ def test_time_stamp(ds):
 def test_scale_by_flux(ds):
     actual = da.scale_by_flux(deepcopy(ds), 2)
     actual_grams, expected_grams = (
-        x.nuclide_grams.sel(element="Ag", mass_number=111, state="")
-        for x in [actual, ds]
+        x.nuclide_grams.sel(element="Ag", mass_number=111, state="") for x in [actual, ds]
     )
     assert actual_grams.size == 2
     assert expected_grams.size == 2

@@ -46,6 +46,33 @@ class InventoryError(ValueError):
         return cast(str, self.__class__.__doc__)  # pragma: no cover
 
 
+def _create_json_inventory_data_mapper() -> Callable[[dict], TimeStep]:
+    prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
+    number = 1
+
+    def json_inventory_data_mapper(jts: dict) -> TimeStep:
+        nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
+        ts = TimeStep.from_json(jts)
+        duration = ts.irradiation_time - prev_irradiation_time
+        if duration == 0.0:
+            duration = ts.cooling_time - prev_cooling_time
+        if duration < 0.0:
+            raise InventoryNonMonotonicTimesError()  # pragma: no cover
+        ts.duration = duration
+        prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
+        if duration == 0.0:
+            ts.flux = 0.0
+        ts.number = number
+        number += 1
+        prev_irradiation_time, prev_cooling_time = (
+            ts.irradiation_time,
+            ts.cooling_time,
+        )
+        return ts
+
+    return json_inventory_data_mapper
+
+
 class InventoryNonMonotonicTimesError(InventoryError):
     """Irradiation and cooling times in FISPACT output should be monotonically increasing."""
 
@@ -60,6 +87,22 @@ class Inventory:
     run_data: RunData
     inventory_data: list[TimeStep]
 
+    @property
+    def meta_info(self) -> RunDataCorrected:
+        """Create corrected Inventory header.
+
+        Returns:
+            RunDataCorrected: with common data for the inventory.
+        """
+        ts = self.inventory_data[-1]  # The dose_rate in the first timestep can be empty.
+        return RunDataCorrected(
+            self.run_data.timestamp,
+            self.run_data.run_name,
+            self.run_data.flux_name,
+            ts.dose_rate.type,
+            ts.dose_rate.distance,
+        )
+
     @classmethod
     def from_json(cls, json_dict: dict) -> "Inventory":
         """Construct Inventory instance from JSON dictionary.
@@ -73,55 +116,10 @@ class Inventory:
         json_run_data = json_dict.pop("run_data")
         run_data = RunData.from_json(json_run_data)
         json_inventory_data = json_dict.pop("inventory_data")
-
-        def create_json_inventory_data_mapper() -> Callable[[dict], TimeStep]:
-            prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
-            number = 1
-
-            def json_inventory_data_mapper(jts: dict) -> TimeStep:
-                nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
-                ts = TimeStep.from_json(jts)
-                duration = ts.irradiation_time - prev_irradiation_time
-                if 0.0 == duration:
-                    duration = ts.cooling_time - prev_cooling_time
-                if duration < 0.0:
-                    raise InventoryNonMonotonicTimesError()  # pragma: no cover
-                ts.duration = duration
-                prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
-                if duration == 0.0:
-                    ts.flux = 0.0
-                ts.number = number
-                number += 1
-                prev_irradiation_time, prev_cooling_time = (
-                    ts.irradiation_time,
-                    ts.cooling_time,
-                )
-                return ts
-
-            return json_inventory_data_mapper
-
-        mapper = create_json_inventory_data_mapper()
+        mapper = _create_json_inventory_data_mapper()
         inventory_data = [mapper(ts) for ts in json_inventory_data]
 
         return cls(run_data, inventory_data)
-
-    @property
-    def meta_info(self) -> RunDataCorrected:
-        """Create corrected Inventory header.
-
-        Returns:
-            RunDataCorrected: with common data for the inventory.
-        """
-        ts = self.inventory_data[
-            -1
-        ]  # The dose_rate in the first timestep can be empty.
-        return RunDataCorrected(
-            self.run_data.timestamp,
-            self.run_data.run_name,
-            self.run_data.flux_name,
-            ts.dose_rate.type,
-            ts.dose_rate.distance,
-        )
 
     def extract_times(self) -> array:
         """Create vector of elapsed time for all the time steps in the inventory.

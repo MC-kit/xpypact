@@ -47,9 +47,17 @@ class Nuclide:
             if self.state != "":
                 self.zai += 1
         if self.atoms == 0.0 and 0.0 < self.grams:
-            self.atoms = (
-                Avogadro * self.grams / get_nuclide_mass(int(e.z), self.isotope)
-            )
+            self.atoms = Avogadro * self.grams / get_nuclide_mass(int(e.z), self.isotope)
+
+    @property
+    def a(self) -> int:
+        """Synonym to mass number, isotope, A.
+
+        Returns:
+            A, mass number
+
+        """
+        return self.isotope
 
     @classmethod
     def from_json(cls, json_dict: dict) -> "Nuclide":
@@ -62,13 +70,3 @@ class Nuclide:
             Nuclide: the Nuclide object
         """
         return cls(**json_dict)
-
-    @property
-    def a(self) -> int:
-        """Synonym to mass number, isotope, A.
-
-        Returns:
-            A, mass number
-
-        """
-        return self.isotope

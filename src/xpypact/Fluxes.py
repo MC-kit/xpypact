@@ -268,7 +268,7 @@ def are_fluxes_close(
         b: the second flux to compare
         rtol: relative tolerance
         atol: absolute tolerance
-        equal_nan: see :py:func:`numpy.allclose()`
+        equal_nan: see :func:`numpy.allclose()`
 
     Returns:
         bool: True, if the fluxes are equivalent by data
@@ -447,39 +447,6 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
     if data.size != 709:
         raise StandardFluxesDataSizeError()
     return FISPACT_709_BINS, data[::-1]
-
-
-# def make_709_fluxes(fluxes: Fluxes):
-#     energies, hist, comment, norm = (
-#         fluxes.energy_bins,
-#         fluxes.fluxes,
-#         fluxes.comment,
-#         fluxes.norm,
-#     )
-#     e_min_max = energies[:: energies.size - 1]
-#     i_min, i_max = np.searchsorted(FISPACT_709_BINS, e_min_max)
-#     if FISPACT_709_BINS[i_max] == e_min_max[1]:
-#         i_max += 1
-#     rebin_hist = ut.rebin_1d(
-#         hist,
-#         np.log(energies),
-#         np.log(FISPACT_709_BINS[i_min:i_max]),
-#         grouped=True,
-#         assume_sorted=True,
-#     )
-#     leading_zeros = np.zeros(i_min, dtype=float)
-#     trailing_zeros = np.zeros(709 - i_max + 1, dtype=float)
-#     assert leading_zeros.size + rebin_hist.size + trailing_zeros.size == 709
-#     rebin_hist = np.hstack(
-#         [
-#             leading_zeros,
-#             rebin_hist,
-#             trailing_zeros,
-#         ]
-#     )
-#     result = Fluxes(FISPACT_709_BINS, rebin_hist, comment, norm)
-#     assert is_709_fluxes(result)
-#     return result
 
 
 def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) -> None:

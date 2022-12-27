@@ -33,12 +33,17 @@ class DoseRate:
 
 @dataclass
 class GammaSpectrum:
-    """Data on gamma emission."""
+    """Data on gamma emission.
+
+    Attrs:
+        boundaries:
+            Energy boundaries, MeV
+        values:
+            Gamma emission intensity.
+    """
 
     boundaries: array
-    """Energy boundaries, MeV"""
     values: array
-    """Gamma emission intensity."""  # TODO dvp: identify units.
 
     @classmethod
     def from_json(cls, json: dict) -> "GammaSpectrum":
@@ -90,17 +95,17 @@ class TimeStep:
         """Correct data missed in FISPACT-4."""
         # TODO dvp: check for FISPACT v.5
         # workarounds for FISPACT v.4
-        if 0.0 == self.total_mass:
+        if self.total_mass == 0.0:
             self.total_mass = 1e-3 * sum(n.grams for n in self.nuclides)
-        if 0.0 == self.total_atoms:
+        if self.total_atoms == 0.0:
             self.total_atoms = sum(n.atoms for n in self.nuclides)
-        if 0.0 == self.total_activity:
+        if self.total_activity == 0.0:
             self.total_activity = sum(n.activity for n in self.nuclides)
-        if 0.0 == self.alpha_activity:
+        if self.alpha_activity == 0.0:
             self.alpha_activity = sum(n.alpha_activity for n in self.nuclides)
-        if 0.0 == self.beta_activity:
+        if self.beta_activity == 0.0:
             self.beta_activity = sum(n.beta_activity for n in self.nuclides)
-        if 0.0 == self.gamma_activity:
+        if self.gamma_activity == 0.0:
             self.gamma_activity = sum(n.gamma_activity for n in self.nuclides)
 
     @property
