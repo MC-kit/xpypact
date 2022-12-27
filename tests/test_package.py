@@ -12,7 +12,7 @@ from xpypact import __version__
 
 
 def find_version_from_project_toml():
-    toml_path = Path(__file__).parent.parent.parent / "pyproject.toml"
+    toml_path = Path(__file__).parent.parent / "pyproject.toml"
     assert toml_path.exists()
     pyproject = tomllib.loads(toml_path.read_text())
     version = pyproject["tool"]["poetry"]["version"]
