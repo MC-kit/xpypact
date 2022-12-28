@@ -8,7 +8,6 @@ from typing import Final, List
 
 import re
 import shutil
-import sys
 
 from glob import glob
 from pathlib import Path
@@ -271,7 +270,7 @@ def lint(s: Session) -> None:
 @session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or ["src", "docs/source/conf.py"]
+    args = s.posargs or ["src", "docs/source/conf.py", "noxfile.py"]
     s.run(
         "poetry",
         "install",
@@ -281,8 +280,6 @@ def mypy(s: Session) -> None:
         external=True,
     )
     s.run("mypy", *args)
-    if not s.posargs:
-        s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python="3.10")

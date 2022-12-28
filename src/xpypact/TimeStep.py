@@ -8,8 +8,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from numpy import ndarray as array
-
-from .Nuclide import Nuclide
+from xpypact.Nuclide import Nuclide
 
 
 @dataclass
@@ -38,12 +37,12 @@ class GammaSpectrum:
     Attrs:
         boundaries:
             Energy boundaries, MeV
-        values:
+        intensities:
             Gamma emission intensity.
     """
 
     boundaries: array
-    values: array
+    intensities: array
 
     @classmethod
     def from_json(cls, json: dict) -> "GammaSpectrum":
@@ -57,7 +56,7 @@ class GammaSpectrum:
         """
         return cls(
             boundaries=np.array(json["boundaries"], dtype=float),
-            values=np.array(json["values"], dtype=float),
+            intensities=np.array(json["values"], dtype=float),
         )
 
 

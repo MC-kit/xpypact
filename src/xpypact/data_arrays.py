@@ -15,7 +15,7 @@ the difference with initial state is scaled with a given factor.
 """
 from __future__ import annotations
 
-from typing import Any, Hashable, Iterable, Literal, Mapping, TextIO, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, TextIO, Tuple, Union, cast
 
 from functools import reduce
 from pathlib import Path
@@ -25,12 +25,22 @@ import pandas as pd
 import xarray as xr
 
 from mckit_nuclides.nuclides import SYMBOL_2_ATOMIC_NUMBER, get_nuclide_mass
+from numpy.typing import ArrayLike
 from xarray.core.accessor_dt import DatetimeAccessor
+from xpypact.Inventory import Inventory
+from xpypact.Inventory import from_json as inventory_from_json
+from xpypact.TimeStep import TimeStep
+from xpypact.utils.types import MayBePath
 
-from .Inventory import Inventory
-from .Inventory import from_json as inventory_from_json
-from .TimeStep import TimeStep
-from .utils.types import MayBePath
+if TYPE_CHECKING:  # pragma: no cover
+    try:
+        from dask.delayed import Delayed
+    except ImportError:
+        Delayed = None
+    try:
+        from dask.dataframe import DataFrame as DaskDataFrame
+    except ImportError:
+        DaskDataFrame = None
 
 SCALABLE_COLUMNS = [
     "total_mass",
@@ -57,18 +67,18 @@ SCALABLE_COLUMNS = [
 ]
 
 
-def _make_var(value, dtype=float) -> Tuple[str, np.ndarray]:
+def _make_var(value, dtype=float) -> Tuple[str, ArrayLike]:
     value = np.array([value], dtype=dtype)
     return "time_step_number", value
 
 
-def _make_nuclide_var(getter, nuclides, dtype=float) -> Tuple[str, np.ndarray]:
+def _make_nuclide_var(getter, nuclides, dtype=float) -> Tuple[str, ArrayLike]:
     return "nuclide", np.fromiter(map(getter, nuclides), dtype=dtype)
 
 
 def _make_time_step_and_nuclide_var(
     getter, nuclides, dtype=float
-) -> Tuple[Tuple[str, str], np.ndarray]:
+) -> Tuple[Tuple[str, str], ArrayLike]:
     _data = np.fromiter(map(getter, nuclides), dtype=dtype)
     return ("time_step_number", "nuclide"), _data.reshape(1, _data.size)
 
@@ -141,7 +151,7 @@ def _add_time_step_record(_ds: xr.Dataset, x: TimeStep) -> xr.Dataset:
 
     if x.gamma_spectrum is not None:
         gamma_boundaries = x.gamma_spectrum.boundaries
-        gamma_value = x.gamma_spectrum.values  # GammaSpectrum does have 'values'
+        gamma_value = x.gamma_spectrum.intensities
         gamma_value = np.insert(gamma_value, 0, 0.0).reshape(1, len(gamma_boundaries))
         data_vars["gamma"] = (("time_step_number", "gamma_boundaries"), gamma_value)
         coords["gamma_boundaries"] = gamma_boundaries
@@ -232,21 +242,21 @@ def get_timestamp(ds: xr.Dataset) -> DatetimeAccessor:
     Returns:
         accessor to timestamp
     """
-    return ds.timestamp[0].dt  # type: ignore[no-any-return]
+    return cast(DatetimeAccessor, ds.timestamp[0].dt)
 
 
-def get_atomic_numbers(ds: xr.Dataset) -> np.ndarray:
+def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
     """Create column of atomic numbers (Z) corresponding to `nuclide` coordinate.
 
     Args:
         ds: dataset with the 'nuclides' coordinate
 
     Returns:
-        ndarray: Z values for the nuclides
+        Z values for the nuclides
 
     """
     return cast(
-        np.ndarray,
+        ArrayLike,
         np.fromiter((SYMBOL_2_ATOMIC_NUMBER[x.item()[0]] for x in ds.nuclide), dtype=int),
     )
 
@@ -269,7 +279,7 @@ def add_atomic_number_coordinate(
     return ds
 
 
-def get_atomic_masses(ds: xr.Dataset) -> np.ndarray:
+def get_atomic_masses(ds: xr.Dataset) -> ArrayLike:
     """Create column with relative atomic masses along nuclide coordinate.
 
     Args:
@@ -286,7 +296,7 @@ def get_atomic_masses(ds: xr.Dataset) -> np.ndarray:
     # TODO dvp: in mckit-nuclides add dispatching over int64 in get_nuclide_mass()
     #           and remove int() conversion above
 
-    return cast(np.ndarray, np.fromiter((mapper(x) for x in ds.nuclide), dtype=float))
+    return cast(ArrayLike, np.fromiter((mapper(x) for x in ds.nuclide), dtype=float))
 
 
 def add_atomic_masses(ds: xr.Dataset, variable_name="atomic_mass") -> xr.Dataset:
@@ -371,16 +381,8 @@ def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
 def save_nc(
     ds: xr.Dataset,
     path: MayBePath = None,
-    mode: Literal["w", "a"] = "w",
-    format: Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_64BIT", "NETCDF3_CLASSIC"]
-    | None = None,
-    group: str | None = None,
-    engine: Literal["netcdf4", "scipy", "h5netcdf"] | None = "h5netcdf",
-    encoding: Mapping[Hashable, Mapping[str, Any]] | None = None,
-    unlimited_dims: Iterable[Hashable] | None = None,
-    compute: bool = True,
-    invalid_netcdf: bool = False,
-) -> bytes | None:
+    **kwargs: Any,
+) -> bytes | Delayed | None:
     """Save a dataset with nuclide index.
 
     Encodes MultiIndex instance in a dataset and saves the result.
@@ -389,30 +391,14 @@ def save_nc(
     Args:
         ds: FISPACT output as dataset
         path: see :meth:`xarray.Dataset.to_netcdf()`
-        mode: ...
-        format: ...
-        group: ...
-        engine: ...
-        encoding: ...
-        unlimited_dims: ...
-        compute: ...
-        invalid_netcdf: ...
+        kwargs: ...
 
     Returns:
         see :meth:`xarray.Dataset.to_netcdf()`
     """
     encoded = _encode_multiindex(ds, "nuclide")
-    return encoded.to_netcdf(  # type: ignore[misc]
-        path,  # type: ignore[arg-type]
-        mode,
-        format,
-        group,
-        engine,
-        encoding,
-        unlimited_dims,
-        compute,
-        invalid_netcdf,
-    )
+    engine = kwargs.pop("engine", "h5netcdf")
+    return encoded.to_netcdf(path, engine=engine, **kwargs)
 
 
 def load_nc(

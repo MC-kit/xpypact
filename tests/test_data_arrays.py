@@ -51,7 +51,7 @@ def test_elapsed_time(ds: xr.Dataset, inventory: Inventory) -> None:
 def test_extract_dose(ds: xr.Dataset) -> None:
     doses = ds.total_dose_rate
     assert doses.size == 2
-    assert_array_equal(doses.values, [0.0, 0.91720603767081113e-4])
+    assert_array_equal(doses.to_numpy(), [0.0, 0.91720603767081113e-4])
 
 
 def test_access_by_z(ds: xr.Dataset) -> None:
@@ -68,11 +68,7 @@ def test_access_by_z(ds: xr.Dataset) -> None:
     assert argentum2.nuclide.size == 14
     # in xarray since version 2022.6.2 the element coordinate is preserved
     # even there's only one item in the coordinate
-    assert "Ag" == argentum2.element.item(), " the element coordinate is preserved"
-
-    # argentum_atoms = argentum.atoms.sel(time_step_number=1)
-    # argentum_atoms2 = argentum2.atoms.sel(time_step_number=1)
-    # assert argentum_atoms.equals(argentum_atoms2)
+    assert argentum2.element.item() == "Ag", " the element coordinate is preserved"
 
 
 def test_atomic_masses_column(ds: xr.Dataset) -> None:

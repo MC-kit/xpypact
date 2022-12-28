@@ -84,6 +84,7 @@ pytest-cov = ">=3.0.0"
 pytest-mock = ">=3.6.1"
 #codecov = ">=2.1.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
+pytest-benchmark = "^4.0.0"
 
 [tool.poetry.group.coverage.dependencies]
 coverage = { version = ">=6.1.2", extras = ["toml"] }
@@ -272,15 +273,19 @@ plugins = ["numpy.typing.mypy_plugin"]
 module = [
     "click",
     "click.testing",
+    "dask.*",
     "loguru",
+    "mckit_nuclides.*",
     "multipledispatch",
     "nox",
     "numpy.testing",
+    "orjson",
     "pandas",
     "pytest",
     "scipy.constants",
     "tomllib",
-    "tomli"
+    "tomli",
+    "xarray.*"
 ]
 ignore_missing_imports = true
 
