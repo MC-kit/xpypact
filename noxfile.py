@@ -125,7 +125,7 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-@session(python="3.11")
+@session(python="3.10")
 def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = f"{s.virtualenv.location}/safety-requirements.txt"
