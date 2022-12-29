@@ -24,7 +24,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from mckit_nuclides.nuclides import SYMBOL_2_ATOMIC_NUMBER, get_nuclide_mass
+from mckit_nuclides.elements import ELEMENTS_TABLE
+from mckit_nuclides.nuclides import NUCLIDES_TABLE
 from numpy.typing import ArrayLike
 from xarray.core.accessor_dt import DatetimeAccessor
 from xpypact.Inventory import Inventory
@@ -83,75 +84,75 @@ def _make_time_step_and_nuclide_var(
     return ("time_step_number", "nuclide"), _data.reshape(1, _data.size)
 
 
-def _add_time_step_record(_ds: xr.Dataset, x: TimeStep) -> xr.Dataset:
+def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
+
+    data_vars = {
+        "irradiation_time": _make_var(ts.irradiation_time),
+        "cooling_time": _make_var(ts.cooling_time),
+        "duration": _make_var(ts.duration),
+        "flux": _make_var(ts.flux),
+        "total_atoms": _make_var(ts.total_atoms),
+        "total_activity": _make_var(ts.total_activity),
+        "total_alpha_activity": _make_var(ts.alpha_activity),
+        "total_beta_activity": _make_var(ts.beta_activity),
+        "total_gamma_activity": _make_var(ts.gamma_activity),
+        "total_mass": _make_var(ts.total_mass),
+        "total_heat": _make_var(ts.total_heat),
+        "total_alpha_heat": _make_var(ts.alpha_heat),
+        "total_beta_heat": _make_var(ts.beta_heat),
+        "total_gamma_heat": _make_var(ts.gamma_heat),
+        "total_ingest1ion_dose": _make_var(ts.ingestion_dose),
+        "total_inhalation_dose": _make_var(ts.inhalation_dose),
+        "total_dose_rate": _make_var(ts.dose_rate.dose),
+        "nuclide_half_life": _make_nuclide_var(lambda n: n.half_life, ts.nuclides),
+        "nuclide_atoms": _make_time_step_and_nuclide_var(lambda n: n.atoms, ts.nuclides),
+        "nuclide_grams": _make_time_step_and_nuclide_var(lambda n: n.grams, ts.nuclides),
+        "nuclide_activity": _make_time_step_and_nuclide_var(
+            lambda n: n.activity, ts.nuclides
+        ),
+        "nuclide_alpha_activity": _make_time_step_and_nuclide_var(
+            lambda n: n.alpha_activity, ts.nuclides
+        ),
+        "nuclide_beta_activity": _make_time_step_and_nuclide_var(
+            lambda n: n.beta_activity, ts.nuclides
+        ),
+        "nuclide_gamma_activity": _make_time_step_and_nuclide_var(
+            lambda n: n.gamma_activity, ts.nuclides
+        ),
+        "nuclide_heat": _make_time_step_and_nuclide_var(lambda n: n.heat, ts.nuclides),
+        "nuclide_alpha_heat": _make_time_step_and_nuclide_var(
+            lambda n: n.alpha_heat, ts.nuclides
+        ),
+        "nuclide_beta_heat": _make_time_step_and_nuclide_var(
+            lambda n: n.beta_heat, ts.nuclides
+        ),
+        "nuclide_gamma_heat": _make_time_step_and_nuclide_var(
+            lambda n: n.gamma_heat, ts.nuclides
+        ),
+        "nuclide_dose": _make_time_step_and_nuclide_var(lambda n: n.dose, ts.nuclides),
+        "nuclide_ingestion": _make_time_step_and_nuclide_var(
+            lambda n: n.ingestion, ts.nuclides
+        ),
+        "nuclide_inhalation": _make_time_step_and_nuclide_var(
+            lambda n: n.inhalation, ts.nuclides
+        ),
+    }
 
     nuclide_coordinate = pd.MultiIndex.from_tuples(
-        ((n.element, n.a, n.state) for n in x.nuclides),
+        ((n.element, n.a, n.state) for n in ts.nuclides),
         names=["element", "mass_number", "state"],
     )
 
-    data_vars = {
-        "irradiation_time": _make_var(x.irradiation_time),
-        "cooling_time": _make_var(x.cooling_time),
-        "duration": _make_var(x.duration),
-        "flux": _make_var(x.flux),
-        "total_atoms": _make_var(x.total_atoms),
-        "total_activity": _make_var(x.total_activity),
-        "total_alpha_activity": _make_var(x.alpha_activity),
-        "total_beta_activity": _make_var(x.beta_activity),
-        "total_gamma_activity": _make_var(x.gamma_activity),
-        "total_mass": _make_var(x.total_mass),
-        "total_heat": _make_var(x.total_heat),
-        "total_alpha_heat": _make_var(x.alpha_heat),
-        "total_beta_heat": _make_var(x.beta_heat),
-        "total_gamma_heat": _make_var(x.gamma_heat),
-        "total_ingest1ion_dose": _make_var(x.ingestion_dose),
-        "total_inhalation_dose": _make_var(x.inhalation_dose),
-        "total_dose_rate": _make_var(x.dose_rate.dose),
-        "nuclide_half_life": _make_nuclide_var(lambda n: n.half_life, x.nuclides),
-        "nuclide_atoms": _make_time_step_and_nuclide_var(lambda n: n.atoms, x.nuclides),
-        "nuclide_grams": _make_time_step_and_nuclide_var(lambda n: n.grams, x.nuclides),
-        "nuclide_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.activity, x.nuclides
-        ),
-        "nuclide_alpha_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.alpha_activity, x.nuclides
-        ),
-        "nuclide_beta_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.beta_activity, x.nuclides
-        ),
-        "nuclide_gamma_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.gamma_activity, x.nuclides
-        ),
-        "nuclide_heat": _make_time_step_and_nuclide_var(lambda n: n.heat, x.nuclides),
-        "nuclide_alpha_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.alpha_heat, x.nuclides
-        ),
-        "nuclide_beta_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.beta_heat, x.nuclides
-        ),
-        "nuclide_gamma_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.gamma_heat, x.nuclides
-        ),
-        "nuclide_dose": _make_time_step_and_nuclide_var(lambda n: n.dose, x.nuclides),
-        "nuclide_ingestion": _make_time_step_and_nuclide_var(
-            lambda n: n.ingestion, x.nuclides
-        ),
-        "nuclide_inhalation": _make_time_step_and_nuclide_var(
-            lambda n: n.inhalation, x.nuclides
-        ),
-    }
-
     coords = {
-        "time_step_number": _make_var(x.number, dtype=int),
-        "elapsed_time": _make_var(x.elapsed_time),
+        "time_step_number": _make_var(ts.number, dtype=int),
+        "elapsed_time": _make_var(ts.elapsed_time),
         "nuclide": nuclide_coordinate,
-        "zai": _make_nuclide_var(lambda n: n.zai, x.nuclides, dtype=int),
+        "zai": _make_nuclide_var(lambda n: n.zai, ts.nuclides, dtype=int),
     }
 
-    if x.gamma_spectrum is not None:
-        gamma_boundaries = x.gamma_spectrum.boundaries
-        gamma_value = x.gamma_spectrum.intensities
+    if ts.gamma_spectrum is not None:
+        gamma_boundaries = ts.gamma_spectrum.boundaries
+        gamma_value = ts.gamma_spectrum.intensities
         gamma_value = np.insert(gamma_value, 0, 0.0).reshape(1, len(gamma_boundaries))
         data_vars["gamma"] = (("time_step_number", "gamma_boundaries"), gamma_value)
         coords["gamma_boundaries"] = gamma_boundaries
@@ -255,9 +256,10 @@ def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
         Z values for the nuclides
 
     """
+    elements = ds.nuclide.element.to_numpy()
     return cast(
         ArrayLike,
-        np.fromiter((SYMBOL_2_ATOMIC_NUMBER[x.item()[0]] for x in ds.nuclide), dtype=int),
+        ELEMENTS_TABLE.loc[elements, ["atomic_number"]].to_numpy().flatten(),
     )
 
 
@@ -266,7 +268,7 @@ def add_atomic_number_coordinate(
 ) -> xr.Dataset:
     """Add coordinate for Z.
 
-    This allows index dataset with integer Z (atomic number) values.
+    This allows indexing of a dataset with integer Z (atomic number) values.
 
     Args:
         ds: FISPACT results dataset
@@ -288,15 +290,10 @@ def get_atomic_masses(ds: xr.Dataset) -> ArrayLike:
     Returns:
         Vector with relative atomic masses.
     """
-
-    def mapper(x) -> float:
-        element, mass_number, _ = x.item()
-        return cast(float, get_nuclide_mass(element, int(mass_number)))
-
-    # TODO dvp: in mckit-nuclides add dispatching over int64 in get_nuclide_mass()
-    #           and remove int() conversion above
-
-    return cast(ArrayLike, np.fromiter((mapper(x) for x in ds.nuclide), dtype=float))
+    atomic_numbers = get_atomic_numbers(ds)
+    mass_numbers = ds.nuclide.mass_number.to_numpy().flatten()
+    mi = pd.MultiIndex.from_arrays([atomic_numbers, mass_numbers])
+    return cast(ArrayLike, NUCLIDES_TABLE.loc[mi, ["nuclide_mass"]].to_numpy().flatten())
 
 
 def add_atomic_masses(ds: xr.Dataset, variable_name="atomic_mass") -> xr.Dataset:
@@ -354,8 +351,6 @@ def scale_by_mass(ds: xr.Dataset, scale: float) -> xr.Dataset:
     columns = [x for x in SCALABLE_COLUMNS if x in ds.variables]
     scaled = ds.merge(ds[columns] * scale, overwrite_vars=columns, join="exact")
     return scaled
-
-    # TODO dvp: check if the dose rate is not always computed for 1g in v.5
 
 
 def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:

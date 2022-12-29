@@ -66,8 +66,6 @@ def test_access_by_z(ds: xr.Dataset) -> None:
     assert argentum.nuclide.size == 14
     argentum2 = ds.sel(element="Ag")
     assert argentum2.nuclide.size == 14
-    # in xarray since version 2022.6.2 the element coordinate is preserved
-    # even there's only one item in the coordinate
     assert argentum2.element.item() == "Ag", " the element coordinate is preserved"
 
 
@@ -96,7 +94,6 @@ def test_scale_by_mass(ds):
 
 
 def test_time_stamp(ds):
-    # noinspection PyTypeChecker
     assert ds.timestamp[0] == pd.Timestamp("23:01:19 12 July 2020")
     actual = da.get_timestamp(ds)
     assert actual.year == 2020
