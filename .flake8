@@ -41,6 +41,7 @@ ignore=
     PD008
     # And we use iat()
     PD009
+
 exclude=
     .git
     __pycache__

@@ -1,6 +1,8 @@
 """Nuclide specification in FISPACT JSON."""
 from __future__ import annotations
 
+from typing import Any
+
 from dataclasses import dataclass
 
 try:
@@ -58,7 +60,7 @@ class Nuclide:
         return self.isotope
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "Nuclide":
+    def from_json(cls, json_dict: dict[str, Any]) -> "Nuclide":
         """Construct the Nuclide from JSON dictionary.
 
         Args:

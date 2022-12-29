@@ -1,14 +1,14 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
 from dataclasses import dataclass, field
 
 import numpy as np
 
-from numpy import ndarray as array
 from xpypact.Nuclide import Nuclide
+from xpypact.utils.types import NDArrayFloat
 
 
 @dataclass
@@ -41,11 +41,11 @@ class GammaSpectrum:
             Gamma emission intensity.
     """
 
-    boundaries: array
-    intensities: array
+    boundaries: NDArrayFloat
+    intensities: NDArrayFloat
 
     @classmethod
-    def from_json(cls, json: dict) -> "GammaSpectrum":
+    def from_json(cls, json: dict[str, list[float]]) -> "GammaSpectrum":
         """Construct GammaSpectrum instance from JSON dictionary.
 
         Args:
@@ -126,7 +126,7 @@ class TimeStep:
         return self.flux == 0.0
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "TimeStep":
+    def from_json(cls, json_dict: dict[str, Any]) -> "TimeStep":
         """Construct TimeStep instance from JSON dictionary.
 
         Args:

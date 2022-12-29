@@ -1,7 +1,7 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Callable, Iterable, TextIO, cast
+from typing import Any, Callable, Iterable, TextIO, Union, cast
 
 from dataclasses import dataclass
 from io import TextIOBase
@@ -11,10 +11,9 @@ import numpy as np
 import orjson as json
 
 from multipledispatch import dispatch
-from numpy import ndarray as array
-
-from .RunData import RunData
-from .TimeStep import TimeStep
+from xpypact.RunData import RunData
+from xpypact.TimeStep import TimeStep
+from xpypact.utils.types import NDArrayFloat
 
 
 @dataclass
@@ -46,11 +45,11 @@ class InventoryError(ValueError):
         return cast(str, self.__class__.__doc__)  # pragma: no cover
 
 
-def _create_json_inventory_data_mapper() -> Callable[[dict], TimeStep]:
+def _create_json_inventory_data_mapper() -> Callable[[dict[str, Any]], TimeStep]:
     prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
     number = 1
 
-    def json_inventory_data_mapper(jts: dict) -> TimeStep:
+    def json_inventory_data_mapper(jts: dict[str, Any]) -> TimeStep:
         nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
         ts = TimeStep.from_json(jts)
         duration = ts.irradiation_time - prev_irradiation_time
@@ -104,7 +103,7 @@ class Inventory:
         )
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "Inventory":
+    def from_json(cls, json_dict: dict[str, Any]) -> "Inventory":
         """Construct Inventory instance from JSON dictionary.
 
         Args:
@@ -121,7 +120,7 @@ class Inventory:
 
         return cls(run_data, inventory_data)
 
-    def extract_times(self) -> array:
+    def extract_times(self) -> NDArrayFloat:
         """Create vector of elapsed time for all the time steps in the inventory.
 
         Returns:
@@ -145,7 +144,7 @@ class Inventory:
         """
         return len(self.inventory_data)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Union[int, slice]) -> TimeStep | list[TimeStep]:
         """List interface delegated to the time steps.
 
         Args:
@@ -157,7 +156,7 @@ class Inventory:
         return self.inventory_data[item]
 
 
-def extract_times(time_steps: Iterable[TimeStep]) -> array:
+def extract_times(time_steps: Iterable[TimeStep]) -> NDArrayFloat:
     """Create vector of elapsed time for all the time steps.
 
     Args:
@@ -166,7 +165,7 @@ def extract_times(time_steps: Iterable[TimeStep]) -> array:
     Returns:
         Vector with elapsed times.
     """
-    return cast(array, np.fromiter((x.elapsed_time for x in time_steps), dtype=float))
+    return np.fromiter((x.elapsed_time for x in time_steps), dtype=float)
 
 
 @dispatch(str)
