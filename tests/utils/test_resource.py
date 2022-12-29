@@ -11,7 +11,6 @@ THIS_FILENAME = Path(__file__).name
 @pytest.mark.parametrize(
     "package, resource, expected",
     [
-        # (None, THIS_FILENAME, THIS_FILENAME),
         ("tests", "data/Ag-1.json", "data/Ag-1.json"),
     ],
 )
@@ -24,11 +23,9 @@ def test_filename_resolver(package, resource, expected):
     assert Path(actual).exists(), f"The resource '{resource}' is not available"
 
 
-# noinspection PyCompatibility
 @pytest.mark.parametrize(
     "package, resource, expected",
     [
-        # (None, "not_existing.py", "not_existing.py"),
         ("tests", "data/not_existing", "tests/data/not_existing"),
         ("xpypact", "data/not_existing", "xpypact/data/not_existing"),
     ],
@@ -36,9 +33,7 @@ def test_filename_resolver(package, resource, expected):
 def test_filename_resolver_when_resource_doesnt_exist(package, resource, expected):
     resolver = filename_resolver(package)
     actual = resolver(resource)
-    assert not Path(
-        actual
-    ).exists(), f"The resource '{resource}' should not be available"
+    assert not Path(actual).exists(), f"The resource '{resource}' should not be available"
 
 
 def test_filename_resolver_when_package_doesnt_exist():

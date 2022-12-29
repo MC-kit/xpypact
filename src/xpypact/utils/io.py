@@ -20,13 +20,10 @@ def print_cols(
         int: the number of the last column printed on the last row
 
     """
-    column = 0
-    for s in seq:
+    for i, s in enumerate(seq):
         print(fmt.format(s), file=fid, end="")
-        column += 1
-        if column == max_columns:
+        if 0 < i and i % max_columns == 0:
             print(file=fid)
-            column = 0
         else:
             print(" ", file=fid, end="")
-    return column
+    return i % max_columns

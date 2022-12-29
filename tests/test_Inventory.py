@@ -47,10 +47,6 @@ def test_loading(inventory):
     assert ts2.elapsed_time == 0.631152e8
     assert ts2.flux == 0.24452e11
     assert ts1.nuclides_mass == pytest.approx(1e-3, rel=1e-3)
-    # times = extract_times(inventory)
-    # assert times.size == 2
-    # assert times[0] == ts1.elapsed_time
-    # assert times[1] == ts2.elapsed_time
 
 
 def test_loading_from_stream(data, inventory):
@@ -78,26 +74,6 @@ def test_elapsed_time(inventory):
     elapsed_time = inventory.extract_times()
     assert elapsed_time[0] == 0
     assert int(elapsed_time[-1]) == 0.631152e8
-
-
-# def test_inventory_as_array(inventory):
-#     actual = inventory.as_array()
-#     assert actual.shape == (2, 18)
-
-
-# TODO dvp: move to benchmarks
-# @pytest.fixture(scope="module")
-# def big_inventory() -> Inventory:
-#     with bz2.open(benchmark_data_path_resolver("data/Ag-1.json.bz2")) as fid:
-#         return from_json(fid.read().decode("utf-8"))
-
-
-# def test_big_inventory(big_inventory):
-#     assert len(big_inventory.inventory_data) == 65
-#     times_steps_with_nuclides = sum(
-#         map(lambda x: 1 if x.nuclides else 0, big_inventory.inventory_data)
-#     )
-#     assert times_steps_with_nuclides == 65
 
 
 def test_inventory_with_gamma(data):

@@ -51,7 +51,7 @@ def test_elapsed_time(ds: xr.Dataset, inventory: Inventory) -> None:
 def test_extract_dose(ds: xr.Dataset) -> None:
     doses = ds.total_dose_rate
     assert doses.size == 2
-    assert_array_equal(doses.values, [0.0, 0.91720603767081113e-4])
+    assert_array_equal(doses.to_numpy(), [0.0, 0.91720603767081113e-4])
 
 
 def test_access_by_z(ds: xr.Dataset) -> None:
@@ -66,13 +66,7 @@ def test_access_by_z(ds: xr.Dataset) -> None:
     assert argentum.nuclide.size == 14
     argentum2 = ds.sel(element="Ag")
     assert argentum2.nuclide.size == 14
-    # in xarray since version 2022.6.2 the element coordinate is preserved
-    # even there's only one item in the coordinate
-    assert "Ag" == argentum2.element.item(), " the element coordinate is preserved"
-
-    # argentum_atoms = argentum.atoms.sel(time_step_number=1)
-    # argentum_atoms2 = argentum2.atoms.sel(time_step_number=1)
-    # assert argentum_atoms.equals(argentum_atoms2)
+    assert argentum2.element.item() == "Ag", " the element coordinate is preserved"
 
 
 def test_atomic_masses_column(ds: xr.Dataset) -> None:
@@ -92,8 +86,7 @@ def test_atomic_masses_column(ds: xr.Dataset) -> None:
 def test_scale_by_mass(ds):
     actual = da.scale_by_mass(ds, 2)
     actual_atoms, expected_atoms = (
-        x.nuclide_atoms.sel(element="Ag", mass_number=107, state="")
-        for x in [actual, ds]
+        x.nuclide_atoms.sel(element="Ag", mass_number=107, state="") for x in [actual, ds]
     )
     assert actual_atoms.size == 2
     assert expected_atoms.size == 2
@@ -101,7 +94,6 @@ def test_scale_by_mass(ds):
 
 
 def test_time_stamp(ds):
-    # noinspection PyTypeChecker
     assert ds.timestamp[0] == pd.Timestamp("23:01:19 12 July 2020")
     actual = da.get_timestamp(ds)
     assert actual.year == 2020
@@ -112,8 +104,7 @@ def test_time_stamp(ds):
 def test_scale_by_flux(ds):
     actual = da.scale_by_flux(deepcopy(ds), 2)
     actual_grams, expected_grams = (
-        x.nuclide_grams.sel(element="Ag", mass_number=111, state="")
-        for x in [actual, ds]
+        x.nuclide_grams.sel(element="Ag", mass_number=111, state="") for x in [actual, ds]
     )
     assert actual_grams.size == 2
     assert expected_grams.size == 2
