@@ -188,7 +188,7 @@ class Fluxes:
         """
         return hash((self.energy_bins.size, self.fluxes.size, self.comment, self.norm))
 
-    def __eq__(self, other) -> bool:  # type: ignore[no-untyped-def]
+    def __eq__(self, other) -> bool:
         """Compare fluxes.
 
         Args:
@@ -205,7 +205,7 @@ class Fluxes:
             and self.norm == other.norm
         )
 
-    def __ne__(self, other) -> bool:  # type: ignore[no-untyped-def]
+    def __ne__(self, other) -> bool:
         """Compare fluxes.
 
         Args:

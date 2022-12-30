@@ -1,7 +1,7 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, TextIO, Union, cast
+from typing import Any, Callable, Iterable, TextIO, cast
 
 from dataclasses import dataclass
 from io import TextIOBase
@@ -144,7 +144,7 @@ class Inventory:
         """
         return len(self.inventory_data)
 
-    def __getitem__(self, item: Union[int, slice]) -> TimeStep | list[TimeStep]:
+    def __getitem__(self, item):
         """List interface delegated to the time steps.
 
         Args:
