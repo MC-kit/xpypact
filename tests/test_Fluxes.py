@@ -131,14 +131,6 @@ def test_fispact_conversion(arb_flux_1, fluxes_1):
     assert_almost_equal(arb_flux_1.total, fluxes_1.total, decimal=5)
 
 
-# def test_make_709_fluxes_1(arb_flux_1, fluxes_1):
-#     actual = make_709_fluxes(arb_flux_1)
-#     assert_almost_equal(arb_flux_1.total, actual.total, decimal=8)
-#     assert_almost_equal(
-#         actual.fluxes, fluxes_1.fluxes, decimal=7
-#     ), "Fluxes generated with python and FISPACT should be equal"
-
-
 def test_print_arbitrary_fluxes(data, arb_flux_1):
     original_text = (data / "arb_flux_1").read_text()
     stream = StringIO()

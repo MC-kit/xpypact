@@ -1,16 +1,22 @@
 [flake8]
-select=ANN,B,B9,BLK,C,D,DAR,E,F,I,TC,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,S,W
 max-complexity=10
-max-line-length=88
+max-line-length=90
 ignore=
-    # ANN001 Missing type annotation for function argument
+    # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     ANN001
+    # ANN002 Missing type annotation for *drop_items: ... as above
+    ANN002
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
+    # ANN202 Missing return type annotation for protected function: ... dispatching
+    ANN202
     #ANN204 Missing return type annotation for special method
     ANN204
+    # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    B905
     # C812 Missing trailing comma: black compatibility
     C812
     # D105 Missing docstring in magic method (__hash__, __eq__)
@@ -23,11 +29,19 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-    # import is controlled by isort
+
+    # import order is controlled by isort
     I100
     I101
     I201
     I202
+
+    # ignore some questionable pandas-vet warnings
+    # We use at() to access single values
+    PD008
+    # And we use iat()
+    PD009
+
 exclude=
     .git
     __pycache__
@@ -36,17 +50,17 @@ exclude=
     wrk
     build
     dist
-    tools/install-poetry.py
     *.pyc
     *.egg-info
     .cache
     .eggs
 per-file-ignores =
+    benchmarks/*:S101,DAR101
     noxfile.py:ANN,DAR101
     tools/clear-prev-dist-info.py:S404,S603,S607
-    src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103,PD005
     src/xpypact/Inventory.py:F811
-    src/xpypact/data_arrays.py:ANN401
+    src/xpypact/data_arrays.py:ANN401,PD011
     src/xpypact/utils/resource.py:ANN202
 ignore-decorators=click,pytest
 docstring-convention = google

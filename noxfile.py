@@ -8,7 +8,6 @@ from typing import Final, List
 
 import re
 import shutil
-import sys
 
 from glob import glob
 from pathlib import Path
@@ -19,7 +18,7 @@ import nox
 from nox import Session, session  # mypy: ignore
 
 nox.options.sessions = (
-    # "safety",   # TODO dvp: check if 'safety' session is necessary, if yes, return it
+    "safety",
     "pre-commit",
     "mypy",
     "tests",
@@ -57,11 +56,32 @@ def find_my_name() -> str:
 
 
 package: Final = find_my_name()
-locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
+locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.11"
-lint_pythons: Final = "3.11"
+black_pythons: Final = "3.10"  # TODO dvp: waith for h5py updates to 3.11
+lint_pythons: Final = "3.10"
+mypy_pythons: Final = "3.10"
+
+
+def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
+    text = hook.read_text()
+    bin_dir = repr(s.bin)[1:-1]  # strip quotes
+    if Path("A") == Path("a") and bin_dir.lower() in text.lower() or bin_dir in text:
+        lines = text.splitlines()
+        if lines[0].startswith("#!") and "python" in lines[0].lower():
+            header = dedent(
+                f"""\
+                import os
+                os.environ["VIRTUAL_ENV"] = {virtualenv!r}
+                os.environ["PATH"] = os.pathsep.join((
+                    {s.bin!r},
+                    os.environ.get("PATH", ""),
+                ))
+                """,
+            )
+            lines.insert(1, header)
+            hook.write_text("\n".join(lines))
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -82,39 +102,13 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
     if not hook_dir.is_dir():
         return
 
-    for hook in hook_dir.iterdir():
-        if hook.name.endswith(".sample") or not hook.is_file():
-            continue
-
-        text = hook.read_text()
-        bin_dir = repr(s.bin)[1:-1]  # strip quotes
-        if not (
-            Path("A") == Path("a")
-            and bin_dir.lower() in text.lower()
-            or bin_dir in text
-        ):
-            continue
-
-        lines = text.splitlines()
-        if not (lines[0].startswith("#!") and "python" in lines[0].lower()):
-            continue
-
-        header = dedent(
-            f"""\
-            import os
-            os.environ["VIRTUAL_ENV"] = {virtualenv!r}
-            os.environ["PATH"] = os.pathsep.join((
-                {s.bin!r},
-                os.environ.get("PATH", ""),
-            ))
-            """,
-        )
-
-        lines.insert(1, header)
-        hook.write_text("\n".join(lines))
+    for hook in filter(
+        lambda x: not x.name.endswith(".sample") and x.is_file(), hook_dir.iterdir()
+    ):
+        _update_hook(hook, virtualenv, s)
 
 
-@session(name="pre-commit", python="3.11")
+@session(name="pre-commit", python="3.10")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -131,12 +125,23 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-# @session(python="3.10")
-# def safety(s: Session) -> None:
-#     """Scan dependencies for insecure packages."""
-#     requirements = s.poetry.export_requirements()
-#     s.install("safety")
-#     s.run("safety", "check", "--full-report", f"--file={requirements}", *s.posargs)
+@session(python="3.10")
+def safety(s: Session) -> None:
+    """Scan dependencies for insecure packages."""
+    requirements = f"{s.virtualenv.location}/safety-requirements.txt"
+    s.run(
+        "poetry",
+        "export",
+        "-f",
+        "requirements.txt",
+        "-o",
+        requirements,
+        "--only",
+        "main",
+        external=True,
+    )
+    s.install("safety")
+    s.run("safety", "check", "--full-report", f"--file={requirements}", *s.posargs)
 
 
 @session(python=supported_pythons)
@@ -194,7 +199,7 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.11")
+@session(python="3.10")
 def isort(s: Session) -> None:
     """Organize imports."""
     search_patterns = [
@@ -262,10 +267,10 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python="3.11")
+@session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or ["src", "docs/source/conf.py"]
+    args = s.posargs or ["src", "docs/source/conf.py", "noxfile.py"]
     s.run(
         "poetry",
         "install",
@@ -275,11 +280,9 @@ def mypy(s: Session) -> None:
         external=True,
     )
     s.run("mypy", *args)
-    if not s.posargs:
-        s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.11")
+@session(python="3.10")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     args = s.posargs or ["--quiet", "-m", f"src/{package}"]
@@ -294,7 +297,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
-@session(name="docs-build", python="3.11")
+@session(name="docs-build", python="3.10")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -312,7 +315,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.11")
+@session(python="3.10")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]

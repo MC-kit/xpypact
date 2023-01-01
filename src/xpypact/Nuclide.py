@@ -1,6 +1,8 @@
 """Nuclide specification in FISPACT JSON."""
 from __future__ import annotations
 
+from typing import Any
+
 from dataclasses import dataclass
 
 try:
@@ -8,7 +10,7 @@ try:
 except ImportError:  # pragma: no cover
     Avogadro = 6.02214075999999987023872e23
 
-from mckit_nuclides.elements import Element
+from mckit_nuclides.elements import z
 from mckit_nuclides.nuclides import get_nuclide_mass
 
 __all__ = ["Avogadro", "Nuclide"]
@@ -39,29 +41,13 @@ class Nuclide:
 
     def __post_init__(self) -> None:
         """Make the values consistent in data from old FISPACT."""
-        e = Element(self.element)
+        _z = z(self.element)
         if self.zai == 0:
-            # TODO dvp: when mckit-nuclides updates, switch to direct z() method.
-            #           There's no need to construct Element accessor here.
-            self.zai = e.z * 10000 + self.isotope * 10
+            self.zai = _z * 10000 + self.isotope * 10
             if self.state != "":
                 self.zai += 1
         if self.atoms == 0.0 and 0.0 < self.grams:
-            self.atoms = (
-                Avogadro * self.grams / get_nuclide_mass(int(e.z), self.isotope)
-            )
-
-    @classmethod
-    def from_json(cls, json_dict: dict) -> "Nuclide":
-        """Construct the Nuclide from JSON dictionary.
-
-        Args:
-            json_dict: information in json
-
-        Returns:
-            Nuclide: the Nuclide object
-        """
-        return cls(**json_dict)
+            self.atoms = Avogadro * self.grams / get_nuclide_mass(_z, self.isotope)
 
     @property
     def a(self) -> int:
@@ -72,3 +58,15 @@ class Nuclide:
 
         """
         return self.isotope
+
+    @classmethod
+    def from_json(cls, json_dict: dict[str, Any]) -> "Nuclide":
+        """Construct the Nuclide from JSON dictionary.
+
+        Args:
+            json_dict: information in json
+
+        Returns:
+            Nuclide: the Nuclide object
+        """
+        return cls(**json_dict)
