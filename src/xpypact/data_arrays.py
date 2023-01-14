@@ -427,4 +427,4 @@ def from_json(path: Union[str, Path, TextIO]) -> xr.Dataset:
     Returns:
         The loaded Dataset.
     """
-    return create_dataset(inventory_from_json(path))
+    return create_dataset(inventory_from_json(path))  # type: ignore[arg-type]

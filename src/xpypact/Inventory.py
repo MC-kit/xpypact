@@ -1,16 +1,17 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, TextIO, cast
+from typing import Any, Callable, Iterable, cast
+
+import io
 
 from dataclasses import dataclass
-from io import TextIOBase
+from functools import singledispatch
 from pathlib import Path
 
 import numpy as np
 import orjson as json
 
-from multipledispatch import dispatch
 from xpypact.RunData import RunData
 from xpypact.TimeStep import TimeStep
 from xpypact.utils.types import NDArrayFloat
@@ -168,7 +169,8 @@ def extract_times(time_steps: Iterable[TimeStep]) -> NDArrayFloat:
     return np.fromiter((x.elapsed_time for x in time_steps), dtype=float)
 
 
-@dispatch(str)
+# @dispatch(str)
+@singledispatch
 def from_json(text: str) -> Inventory:
     """Construct Inventory instance from JSON text.
 
@@ -182,8 +184,8 @@ def from_json(text: str) -> Inventory:
     return Inventory.from_json(json_dict)
 
 
-@dispatch(TextIOBase)  # type: ignore[no-redef]
-def from_json(stream: TextIO) -> Inventory:
+@from_json.register
+def _(stream: io.IOBase) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON stream.
 
     Args:
@@ -195,8 +197,8 @@ def from_json(stream: TextIO) -> Inventory:
     return from_json(stream.read())
 
 
-@dispatch(Path)  # type: ignore[no-redef]
-def from_json(path: Path) -> Inventory:
+@from_json.register
+def _(path: Path) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON path.
 
     Args:

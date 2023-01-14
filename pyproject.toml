@@ -42,7 +42,6 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 python = ">=3.8,<4.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
-multipledispatch = ">=0.6.0"
 numpy = ">=1.23.2"
 openpyxl = ">=3.0.9"
 orjson = ">=3.6.7"
@@ -50,6 +49,7 @@ pandas = ">=1.3.4"
 xarray = ">=2022.3.0"
 # https://www.programmersought.com/article/97207856623/
 # versioned-hdf5 = {version = ">=1.3.12", python = ">=3.11"}
+multipledispatch = ">=0.6.0"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
