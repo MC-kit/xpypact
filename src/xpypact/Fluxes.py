@@ -460,7 +460,6 @@ def print_fluxes(
         fid: a stream to print to
         arbitrary: if True - arbitrary, otherwise 709
         max_columns: max columns in output
-
     """
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
@@ -489,7 +488,6 @@ def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 7) -> None:
 
     Raises:
         NotA709Error: if not a valid 709 group "Fluxes" object is provided.
-
     """
     if not is_709_fluxes(fluxes):
         raise NotA709Error()
@@ -503,6 +501,5 @@ def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) ->
         fluxes: what to print
         fid: output stream
         max_columns: max number of columns in a row
-
     """
     print_fluxes(fluxes, fid, True, max_columns)

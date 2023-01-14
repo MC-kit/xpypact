@@ -18,7 +18,6 @@ def print_cols(
 
     Returns:
         int: the number of the last column printed on the last row
-
     """
     for i, s in enumerate(seq):
         print(fmt.format(s), file=fid, end="")
