@@ -8,6 +8,7 @@ from typing import Final, List
 
 import re
 import shutil
+import sys
 
 from glob import glob
 from pathlib import Path
@@ -15,7 +16,7 @@ from textwrap import dedent
 
 import nox
 
-from nox import Session, session  # mypy: ignore
+from nox import Session, session
 
 nox.options.sessions = (
     "safety",
@@ -270,7 +271,7 @@ def lint(s: Session) -> None:
 @session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or ["src", "docs/source/conf.py", "noxfile.py"]
+    args = s.posargs or ["src", "docs/source/conf.py"]
     s.run(
         "poetry",
         "install",
@@ -280,6 +281,10 @@ def mypy(s: Session) -> None:
         external=True,
     )
     s.run("mypy", *args)
+
+    # special case for noxfile.py: need to fine `nox` itself in session
+    if not s.posargs:
+        s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python="3.10")
