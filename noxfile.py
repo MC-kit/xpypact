@@ -60,9 +60,9 @@ package: Final = find_my_name()
 locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.10"  # TODO dvp: waith for h5py updates to 3.11
-lint_pythons: Final = "3.10"
-mypy_pythons: Final = "3.10"
+black_pythons: Final = "3.11"
+lint_pythons: Final = "3.11"
+mypy_pythons: Final = "3.11"
 
 
 def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
@@ -109,7 +109,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         _update_hook(hook, virtualenv, s)
 
 
-@session(name="pre-commit", python="3.10")
+@session(name="pre-commit", python="3.11")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -126,7 +126,7 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = f"{s.virtualenv.location}/safety-requirements.txt"
@@ -200,13 +200,13 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def isort(s: Session) -> None:
     """Organize imports."""
     search_patterns = [
         "*.py",
         f"src/{package}/*.py",
-        "src/tests/*.py",
+        "tests/*.py",
         "benchmarks/*.py",
         "profiles/*.py",
     ]
@@ -282,12 +282,12 @@ def mypy(s: Session) -> None:
     )
     s.run("mypy", *args)
 
-    # special case for noxfile.py: need to fine `nox` itself in session
+    # special case for noxfile.py: need to find `nox` itself in session
     if not s.posargs:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.10")
+@session(python="3.11")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     args = s.posargs or ["--quiet", "-m", f"src/{package}"]
@@ -302,7 +302,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
-@session(name="docs-build", python="3.10")
+@session(name="docs-build", python="3.11")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -320,7 +320,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]

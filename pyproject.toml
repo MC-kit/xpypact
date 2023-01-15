@@ -34,7 +34,6 @@ classifiers = [
 requires = ["poetry-core>=1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
-
 # [tool.poetry.scripts]
 # xpypact = "xpypact.cli.runner:xpypact"
 
@@ -164,6 +163,7 @@ multi_line_output = 3
 line_length = 90
 include_trailing_comma = true
 lines_between_types = 1
+skip_gitignore = true
 skip = ["setup-generated.py"]
 skip_glob = ["*-example.py"]
 
@@ -329,3 +329,9 @@ exclude = "tools/**"
 strip-whitespaces = true
 max-line-length = 90
 summary-quotes-same-line = true
+
+
+[tool.pylint]
+good-names-rgxs=["."]  # a single character variable is okay
+logging-format-style="new"   # use {} in logging messages
+deprecated-modules=["six"]
