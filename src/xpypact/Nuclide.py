@@ -55,7 +55,6 @@ class Nuclide:
 
         Returns:
             A, mass number
-
         """
         return self.isotope
 

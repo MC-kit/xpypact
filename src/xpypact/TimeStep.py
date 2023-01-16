@@ -134,7 +134,6 @@ class TimeStep:
 
         Returns:
             The new TimeStep instance.
-
         """
         json_dose_rate = json_dict.pop("dose_rate")
         dose_rate = DoseRate(**json_dose_rate)

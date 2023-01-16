@@ -254,7 +254,6 @@ def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
 
     Returns:
         Z values for the nuclides
-
     """
     elements = ds.nuclide.element.to_numpy()
     return cast(
@@ -346,7 +345,6 @@ def scale_by_mass(ds: xr.Dataset, scale: float) -> xr.Dataset:
 
     Returns:
         A new dataset with scaled columns.
-
     """
     columns = [x for x in SCALABLE_COLUMNS if x in ds.variables]
     scaled = ds.merge(ds[columns] * scale, overwrite_vars=columns, join="exact")

@@ -24,7 +24,6 @@ class RunDataCorrected:
     Note:
         Correction - dose_rate_type and dose_rate_distance are duplicated
         the FISPACT time steps. This information is extracted to this header.
-
     """
 
     timestamp: str
