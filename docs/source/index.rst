@@ -3,8 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+=================================
 Welcome to xpypact documentation!
-====================================
+=================================
 
 .. note::
    This is under development.
@@ -13,6 +14,10 @@ Welcome to xpypact documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   readme
+   modules
+   todo
+   license
 
 
 Indices and tables

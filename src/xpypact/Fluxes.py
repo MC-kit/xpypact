@@ -275,9 +275,7 @@ def are_fluxes_close(
     """
     return (
         a.energy_bins.size == b.energy_bins.size
-        and allclose(
-            a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
-        )
+        and allclose(a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan)
         and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
     )
 
@@ -450,9 +448,7 @@ def define_709_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArra
     return FISPACT_709_BINS, data[::-1]
 
 
-def print_fluxes(
-    fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns: int = 5
-) -> None:
+def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns: int = 5) -> None:
     """Print fluxes for FISPACT.
 
     Args:

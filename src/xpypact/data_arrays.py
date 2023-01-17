@@ -107,9 +107,7 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         "nuclide_half_life": _make_nuclide_var(lambda n: n.half_life, ts.nuclides),
         "nuclide_atoms": _make_time_step_and_nuclide_var(lambda n: n.atoms, ts.nuclides),
         "nuclide_grams": _make_time_step_and_nuclide_var(lambda n: n.grams, ts.nuclides),
-        "nuclide_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.activity, ts.nuclides
-        ),
+        "nuclide_activity": _make_time_step_and_nuclide_var(lambda n: n.activity, ts.nuclides),
         "nuclide_alpha_activity": _make_time_step_and_nuclide_var(
             lambda n: n.alpha_activity, ts.nuclides
         ),
@@ -120,22 +118,12 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
             lambda n: n.gamma_activity, ts.nuclides
         ),
         "nuclide_heat": _make_time_step_and_nuclide_var(lambda n: n.heat, ts.nuclides),
-        "nuclide_alpha_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.alpha_heat, ts.nuclides
-        ),
-        "nuclide_beta_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.beta_heat, ts.nuclides
-        ),
-        "nuclide_gamma_heat": _make_time_step_and_nuclide_var(
-            lambda n: n.gamma_heat, ts.nuclides
-        ),
+        "nuclide_alpha_heat": _make_time_step_and_nuclide_var(lambda n: n.alpha_heat, ts.nuclides),
+        "nuclide_beta_heat": _make_time_step_and_nuclide_var(lambda n: n.beta_heat, ts.nuclides),
+        "nuclide_gamma_heat": _make_time_step_and_nuclide_var(lambda n: n.gamma_heat, ts.nuclides),
         "nuclide_dose": _make_time_step_and_nuclide_var(lambda n: n.dose, ts.nuclides),
-        "nuclide_ingestion": _make_time_step_and_nuclide_var(
-            lambda n: n.ingestion, ts.nuclides
-        ),
-        "nuclide_inhalation": _make_time_step_and_nuclide_var(
-            lambda n: n.inhalation, ts.nuclides
-        ),
+        "nuclide_ingestion": _make_time_step_and_nuclide_var(lambda n: n.ingestion, ts.nuclides),
+        "nuclide_inhalation": _make_time_step_and_nuclide_var(lambda n: n.inhalation, ts.nuclides),
     }
 
     nuclide_coordinate = pd.MultiIndex.from_tuples(

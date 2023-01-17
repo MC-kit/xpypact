@@ -60,9 +60,7 @@ def test_access_by_z(ds: xr.Dataset) -> None:
     z = ds.z
     assert len(z) == 48
     argentum = ds.sel(nuclide=(ds.z == 47))
-    assert (
-        argentum.element is not None
-    ), "The above selection preserves 'element' in nuclide index"
+    assert argentum.element is not None, "The above selection preserves 'element' in nuclide index"
     assert argentum.nuclide.size == 14
     argentum2 = ds.sel(element="Ag")
     assert argentum2.nuclide.size == 14
@@ -78,9 +76,7 @@ def test_atomic_masses_column(ds: xr.Dataset) -> None:
     argentum = ds.sel(nuclide=("Ag", 111, ""))
     assert argentum.element == "Ag"
     a = argentum.a
-    assert a.item() == approx(
-        110.905, rel=1e-4
-    ), " the Ag atomic mass is to be about 110.905"
+    assert a.item() == approx(110.905, rel=1e-4), " the Ag atomic mass is to be about 110.905"
 
 
 def test_scale_by_mass(ds):
