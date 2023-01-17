@@ -210,9 +210,7 @@ def isort(s: Session) -> None:
         "benchmarks/*.py",
         "profiles/*.py",
     ]
-    files_to_process: List[str] = sum(
-        (glob(p, recursive=True) for p in search_patterns), []
-    )
+    files_to_process: List[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
     if files_to_process:
         s.run(
             "poetry",
@@ -310,7 +308,7 @@ def docs_build(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "docs",
+        "main,docs",
         external=True,
     )
     build_dir = Path("docs", "_build")
@@ -328,7 +326,7 @@ def docs(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "docs,docs_auto",
+        "main,docs,docs_auto",
         external=True,
     )
     build_dir = Path("docs", "_build")
