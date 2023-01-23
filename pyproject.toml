@@ -220,7 +220,7 @@ source = ["src", ".nox/*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["xpypact"]
+source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
@@ -261,7 +261,7 @@ error_summary = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
-files = "src/xpypact/**/*.py"
+files = "src/**/*.py"
 plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
