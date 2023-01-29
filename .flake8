@@ -64,6 +64,7 @@ per-file-ignores =
     src/xpypact/Inventory.py:F811
     src/xpypact/data_arrays.py:ANN401,PD011
     src/xpypact/utils/resource.py:ANN202
+    src/xpypact/Fluxes.py:F811
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref

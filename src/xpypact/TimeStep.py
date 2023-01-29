@@ -61,7 +61,7 @@ class GammaSpectrum:
 
 
 @dataclass
-class TimeStep:
+class TimeStep:  # pylint: disable=too-many-instance-attributes
     """Time step attributes.
 
     All names must be the same as in FISPACT JSON file.

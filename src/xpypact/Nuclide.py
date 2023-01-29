@@ -17,7 +17,7 @@ __all__ = ["Avogadro", "Nuclide"]
 
 
 @dataclass
-class Nuclide:
+class Nuclide:  # pylint: disable=too-many-instance-attributes
     """Nuclide properties from FISPACT JSON."""
 
     element: str

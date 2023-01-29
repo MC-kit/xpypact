@@ -12,6 +12,8 @@ from numpy import allclose, array_equal
 from xpypact.utils.io import print_cols
 from xpypact.utils.types import NDArrayFloat
 
+# pylint: disable=function-redefined
+
 LAST_TWO_DECADES = np.fromstring(
     """
         1.0000E+9
@@ -318,7 +320,7 @@ def read_arb_fluxes(
 
 
 @dispatch(Path)  # type: ignore[no-redef]
-def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
+def read_arb_fluxes(path: Path) -> Fluxes:
     """Read arbitrary fluxes from Path.
 
     Args:
@@ -332,7 +334,7 @@ def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
 
 
 @dispatch(str)  # type: ignore[no-redef]
-def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
+def read_arb_fluxes(text: str) -> Fluxes:
     """Read arbitrary fluxes from text.
 
     Args:
@@ -361,7 +363,7 @@ def read_709_fluxes(
 
 
 @dispatch(Path)  # type: ignore[no-redef]
-def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
+def read_709_fluxes(path: Path) -> Fluxes:
     """Read 709-group fluxes from path.
 
     Args:
@@ -375,7 +377,7 @@ def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
 
 
 @dispatch(str)  # type: ignore[no-redef]
-def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
+def read_709_fluxes(text: str) -> Fluxes:
     """Read 709-group fluxes from text.
 
     Args:
