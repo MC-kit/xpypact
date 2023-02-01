@@ -3,9 +3,50 @@ Welcome to xpypact documentation!
 =================================
 
 .. todo::
-   This is under development.
 
-Content
+    The documentation is under development.
+
+
+The package helps:
+
+    - to create FISPACT run configuration,
+    - to load FISPACT JSON output as 'xarray <https://xarray.dev/>'_ dataset,
+    - filter, aggregate data from dataset, join with external data
+    - save results to netcdf files
+
+
+
+
+.. todo::
+
+    - Implement prepare multiple configurations run for given case ids, materials, fluxes
+    - Parallel (may be with dask?) execution of FISPACT
+    - prototype alternatives for data saving to parquet, SQL, whatever
+    - parallel collecting results to selected alternative
+
+
+Installation
+============
+
+From PyPI (recommended):
+
+.. code-block::
+
+   pip install mckit-nuclides
+
+With package manager (as dependency):
+
+.. code-block::
+
+   poetry add mckit-nuclides
+
+From source:
+
+.. code-block::
+
+   pip install https://github.com/MC-kit/mckit-nuclides.git
+
+Details
 =======
 
 .. toctree::
