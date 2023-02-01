@@ -10,7 +10,7 @@ Welcome to xpypact documentation!
 The package helps:
 
     - to create FISPACT run configuration,
-    - to load FISPACT JSON output as 'xarray <https://xarray.dev/>'_ dataset,
+    - to load FISPACT JSON output as `xarray <https://xarray.dev/>`_ dataset,
     - filter, aggregate data from dataset, join with external data
     - save results to netcdf files
 
@@ -32,19 +32,19 @@ From PyPI (recommended):
 
 .. code-block::
 
-   pip install mckit-nuclides
+   pip install xpypact
 
 With package manager (as dependency):
 
 .. code-block::
 
-   poetry add mckit-nuclides
+   poetry add xpypact
 
 From source:
 
 .. code-block::
 
-   pip install https://github.com/MC-kit/mckit-nuclides.git
+   pip install https://github.com/MC-kit/xpypact.git
 
 Details
 =======

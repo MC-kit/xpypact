@@ -133,11 +133,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        exclude:
-          - os: windows-latest
-            python-version: 3.11
-          - os: macos-latest
-            python-version: 3.11
     steps:
 
       - name: Checkout repository
@@ -176,15 +171,6 @@ jobs:
           poetry config --local virtualenvs.create false
           poetry env info
 
-# The following step fixes failure to install h5py (required by h5netcdf)
-# Reason: for 3.7.0 there still no 3.11 wheels on PyPI.
-# The installation goes from source and fails to build with libhdf5 installed.
-      - name: Install hdf5-devel
-        if: ${{ matrix.python-version == '3.11'  &&  matrix.os == 'ubuntu-latest' }}
-        run: |
-          sudo add-apt-repository universe
-          sudo apt-get update
-          sudo apt-get install -y libhdf5-serial-dev
       - name: Run nox tests
         run: nox  --force-color --session tests --python ${{ matrix.python-version }}
 

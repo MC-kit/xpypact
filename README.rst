@@ -9,7 +9,8 @@
 .. contents::
 
 
-Note:
+.. todo::
+
     This document is in progress.
 
 Description
@@ -20,33 +21,43 @@ This allows efficient data extraction and aggregation.
 
 .. configures and runs FISPACT, converts FISPACT output to xarray datasets.
 
-.. TODO dvp: apply FISPACT v.5 API and describe here.
+.. todo::
+
+    Currently available FISPACT v.5 API uses rather old python version (3.6).
+    That prevents direct use of their API in our package (>=3.8).
+    Check if own python integration with FISPACT is reasonable and feasible.
 
 
 Installation
 ------------
 
-::
+From PyPI
+
+.. code-block::
 
     pip install xpypact
 
-.. warning:: Install the hdf5 before installing xpypact for Python3.11.
 
-    Reason:
+As dependency
 
-    We depend on h5py through h5netcdf.
-    The h5py package as for recent version 3.7.0 doesn't provide wheels for Python3.11.
-    So, for python 3.11 pip tries to build the h5py package from sources. This fails, if hdf5 library is not preinstalled.
+.. code-block::
 
+    poetry add xpypact
 
 
-.. TODO dvp: check and report all possible ways to install (pip, poetry)
+From source
+
+.. code-block::
+
+    pip install htpps://github.com/MC-kit/xpypact.git
 
 
 Examples
 --------
 
-.. TODO
+.. todo::
+
+    Add examples
 
 Contributing
 ------------
@@ -68,14 +79,18 @@ Contributing
    :target: https://github.com/guilatrova/tryceratops
    :alt: try/except style: tryceratops
 
-https://www.conventionalcommits.org/en/v1.0.0/#summary
-https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelinesi
+Just follow ordinary practice:
+
+    - `Commit message <https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines>`_
+    - `Conventional commits <https://www.conventionalcommits.org/en/v1.0.0/#summary>`_
 
 
 References
 ----------
 
-.. TODO dvp: add references to FISPACT, pypact and used libraries:  poetry, xarray etc
+.. todo::
+
+    add references to FISPACT, pypact and used tools:  poetry etc
 
 
 .. Substitutions
