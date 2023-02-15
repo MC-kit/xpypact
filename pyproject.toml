@@ -209,8 +209,9 @@ markers = [
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
-    "ignore:::.*not typechecking multipledispatch.dispatcher.*UserWarning",
-    "ignore:::.*python3.11/site-packages/pkg_resources/__init__.py.*DeprecationWarning"
+    "error",
+    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning"
 ]
 
 [tool.xdoctest]
