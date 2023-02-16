@@ -7,8 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
-from multipledispatch import dispatch
 from numpy import allclose, array_equal
+
+from multipledispatch import dispatch
 from xpypact.utils.io import print_cols
 from xpypact.utils.types import NDArrayFloat
 

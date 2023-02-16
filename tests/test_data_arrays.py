@@ -7,12 +7,14 @@ import bz2
 from copy import deepcopy
 
 import numpy as np
+
+from numpy.testing import assert_array_equal, assert_equal
+
 import pandas as pd
 import pytest
 import xarray as xr
 import xpypact.data_arrays as da
 
-from numpy.testing import assert_array_equal, assert_equal
 from pytest import approx
 from xpypact.Inventory import Inventory, from_json
 

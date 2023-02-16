@@ -10,6 +10,7 @@ from functools import singledispatch
 from pathlib import Path
 
 import numpy as np
+
 import orjson as json
 
 from xpypact.RunData import RunData
