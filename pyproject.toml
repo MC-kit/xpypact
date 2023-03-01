@@ -46,7 +46,7 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 python = ">=3.8,<4.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
-numpy = ">=1.23.2"
+numpy = ">=1.24.2"
 openpyxl = ">=3.0.9"
 orjson = ">=3.6.7"
 pandas = ">=1.4.1"
@@ -74,7 +74,7 @@ rstcheck = ">=3.3.1"
 pydocstringformatter = "^0.7.3"
 
 [tool.poetry.group.black.dependencies]
-black = ">=22.8.0"
+black = ">=22.8.0"  #TODO dvp: update with safety and packaging
 
 [tool.poetry.group.isort.dependencies]
 isort = ">=5.9.3"
@@ -105,7 +105,8 @@ numpy = ">=1.23.2"
 
 [tool.poetry.group.flake8.dependencies]
 darglint = ">=1.8.1"
-flake8 = ">=4.0.1"
+flake8 = ">=4.0.1"  #TODO dvp: update with flake8-eradicate
+#flake8 = ">=6.0.0"
 flake8-adjustable-complexity = ">=0.0.6"
 flake8-annotations = ">=2.6.2"
 flake8-annotations-coverage = ">=0.0.6"
@@ -234,8 +235,8 @@ omit = ["*_tab.py", "**/__init__.py"]
 show_missing = true
 skip_covered = true
 fail_under = 100
-# Regexes for lines to exclude from consideration
 omit = ["*_tab.py", "**/__init__.py"]
+# Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma
     "pragma: no cover",
