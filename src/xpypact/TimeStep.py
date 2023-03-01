@@ -90,9 +90,8 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
     nuclides: list[Nuclide] = field(default_factory=list)
     gamma_spectrum: Optional[GammaSpectrum] = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: ignore[CAC001]
         """Correct data missed in FISPACT-4."""
-        # TODO dvp: check for FISPACT v.5
         # workarounds for FISPACT v.4
         if self.total_mass == 0.0:
             self.total_mass = 1e-3 * sum(n.grams for n in self.nuclides)
