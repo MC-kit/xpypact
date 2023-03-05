@@ -60,9 +60,6 @@ package: Final = find_my_name()
 locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.11"
-lint_pythons: Final = "3.11"
-mypy_pythons: Final = "3.11"
 
 
 def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
@@ -109,7 +106,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         _update_hook(hook, virtualenv, s)
 
 
-@session(name="pre-commit", python="3.11")
+@session(name="pre-commit")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
