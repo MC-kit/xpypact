@@ -228,7 +228,7 @@ source = ["src", ".nox/*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["src/xpypact"]
+source = ["src"]
 omit = ["*_tab.py", "**/__init__.py"]
 
 [tool.coverage.report]
