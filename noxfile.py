@@ -155,7 +155,7 @@ def tests(s: Session) -> None:
     try:
         s.run("coverage", "run", "--parallel", "-m", "pytest", *s.posargs)
     finally:
-        if s.interactive:
+        if s.interactive and "--no-cov" not in s.posargs:
             s.notify("coverage", posargs=[])
 
 
@@ -183,7 +183,6 @@ def coverage(s: Session) -> None:
     s.run("coverage", *args)
 
 
-# TODO dvp: check some strange errors on 3.8, 3.9 and slow install of pandas on 3.11
 @session
 def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
@@ -194,7 +193,7 @@ def typeguard(s: Session) -> None:
         "main,test,typeguard",
         external=True,
     )
-    s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
+    s.run("pytest", "--typeguard-packages=src", *s.posargs, external=True)
 
 
 @session

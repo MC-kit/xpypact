@@ -137,7 +137,6 @@ flake8-pylint = ">=0.1.3"
 # TODO dvp: check/use flake8-pyprojecttoml plugin
 # https://gitlab.com/durko/flake8-pyprojecttoml/-/blob/master/pyproject.toml
 
-
 [tool.poetry.group.docs.dependencies]
 sphinx = ">=6.1.3"
 sphinx-autodoc-typehints = ">=1.19.5"
@@ -192,6 +191,7 @@ exclude = '''
   | data
   | htmlcov
   | \.egg-info
+  | _tab\.py$
   | notebooks
   | wrk
 )

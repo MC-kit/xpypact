@@ -1,6 +1,6 @@
 [flake8]
 select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,TR,S,W
-max-complexity=10
+max-complexity=15
 max-mccabe-complexity=5
 max-line-length=100
 ignore=
@@ -61,7 +61,7 @@ per-file-ignores =
     benchmarks/*:S101,DAR101
     noxfile.py:ANN,DAR101
     tools/clear-prev-dist-info.py:S404,S603,S607
-    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103,PD005
+    tests/*:ANN,B950,DAR100,D100,D101,D102,D103,D104,DAR101,DAR103,S101
     src/xpypact/Inventory.py:F811
     src/xpypact/data_arrays.py:ANN401,PD011
     src/xpypact/utils/resource.py:ANN202
