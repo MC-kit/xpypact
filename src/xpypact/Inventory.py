@@ -180,7 +180,7 @@ def from_json(text: str) -> Inventory:
     Returns:
         The loaded Inventory instance.
     """
-    json_dict = json.loads(text)
+    json_dict = json.loads(text)  # pylint: disable=no-member
     return Inventory.from_json(json_dict)
 
 
