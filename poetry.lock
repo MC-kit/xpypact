@@ -1111,6 +1111,25 @@ perf = ["ipython"]
 testing = ["flake8 (<5)", "flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)"]
 
 [[package]]
+name = "importlib-resources"
+version = "5.12.0"
+description = "Read resources from Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "importlib_resources-5.12.0-py3-none-any.whl", hash = "sha256:7b1deeebbf351c7578e09bf2f63fa2ce8b5ffec296e0d349139d43cca061a81a"},
+    {file = "importlib_resources-5.12.0.tar.gz", hash = "sha256:4be82589bf5c1d7999aedf2a45159d10cb3ca4f19b2271f8792bc8e6da7b22f6"},
+]
+
+[package.dependencies]
+zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+testing = ["flake8 (<5)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -1342,20 +1361,21 @@ files = [
 
 [[package]]
 name = "mckit-nuclides"
-version = "0.2.0"
-description = "\"Python tools to work with elements and isotopes\""
+version = "0.2.1"
+description = "Python tools to work with elements and isotopes"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "mckit_nuclides-0.2.0-py3-none-any.whl", hash = "sha256:83f0071e62f661dad1f28c48fb5fd5ecf5943a25dfb9089537474d21134827ce"},
-    {file = "mckit_nuclides-0.2.0.tar.gz", hash = "sha256:fd997bf6b15f4f9168c44903b03189ed29f6c9b3445886d365d000f876cf7d06"},
+    {file = "mckit_nuclides-0.2.1-py3-none-any.whl", hash = "sha256:da23103ccf0af001096d00ec2d8d4005d3081952c49f2699642e9232e3eaafb0"},
+    {file = "mckit_nuclides-0.2.1.tar.gz", hash = "sha256:099f88bb0f7d197a8fa6fe67ee8732988e1cfd4cfe01a2763c13933f8777666c"},
 ]
 
 [package.dependencies]
-numpy = ">=1.23.2"
+importlib-resources = {version = ">=5.12.0", markers = "python_version == \"3.8\""}
+numpy = ">=1.24.2"
 openpyxl = ">=3.0.9"
-pandas = ">=1.3.4"
+pandas = ">=1.4.1"
 
 [[package]]
 name = "mr-proper"
@@ -2941,7 +2961,7 @@ tests-strict = ["codecov (==2.0.15)", "pytest (==4.6.0)", "pytest (==4.6.0)", "p
 name = "zipp"
 version = "3.15.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
