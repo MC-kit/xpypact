@@ -7,10 +7,13 @@ from pathlib import Path
 
 import numpy as np
 
-from multipledispatch import dispatch
 from numpy import allclose, array_equal
-from numpy import ndarray as array
+
+from multipledispatch import dispatch
 from xpypact.utils.io import print_cols
+from xpypact.utils.types import NDArrayFloat
+
+# pylint: disable=function-redefined
 
 LAST_TWO_DECADES = np.fromstring(
     """
@@ -129,7 +132,7 @@ LAST_TWO_DECADES = np.fromstring(
 )[::-1]
 
 
-def compute_709_bins() -> np.ndarray:
+def compute_709_bins() -> NDArrayFloat:
     """Computes bins for 709 groups according to the specification.
 
     Decades from -5 to 9 are divided to 50 bins equidistant in log scale.
@@ -140,11 +143,11 @@ def compute_709_bins() -> np.ndarray:
         See notebooks/dvp/demo_fispact_flux_generator.ipynb
 
     Returns:
-        np.ndarray: array of 709 bins
+        array of 709 bins
     """
     template = np.logspace(0, 1, 51)
     res = np.hstack([template[1:] * 10**i for i in range(-5, 7)] + [LAST_TWO_DECADES])
-    return cast(np.ndarray, np.insert(res, 0, 1e-5))
+    return np.insert(res, 0, 1e-5)
 
 
 FISPACT_709_BINS = compute_709_bins()
@@ -154,8 +157,8 @@ FISPACT_709_BINS = compute_709_bins()
 class Fluxes:
     """Class to represent flux data."""
 
-    energy_bins: array
-    fluxes: array
+    energy_bins: NDArrayFloat
+    fluxes: NDArrayFloat
     comment: str
     norm: float = 1.0
 
@@ -275,15 +278,14 @@ def are_fluxes_close(
     """
     return (
         a.energy_bins.size == b.energy_bins.size
-        and allclose(
-            a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan
-        )
+        and allclose(a.energy_bins, b.energy_bins, rtol=rtol, atol=atol, equal_nan=equal_nan)
         and allclose(a.fluxes, b.fluxes, rtol=rtol, atol=atol, equal_nan=equal_nan)
     )
 
 
 def read_fluxes(
-    stream: TextIO, define_bins_and_fluxes: Callable[[array], Tuple[array, array]]
+    stream: TextIO,
+    define_bins_and_fluxes: Callable[[NDArrayFloat], Tuple[NDArrayFloat, NDArrayFloat]],
 ) -> Fluxes:
     """Load Fluxes from a stream.
 
@@ -319,7 +321,7 @@ def read_arb_fluxes(
 
 
 @dispatch(Path)  # type: ignore[no-redef]
-def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
+def read_arb_fluxes(path: Path) -> Fluxes:
     """Read arbitrary fluxes from Path.
 
     Args:
@@ -333,7 +335,7 @@ def read_arb_fluxes(path: Path) -> Fluxes:  # noqa: F811
 
 
 @dispatch(str)  # type: ignore[no-redef]
-def read_arb_fluxes(text: str) -> Fluxes:  # noqa: F811
+def read_arb_fluxes(text: str) -> Fluxes:
     """Read arbitrary fluxes from text.
 
     Args:
@@ -362,7 +364,7 @@ def read_709_fluxes(
 
 
 @dispatch(Path)  # type: ignore[no-redef]
-def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
+def read_709_fluxes(path: Path) -> Fluxes:
     """Read 709-group fluxes from path.
 
     Args:
@@ -376,7 +378,7 @@ def read_709_fluxes(path: Path) -> Fluxes:  # noqa: F811
 
 
 @dispatch(str)  # type: ignore[no-redef]
-def read_709_fluxes(text: str) -> Fluxes:  # noqa: F811
+def read_709_fluxes(text: str) -> Fluxes:
     """Read 709-group fluxes from text.
 
     Args:
@@ -405,7 +407,7 @@ class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
     """The number of float values from arb_flux file should be odd."""
 
 
-def define_arb_bins_and_fluxes(data: array) -> Tuple[array, array]:
+def define_arb_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArrayFloat]:
     """Extract energy bins and values of arbitrary flux.
 
     Args:
@@ -432,7 +434,7 @@ class StandardFluxesDataSizeError(FluxesDataSizeError):
     """Invalid data for standard FISPACT 709-group fluxes."""
 
 
-def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
+def define_709_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArrayFloat]:
     """Strategy to define energy bins and values of standard 709 group flux.
 
     Args:
@@ -449,7 +451,7 @@ def define_709_bins_and_fluxes(data: array) -> Tuple[array, array]:
     return FISPACT_709_BINS, data[::-1]
 
 
-def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) -> None:
+def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns: int = 5) -> None:
     """Print fluxes for FISPACT.
 
     Args:
@@ -457,7 +459,6 @@ def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns=5) ->
         fid: a stream to print to
         arbitrary: if True - arbitrary, otherwise 709
         max_columns: max columns in output
-
     """
     if arbitrary:
         sequence = fluxes.energy_bins[::-1]
@@ -476,7 +477,7 @@ class NotA709Error(FluxesDataSizeError):
     """Expected 709-group fluxes."""
 
 
-def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7) -> None:
+def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 7) -> None:
     """Print standard 709-group fluxes.
 
     Args:
@@ -486,20 +487,18 @@ def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=7) -> None:
 
     Raises:
         NotA709Error: if not a valid 709 group "Fluxes" object is provided.
-
     """
     if not is_709_fluxes(fluxes):
         raise NotA709Error()
     print_fluxes(fluxes, fid, False, max_columns)
 
 
-def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns=5) -> None:
+def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None:
     """Print fluxes in FISPACT arbitrary flux format.
 
     Args:
         fluxes: what to print
         fid: output stream
         max_columns: max number of columns in a row
-
     """
     print_fluxes(fluxes, fid, True, max_columns)

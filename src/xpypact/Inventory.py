@@ -1,20 +1,21 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Callable, Iterable, TextIO, cast
+from typing import Any, Callable, Iterable, cast
+
+import io
 
 from dataclasses import dataclass
-from io import TextIOBase
+from functools import singledispatch
 from pathlib import Path
 
 import numpy as np
+
 import orjson as json
 
-from multipledispatch import dispatch
-from numpy import ndarray as array
-
-from .RunData import RunData
-from .TimeStep import TimeStep
+from xpypact.RunData import RunData
+from xpypact.TimeStep import TimeStep
+from xpypact.utils.types import NDArrayFloat
 
 
 @dataclass
@@ -24,7 +25,6 @@ class RunDataCorrected:
     Note:
         Correction - dose_rate_type and dose_rate_distance are duplicated
         the FISPACT time steps. This information is extracted to this header.
-
     """
 
     timestamp: str
@@ -46,11 +46,11 @@ class InventoryError(ValueError):
         return cast(str, self.__class__.__doc__)  # pragma: no cover
 
 
-def _create_json_inventory_data_mapper() -> Callable[[dict], TimeStep]:
+def _create_json_inventory_data_mapper() -> Callable[[dict[str, Any]], TimeStep]:
     prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
     number = 1
 
-    def json_inventory_data_mapper(jts: dict) -> TimeStep:
+    def json_inventory_data_mapper(jts: dict[str, Any]) -> TimeStep:
         nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
         ts = TimeStep.from_json(jts)
         duration = ts.irradiation_time - prev_irradiation_time
@@ -104,7 +104,7 @@ class Inventory:
         )
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "Inventory":
+    def from_json(cls, json_dict: dict[str, Any]) -> "Inventory":
         """Construct Inventory instance from JSON dictionary.
 
         Args:
@@ -121,7 +121,7 @@ class Inventory:
 
         return cls(run_data, inventory_data)
 
-    def extract_times(self) -> array:
+    def extract_times(self) -> NDArrayFloat:
         """Create vector of elapsed time for all the time steps in the inventory.
 
         Returns:
@@ -157,7 +157,7 @@ class Inventory:
         return self.inventory_data[item]
 
 
-def extract_times(time_steps: Iterable[TimeStep]) -> array:
+def extract_times(time_steps: Iterable[TimeStep]) -> NDArrayFloat:
     """Create vector of elapsed time for all the time steps.
 
     Args:
@@ -166,10 +166,11 @@ def extract_times(time_steps: Iterable[TimeStep]) -> array:
     Returns:
         Vector with elapsed times.
     """
-    return cast(array, np.fromiter((x.elapsed_time for x in time_steps), dtype=float))
+    return np.fromiter((x.elapsed_time for x in time_steps), dtype=float)
 
 
-@dispatch(str)
+# @dispatch(str)
+@singledispatch
 def from_json(text: str) -> Inventory:
     """Construct Inventory instance from JSON text.
 
@@ -179,12 +180,12 @@ def from_json(text: str) -> Inventory:
     Returns:
         The loaded Inventory instance.
     """
-    json_dict = json.loads(text)
+    json_dict = json.loads(text)  # pylint: disable=no-member
     return Inventory.from_json(json_dict)
 
 
-@dispatch(TextIOBase)  # type: ignore[no-redef]
-def from_json(stream: TextIO) -> Inventory:
+@from_json.register
+def _(stream: io.IOBase) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON stream.
 
     Args:
@@ -196,8 +197,8 @@ def from_json(stream: TextIO) -> Inventory:
     return from_json(stream.read())
 
 
-@dispatch(Path)  # type: ignore[no-redef]
-def from_json(path: Path) -> Inventory:
+@from_json.register
+def _(path: Path) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON path.
 
     Args:

@@ -5,9 +5,11 @@ from functools import reduce
 from io import StringIO
 
 import numpy as np
-import pytest
 
 from numpy.testing import assert_almost_equal, assert_array_equal
+
+import pytest
+
 from xpypact.Fluxes import (
     Fluxes,
     StandardFluxesDataSizeError,
@@ -63,9 +65,7 @@ def test_flux_constructor():
         (1, 1e6, 1e7, 90),
     ],
 )
-def test_reading_arbitrary_fluxes_1(
-    arb_flux_1, _bin, expected_e0, expected_e1, expected_flux
-):
+def test_reading_arbitrary_fluxes_1(arb_flux_1, _bin, expected_e0, expected_e1, expected_flux):
     assert_bin(arb_flux_1, _bin, expected_e0, expected_e1, expected_flux)
 
 
@@ -99,9 +99,7 @@ def test_eq_and_copy(arb_flux_1, arb_flux_2):
         (6, 7.800000e06, 1.410000e07, 2.870000e03),
     ],
 )
-def test_test_reading_arbitrary_fluxes_2(
-    arb_flux_2, _bin, expected_e0, expected_e1, expected_flux
-):
+def test_test_reading_arbitrary_fluxes_2(arb_flux_2, _bin, expected_e0, expected_e1, expected_flux):
     assert_bin(arb_flux_2, _bin, expected_e0, expected_e1, expected_flux)
 
 
@@ -181,9 +179,7 @@ def test_read_709_fluxes(data):
     assert fluxes.fluxes.size == 709
 
 
-def assert_bin(
-    fluxes: Fluxes, _bin: int, expected_e0, expected_e1, expected_flux
-) -> None:
+def assert_bin(fluxes: Fluxes, _bin: int, expected_e0, expected_e1, expected_flux) -> None:
     actual_e0 = fluxes.energy_bins[_bin]
     assert_almost_equal(actual_e0, expected_e0)
     actual_e1 = fluxes.energy_bins[_bin + 1]

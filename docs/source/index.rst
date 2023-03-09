@@ -1,17 +1,61 @@
-.. xpypact documentation master file, created by
-   sphinx-quickstart on Sun Feb 13 00:58:06 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+=================================
 Welcome to xpypact documentation!
-====================================
+=================================
 
-.. note::
-   This is under development.
+.. todo::
+
+    The documentation is under development.
+
+
+The package helps:
+
+    - to create FISPACT run configuration,
+    - to load FISPACT JSON output as `xarray <https://xarray.dev/>`_ dataset,
+    - filter, aggregate data from dataset, join with external data
+    - save results to netcdf files
+
+
+
+
+.. todo::
+
+    - Implement prepare multiple configurations run for given case ids, materials, fluxes
+    - Parallel (may be with dask?) execution of FISPACT
+    - prototype alternatives for data saving to parquet, SQL, whatever
+    - parallel collecting results to selected alternative
+
+
+Installation
+============
+
+From PyPI (recommended):
+
+.. code-block::
+
+   pip install xpypact
+
+With package manager (as dependency):
+
+.. code-block::
+
+   poetry add xpypact
+
+From source:
+
+.. code-block::
+
+   pip install https://github.com/MC-kit/xpypact.git
+
+Details
+=======
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
+   readme
+   modules
+   license
+   todo
 
 
 

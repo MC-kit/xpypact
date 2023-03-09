@@ -18,12 +18,13 @@ def print_cols(
 
     Returns:
         int: the number of the last column printed on the last row
-
     """
-    for i, s in enumerate(seq):
+    i = 0  # noqa: ignore[SIM113]
+    for s in seq:
         print(fmt.format(s), file=fid, end="")
-        if 0 < i and i % max_columns == 0:
+        if (0 < i) and (i % max_columns == 0):
             print(file=fid)
         else:
             print(" ", file=fid, end="")
+        i += 1
     return i % max_columns

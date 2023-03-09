@@ -1,14 +1,14 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
 from dataclasses import dataclass, field
 
 import numpy as np
 
-from numpy import ndarray as array
 from xpypact.Nuclide import Nuclide
+from xpypact.utils.types import NDArrayFloat
 
 
 @dataclass
@@ -41,11 +41,11 @@ class GammaSpectrum:
             Gamma emission intensity.
     """
 
-    boundaries: array
-    intensities: array
+    boundaries: NDArrayFloat
+    intensities: NDArrayFloat
 
     @classmethod
-    def from_json(cls, json: dict) -> "GammaSpectrum":
+    def from_json(cls, json: dict[str, list[float]]) -> "GammaSpectrum":
         """Construct GammaSpectrum instance from JSON dictionary.
 
         Args:
@@ -61,7 +61,7 @@ class GammaSpectrum:
 
 
 @dataclass
-class TimeStep:
+class TimeStep:  # pylint: disable=too-many-instance-attributes
     """Time step attributes.
 
     All names must be the same as in FISPACT JSON file.
@@ -90,9 +90,8 @@ class TimeStep:
     nuclides: list[Nuclide] = field(default_factory=list)
     gamma_spectrum: Optional[GammaSpectrum] = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: ignore[CAC001]
         """Correct data missed in FISPACT-4."""
-        # TODO dvp: check for FISPACT v.5
         # workarounds for FISPACT v.4
         if self.total_mass == 0.0:
             self.total_mass = 1e-3 * sum(n.grams for n in self.nuclides)
@@ -126,7 +125,7 @@ class TimeStep:
         return self.flux == 0.0
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "TimeStep":
+    def from_json(cls, json_dict: dict[str, Any]) -> "TimeStep":
         """Construct TimeStep instance from JSON dictionary.
 
         Args:
@@ -134,7 +133,6 @@ class TimeStep:
 
         Returns:
             The new TimeStep instance.
-
         """
         json_dose_rate = json_dict.pop("dose_rate")
         dose_rate = DoseRate(**json_dose_rate)

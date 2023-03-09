@@ -4,7 +4,6 @@
 This fixes https://github.com/python-poetry/poetry/issues/4526.
 Should be fixed in poetry 1.2, but it's not available yet.
 Run this if test_package() fails on pytest run.
-
 """
 from typing import Optional, TypeVar
 
@@ -12,6 +11,7 @@ import shutil
 import site
 import subprocess
 import sys
+
 from pathlib import Path
 
 if sys.version_info >= (3, 11):

@@ -1,6 +1,8 @@
 """Nuclide specification in FISPACT JSON."""
 from __future__ import annotations
 
+from typing import Any
+
 from dataclasses import dataclass
 
 try:
@@ -15,7 +17,7 @@ __all__ = ["Avogadro", "Nuclide"]
 
 
 @dataclass
-class Nuclide:
+class Nuclide:  # pylint: disable=too-many-instance-attributes
     """Nuclide properties from FISPACT JSON."""
 
     element: str
@@ -53,12 +55,11 @@ class Nuclide:
 
         Returns:
             A, mass number
-
         """
         return self.isotope
 
     @classmethod
-    def from_json(cls, json_dict: dict) -> "Nuclide":
+    def from_json(cls, json_dict: dict[str, Any]) -> "Nuclide":
         """Construct the Nuclide from JSON dictionary.
 
         Args:

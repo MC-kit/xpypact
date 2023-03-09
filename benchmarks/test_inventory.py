@@ -1,7 +1,6 @@
 """Tests with benchmarks on large FISPACT JSON files.
 
 See https://pytest-benchmark.readthedocs.io/en/latest/index.html
-
 """
 import bz2
 
