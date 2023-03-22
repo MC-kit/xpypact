@@ -13,7 +13,15 @@ from xpypact.utils.types import NDArrayFloat
 
 @dataclass
 class DoseRate:
-    """Dose rate attributes."""
+    """Dose rate attributes.
+
+    Don't scale by mass, for point source mass is always 1g, for contact dose mass is meaningless.
+
+    Attrs:
+        type: "Plain source" for contact dose or "Point source"
+        distance: specified for "point source", meters
+        mass: mass for point source, always 1g
+    """
 
     type: str = ""
     distance: float = 0.0
@@ -22,9 +30,8 @@ class DoseRate:
 
     def __post_init__(self) -> None:
         """Correct wrong value coming from FISPACT."""
-        # TODO dvp: check behaviour with FISPACT v.5 and try to correct scenarios.
         if self.mass == 0.0:
-            # According to FISPACT manual (v.4)
+            # According to FISPACT manual (both v.4 and v.5 (p.63))
             # should be 1 gram always, but FISPACT shows 0 at the first step
             # and less, than 1 in the following steps. Fixing here.
             self.mass = 1.0e-3
