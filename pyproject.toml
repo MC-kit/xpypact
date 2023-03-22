@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.11"
+version = "0.1.12a0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
+requires = ["poetry-core >= 1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 # [tool.poetry.scripts]
