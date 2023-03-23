@@ -49,19 +49,19 @@ from xpypact.Inventory import Inventory, from_json
 inventory = from_json(json_path)
 
 
-# In[241]:
+# In[469]:
 
 
 ds = da.create_dataset(inventory)
 
 
-# In[242]:
+# In[470]:
 
 
 ds
 
 
-# In[287]:
+# In[417]:
 
 
 ds.timestamp
@@ -94,7 +94,20 @@ material_id = 100
 case_id = 3
 
 
-# In[387]:
+# In[475]:
+
+
+ds = ds.expand_dims(dim={"material_id": [material_id], "case_id": [case_id]})
+ds
+
+
+# In[476]:
+
+
+ds.irradiation_time
+
+
+# In[446]:
 
 
 def drop_tables(con):
@@ -105,7 +118,7 @@ def drop_tables(con):
     con.execute("drop table if exists rundata")
 
 
-# In[395]:
+# In[447]:
 
 
 def create_tables(con):
@@ -122,7 +135,9 @@ def create_tables(con):
     );
 
     CREATE TABLE IF NOT EXISTS timestep(
-        id uinteger PRIMARY KEY,
+        material_id  uinteger not null,
+        case_id      uinteger not null,
+        time_step_number uinteger not null,
         elapsed_time float4 not null,
         irradiation_time float4 not null,
         cooling_time float4 not null,
@@ -141,8 +156,7 @@ def create_tables(con):
         total_ingest1ion_dose float4 not null,
         total_inhalation_dose float4 not null,
         total_dose_rate float4 not null,
-        material_id  uinteger not null,
-        case_id      uinteger not null,
+        primary key(material_id, case_id, time_step_number),
         foreign key(material_id, case_id) references rundata(material_id, case_id)
     );
 
@@ -157,7 +171,9 @@ def create_tables(con):
     );
 
     CREATE TABLE IF NOT EXISTS timestep_nuclide(
-        timestep_id uinteger not null,
+        material_id  uinteger not null,
+        case_id      uinteger not null,
+        time_step_number uinteger not null,
         element varchar(2) not null,
         mass_number usmallint not null,
         state varchar(1) not null,
@@ -174,42 +190,44 @@ def create_tables(con):
         dose float4 not null,
         ingestion float4 not null,
         inhalation float4 not null,
-        primary key(timestep_id, element, mass_number, state),
-        foreign key(timestep_id) references timestep(id),
+        primary key(material_id, case_id, time_step_number, element, mass_number, state),
+        foreign key(material_id, case_id, time_step_number) references timestep(material_id, case_id, time_step_number),
         foreign key(element, mass_number, state) references nuclide(element, mass_number, state)
     );
 
     CREATE TABLE IF NOT EXISTS timestep_gamma(
-        timestep_id uinteger not null,
+        material_id  uinteger not null,
+        case_id      uinteger not null,
+        time_step_number uinteger not null,
         boundary real not null check(0 <= boundary),
         intensity real not null,
-        primary key(timestep_id, boundary),
-        foreign key(timestep_id) references timestep(id),
+        primary key(material_id, case_id, time_step_number, boundary),
+        foreign key(material_id, case_id, time_step_number) references timestep(material_id, case_id, time_step_number),
     );
     """
     con.execute(sql)
 
 
-# In[396]:
+# In[448]:
 
 
-# drop_tables(con)
+drop_tables(con)
 create_tables(con)
 
 
-# In[402]:
+# In[449]:
 
 
 def save_rundata(con, ds):
     sql = """
-        INSERT INTO rundata values(?, ?, ?, ?, ?)
+        INSERT INTO rundata values(?, ?, ?, ?, ?, ?, ?)
     """
     con.execute(
         sql,
         (
-            material_id,
-            case_id,
-            ds.coords["timestamp"].item(),
+            ds.material_id.item(),
+            ds.case_id.item(),
+            ds.timestamp.dt.strftime("%Y-%m-%d %H:%M:%S").item(),
             ds.attrs["run_name"],
             ds.attrs["flux_name"],
             ds.attrs["dose_rate_type"],
@@ -219,31 +237,27 @@ def save_rundata(con, ds):
     con.commit()
 
 
-# In[403]:
-
-
-con.execute("select * from information_schema.tables").df()
-
-
-# In[400]:
+# In[451]:
 
 
 save_rundata(con, ds)
 
 
-# In[254]:
+# In[452]:
 
 
 con.execute("select * from rundata").df()
 
 
-# In[255]:
+# In[455]:
 
 
 def save_timesteps(con, ds):
     timesteps_df = (
         ds[
             [
+                "material_id",
+                "case_id",
                 "time_step_number",
                 "elapsed_time",
                 "irradiation_time",
@@ -265,7 +279,7 @@ def save_timesteps(con, ds):
                 "total_dose_rate",
             ]
         ]
-        .to_pandas()
+        .to_dataframe()
         .reset_index()
     )
     sql = "insert into timestep select * from timesteps_df"
@@ -273,19 +287,19 @@ def save_timesteps(con, ds):
     con.commit()
 
 
-# In[256]:
+# In[456]:
 
 
 save_timesteps(con, ds)
 
 
-# In[257]:
+# In[457]:
 
 
 con.execute("select * from timestep").df()
 
 
-# In[258]:
+# In[458]:
 
 
 def save_nuclides(con, ds):
@@ -294,21 +308,72 @@ def save_nuclides(con, ds):
         .to_pandas()
         .reset_index(drop=True)
     )
-    sql = "insert into nuclide select * from nuclides_df"
+    sql = "insert or ignore into nuclide select * from nuclides_df"
     con.execute(sql)
     con.commit()
 
 
-# In[259]:
+# In[459]:
 
 
 save_nuclides(con, ds)
 
 
-# In[285]:
+# In[460]:
 
 
 con.execute("select * from nuclide").df()
+
+
+# In[508]:
+
+
+columns = [
+    "material_id",
+    "case_id",
+    "time_step_number",
+    "element",
+    "mass_number",
+    "state",
+    "nuclide_atoms",
+    "nuclide_grams",
+    "nuclide_activity",
+    "nuclide_alpha_activity",
+    "nuclide_beta_activity",
+    "nuclide_gamma_activity",
+    "nuclide_heat",
+    "nuclide_alpha_heat",
+    "nuclide_beta_heat",
+    "nuclide_gamma_heat",
+    "nuclide_dose",
+    "nuclide_ingestion",
+    "nuclide_inhalation",
+]
+# tn = ds[columns].to_dataframe().reset_index(
+#     [
+#         "material_id", "case_id", "time_step_number",
+#     ]
+# )
+# tn = tn.reset_index(
+#     ["element", "mass_number", "state"]
+# )
+
+# .reset_index()
+# .reset_index("time_step_number")[columns].fillna(0.0)
+# tn.reset_index(allow_duplicates=True)
+ds[columns].reset_index(
+    ["material_id", "case_id", "time_step_number", "nuclide"]
+).to_dataframe().reset_index(
+    [
+        "material_id",
+        "case_id",
+        "time_step_number",
+    ]
+).reset_index(
+    drop=True
+).fillna(
+    0.0
+)
 
 
 # In[263]:
@@ -316,6 +381,8 @@ con.execute("select * from nuclide").df()
 
 def save_timestep_nucludes(con, ds):
     columns = [
+        "material_id",
+        "case_id",
         "time_step_number",
         "element",
         "mass_number",
