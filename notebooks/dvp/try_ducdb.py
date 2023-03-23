@@ -1,189 +1,203 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[233]:
 
 
 get_ipython().run_line_magic("config", "Completer.use_jedi = False")
 
 
-# In[3]:
+# In[234]:
 
 
 import xpypact as xp
 
-# In[5]:
+# In[235]:
 
 
 xp.__version__
 
 
-# In[11]:
+# In[236]:
 
 
 from pathlib import Path
 
-# In[19]:
+# In[237]:
 
 
 root_dir = Path("~", "dev", "xpypact").expanduser()
 
 
-# In[20]:
+# In[238]:
 
 
-json_path = root_dir / "tests/data/Ag-1.json"
+json_path = root_dir / "wrk/Alloy718-Co04-104_2_1_1.json"
 assert json_path.exists()
 
 
-# In[23]:
+# In[239]:
 
 
 import xpypact.data_arrays as da
 
 from xpypact.Inventory import Inventory, from_json
 
-# In[24]:
+# In[240]:
 
 
 inventory = from_json(json_path)
 
 
-# In[25]:
+# In[241]:
 
 
 ds = da.create_dataset(inventory)
 
 
-# In[26]:
+# In[242]:
 
 
 ds
 
 
-# In[ ]:
+# In[287]:
 
 
-# In[28]:
+ds.timestamp
+
+
+# In[243]:
 
 
 import duckdb as db
 
-# In[46]:
+# In[384]:
 
 
 db_path = root_dir / "wrk/try-duckdb.duckdb"
 db_path.parent.mkdir(parents=True, exist_ok=True)
+if db_path.exists():
+    db_path.unlink()
 
 
-# In[48]:
+# In[385]:
 
 
 con = db.connect(str(db_path))
 
 
-# In[153]:
+# In[386]:
 
 
-# con.execute("drop table rundata")
-# con.execute("drop table if exists timestep_gamma")
-con.execute("drop table if exists timestep_nuclide")
-# con.execute("drop table if exists timestep")
-con.execute("drop table nuclide")
+material_id = 100
+case_id = 3
 
 
-# In[154]:
+# In[387]:
+
+
+def drop_tables(con):
+    con.execute("drop table if exists timestep_gamma")
+    con.execute("drop table if exists timestep_nuclide")
+    con.execute("drop table if exists timestep")
+    con.execute("drop table if exists nuclide")
+    con.execute("drop table if exists rundata")
+
+
+# In[395]:
 
 
 def create_tables(con):
     sql = """
-
     CREATE TABLE IF NOT EXISTS rundata (
-        timestamp varchar NOT NULL,
-        run_name  varchar NOT NULL,
+        material_id uinteger not null,
+        case_id uinteger not null,
+        timestamp timestamp not null,
+        run_name varchar not null,
         flux_name varchar NOT NULL,
         dose_rate_type varchar NOT NULL,
-        dose_rate_distance real NOT NULL
+        dose_rate_distance real NOT NULL,
+        primary key(material_id, case_id)
     );
 
     CREATE TABLE IF NOT EXISTS timestep(
-        id integer PRIMARY KEY,
-        elapsed_time real not null,
-        irradiation_time real not null,
-        cooling_time real not null,
-        duration real not null,
-        flux real not null,
-        total_atoms real not null,
-        total_activity real not null,
-        total_alpha_activity real not null,
-        total_beta_activity real not null,
-        total_gamma_activity real not null,
-        total_mass real not null,
-        total_heat real not null,
-        total_alpha_heat real not null,
-        total_beta_heat real not null,
-        total_gamma_heat real not null,
-        total_ingest1ion_dose real not null,
-        total_inhalation_dose real not null,
-        total_dose_rate real not null
+        id uinteger PRIMARY KEY,
+        elapsed_time float4 not null,
+        irradiation_time float4 not null,
+        cooling_time float4 not null,
+        duration float4 not null,
+        flux float4 not null,
+        total_atoms float4 not null,
+        total_activity float4 not null,
+        total_alpha_activity float4 not null,
+        total_beta_activity float4 not null,
+        total_gamma_activity float4 not null,
+        total_mass float4 not null,
+        total_heat float4 not null,
+        total_alpha_heat float4 null,
+        total_beta_heat float4 not null,
+        total_gamma_heat float4 not null,
+        total_ingest1ion_dose float4 not null,
+        total_inhalation_dose float4 not null,
+        total_dose_rate float4 not null,
+        material_id  uinteger not null,
+        case_id      uinteger not null,
+        foreign key(material_id, case_id) references rundata(material_id, case_id)
     );
+
 
     CREATE TABLE IF NOT EXISTS nuclide(
         element varchar(2) not null,
-        mass_number integer not null check(0 < mass_number),     -- A
+        mass_number usmallint not null check(0 < mass_number),
         state varchar(1) not null,
         zai integer not null check(10010 <= zai) unique,
-        half_life real not null check(0 <= half_life),
+        half_life float4 not null check(0 <= half_life),
         primary key(element, mass_number, state)
     );
 
     CREATE TABLE IF NOT EXISTS timestep_nuclide(
-        timestep_id integer not null,
+        timestep_id uinteger not null,
         element varchar(2) not null,
-        mass_number integer not null,
+        mass_number usmallint not null,
         state varchar(1) not null,
-        atoms real not null,
-        grams real not null,
-        activity real not null,
-        alpha_activity real not null,
-        beta_activity real not null,
-        gamma_activity real not null,
-        heat real not null,
-        alpha_heat real not null,
-        beta_heat real not null,
-        gamma_heat real not null,
-        dose real not null,
-        ingestion real not null,
-        inhalation real not null,
+        atoms float4 not null,
+        grams float4 not null,
+        activity float4 not null,
+        alpha_activity float4 not null,
+        beta_activity float4 not null,
+        gamma_activity float4 not null,
+        heat float4 not null,
+        alpha_heat float4 not null,
+        beta_heat float4 not null,
+        gamma_heat float4 not null,
+        dose float4 not null,
+        ingestion float4 not null,
+        inhalation float4 not null,
         primary key(timestep_id, element, mass_number, state),
         foreign key(timestep_id) references timestep(id),
         foreign key(element, mass_number, state) references nuclide(element, mass_number, state)
     );
 
     CREATE TABLE IF NOT EXISTS timestep_gamma(
-        timestep_id integer not null,
+        timestep_id uinteger not null,
         boundary real not null check(0 <= boundary),
         intensity real not null,
         primary key(timestep_id, boundary),
         foreign key(timestep_id) references timestep(id),
     );
-"""
+    """
     con.execute(sql)
 
 
-# In[155]:
+# In[396]:
 
 
+# drop_tables(con)
 create_tables(con)
 
 
-# In[85]:
-
-
-# con.execute("delete from rundata")
-
-
-# In[81]:
+# In[402]:
 
 
 def save_rundata(con, ds):
@@ -193,6 +207,8 @@ def save_rundata(con, ds):
     con.execute(
         sql,
         (
+            material_id,
+            case_id,
             ds.coords["timestamp"].item(),
             ds.attrs["run_name"],
             ds.attrs["flux_name"],
@@ -203,19 +219,25 @@ def save_rundata(con, ds):
     con.commit()
 
 
-# In[83]:
+# In[403]:
+
+
+con.execute("select * from information_schema.tables").df()
+
+
+# In[400]:
 
 
 save_rundata(con, ds)
 
 
-# In[84]:
+# In[254]:
 
 
 con.execute("select * from rundata").df()
 
 
-# In[114]:
+# In[255]:
 
 
 def save_timesteps(con, ds):
@@ -251,27 +273,19 @@ def save_timesteps(con, ds):
     con.commit()
 
 
-# In[115]:
+# In[256]:
 
 
 save_timesteps(con, ds)
 
 
-# In[116]:
+# In[257]:
 
 
 con.execute("select * from timestep").df()
 
 
-# In[131]:
-
-
-ds[
-    ["element", "mass_number", "state", "zai", "nuclide_half_life"]
-].to_pandas().reset_index(drop=True)
-
-
-# In[156]:
+# In[258]:
 
 
 def save_nuclides(con, ds):
@@ -285,93 +299,97 @@ def save_nuclides(con, ds):
     con.commit()
 
 
-# In[157]:
+# In[259]:
 
 
 save_nuclides(con, ds)
 
 
-# In[160]:
+# In[285]:
 
 
-con.execute("select * from nuclide").df().head()
+con.execute("select * from nuclide").df()
 
 
-# In[166]:
-
-
-ds
-
-
-# In[203]:
-
-
-ds[
-    [
-        """Time_step_number.""",
-        """Element.""",
-        """Mass_number.""",
-        """State.""",
-        """Nuclide_atoms.""",
-        """Nuclide_grams.""",
-        """Nuclide_activity.""",
-        """Nuclide_alpha_activity.""",
-        """Nuclide_beta_activity.""",
-        """Nuclide_gamma_activity.""",
-        """Nuclide_heat.""",
-        """Nuclide_alpha_heat.""",
-        """Nuclide_beta_heat.""",
-        """Nuclide_gamma_heat.""",
-        """Nuclide_dose.""",
-        """Nuclide_ingestion.""",
-        """Nuclide_inhalation.""",
-    ]
-].to_array().drop_indexes(["time_step_number", "nuclide"])
-# .reset_coords(names=["time_step_number", "nuclide"])
-# .stack(dimensions={"tsn": ["time_step_number", "element", "mass_number", "state"]})
-
-
-# In[186]:
+# In[263]:
 
 
 def save_timestep_nucludes(con, ds):
-    timesteps_nuclides_df = (
-        ds[
-            [
-                "time_step_number",
-                "element",
-                "mass_number",
-                "state",
-                "nuclide_atoms",
-                "nuclide_grams",
-                "nuclide_activity",
-                "nuclide_alpha_activity",
-                "nuclide_beta_activity",
-                "nuclide_gamma_activity",
-                "nuclide_heat",
-                "nuclide_alpha_heat",
-                "nuclide_beta_heat",
-                "nuclide_gamma_heat",
-                "nuclide_dose",
-                "nuclide_ingestion",
-                "nuclide_inhalation",
-            ]
-        ]
-        .to_dataframe()
-        .reset_index(drop=True)
-    )
-    sql = "insert into timestep_nuclide select * from timesteps_nuclides_df"
+    columns = [
+        "time_step_number",
+        "element",
+        "mass_number",
+        "state",
+        "nuclide_atoms",
+        "nuclide_grams",
+        "nuclide_activity",
+        "nuclide_alpha_activity",
+        "nuclide_beta_activity",
+        "nuclide_gamma_activity",
+        "nuclide_heat",
+        "nuclide_alpha_heat",
+        "nuclide_beta_heat",
+        "nuclide_gamma_heat",
+        "nuclide_dose",
+        "nuclide_ingestion",
+        "nuclide_inhalation",
+    ]
+    tn = ds[columns].to_dataframe().reset_index("time_step_number")[columns].fillna(0.0)
+    sql = "insert into timestep_nuclide select * from tn"
     con.execute(sql)
     con.commit()
 
 
-# In[187]:
+# In[264]:
 
 
 save_timestep_nucludes(con, ds)
 
 
-# In[41]:
+# In[265]:
+
+
+con.execute("select * from timestep_nuclide").df()
+
+
+# In[276]:
+
+
+ds.gamma.to_dataframe().reset_index()[["time_step_number", "gamma_boundaries", "gamma"]]
+
+
+# In[277]:
+
+
+def save_gamma_spectra(con, ds):
+    columns = ["time_step_number", "gamma_boundaries", "gamma"]
+    tg = ds.gamma.to_dataframe().reset_index()[columns]
+    sql = "insert into timestep_gamma select * from tg"
+    con.execute(sql)
+    con.commit()
+
+
+# In[278]:
+
+
+save_gamma_spectra(con, ds)
+
+
+# In[283]:
+
+
+con.execute("select * from timestep_gamma").df()
+
+
+# In[284]:
+
+
+con.execute(
+    "select boundary, intensity from timestep_gamma where timestep_id = 42"
+).df()
+
+
+# In[286]:
 
 
 con.close()
