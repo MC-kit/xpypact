@@ -176,20 +176,24 @@ def create_tables(con):
         time_step_number uinteger not null,
         element varchar(2) not null,
         mass_number usmallint not null,
+
         state varchar(1) not null,
         atoms float4 not null,
         grams float4 not null,
         activity float4 not null,
         alpha_activity float4 not null,
+
         beta_activity float4 not null,
         gamma_activity float4 not null,
         heat float4 not null,
         alpha_heat float4 not null,
         beta_heat float4 not null,
+
         gamma_heat float4 not null,
         dose float4 not null,
         ingestion float4 not null,
         inhalation float4 not null,
+
         primary key(material_id, case_id, time_step_number, element, mass_number, state),
         foreign key(material_id, case_id, time_step_number) references timestep(material_id, case_id, time_step_number),
         foreign key(element, mass_number, state) references nuclide(element, mass_number, state)
@@ -208,14 +212,14 @@ def create_tables(con):
     con.execute(sql)
 
 
-# In[448]:
+# In[512]:
 
 
 drop_tables(con)
 create_tables(con)
 
 
-# In[449]:
+# In[513]:
 
 
 def save_rundata(con, ds):
@@ -237,19 +241,19 @@ def save_rundata(con, ds):
     con.commit()
 
 
-# In[451]:
+# In[514]:
 
 
 save_rundata(con, ds)
 
 
-# In[452]:
+# In[515]:
 
 
 con.execute("select * from rundata").df()
 
 
-# In[455]:
+# In[516]:
 
 
 def save_timesteps(con, ds):
@@ -287,25 +291,27 @@ def save_timesteps(con, ds):
     con.commit()
 
 
-# In[456]:
+# In[517]:
 
 
 save_timesteps(con, ds)
 
 
-# In[457]:
+# In[518]:
 
 
 con.execute("select * from timestep").df()
 
 
-# In[458]:
+# In[533]:
 
 
 def save_nuclides(con, ds):
     nuclides_df = (
         ds[["element", "mass_number", "state", "zai", "nuclide_half_life"]]
-        .to_pandas()
+        .reset_index(["material_id", "case_id"])
+        .to_dataframe()
+        .reset_index(["material_id", "case_id"], drop=True)
         .reset_index(drop=True)
     )
     sql = "insert or ignore into nuclide select * from nuclides_df"
@@ -313,19 +319,19 @@ def save_nuclides(con, ds):
     con.commit()
 
 
-# In[459]:
+# In[534]:
 
 
 save_nuclides(con, ds)
 
 
-# In[460]:
+# In[535]:
 
 
 con.execute("select * from nuclide").df()
 
 
-# In[508]:
+# In[559]:
 
 
 columns = [
@@ -349,34 +355,21 @@ columns = [
     "nuclide_ingestion",
     "nuclide_inhalation",
 ]
-# tn = ds[columns].to_dataframe().reset_index(
+# ds[columns].reset_index(["material_id", "case_id"])
+
+ds[columns].coords.to_dataset()
+# .reset_index(["elapsed_time", "zai"])
+# .reset_coords()
+# .drop_indexes(["material_id", "case_id", "time_step_number", "nuclide"])
+# .reset_index(["material_id", "case_id", "time_step_number", "nuclide"])
+# .to_dataframe().reset_index(
 #     [
 #         "material_id", "case_id", "time_step_number",
 #     ]
-# )
-# tn = tn.reset_index(
-#     ["element", "mass_number", "state"]
-# )
-
-# .reset_index()
-# .reset_index("time_step_number")[columns].fillna(0.0)
-# tn.reset_index(allow_duplicates=True)
-ds[columns].reset_index(
-    ["material_id", "case_id", "time_step_number", "nuclide"]
-).to_dataframe().reset_index(
-    [
-        "material_id",
-        "case_id",
-        "time_step_number",
-    ]
-).reset_index(
-    drop=True
-).fillna(
-    0.0
-)
+# ).reset_index(drop=True)[columns].fillna(0.0)
 
 
-# In[263]:
+# In[540]:
 
 
 def save_timestep_nucludes(con, ds):
@@ -401,13 +394,26 @@ def save_timestep_nucludes(con, ds):
         "nuclide_ingestion",
         "nuclide_inhalation",
     ]
-    tn = ds[columns].to_dataframe().reset_index("time_step_number")[columns].fillna(0.0)
+    tn = (
+        ds[columns]
+        .reset_index(["material_id", "case_id", "time_step_number", "nuclide"])
+        .to_dataframe()
+        .reset_index(
+            [
+                "material_id",
+                "case_id",
+                "time_step_number",
+            ]
+        )
+        .reset_index(drop=True)[columns]
+        .fillna(0.0)
+    )
     sql = "insert into timestep_nuclide select * from tn"
     con.execute(sql)
     con.commit()
 
 
-# In[264]:
+# In[541]:
 
 
 save_timestep_nucludes(con, ds)
