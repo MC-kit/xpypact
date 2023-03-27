@@ -1,78 +1,72 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[233]:
+# In[1]:
 
 
 get_ipython().run_line_magic("config", "Completer.use_jedi = False")
 
 
-# In[234]:
+# In[2]:
 
 
 import xpypact as xp
 
-# In[235]:
+# In[3]:
 
 
 xp.__version__
 
 
-# In[236]:
+# In[4]:
 
 
 from pathlib import Path
 
-# In[237]:
+# In[5]:
 
 
 root_dir = Path("~", "dev", "xpypact").expanduser()
 
 
-# In[238]:
+# In[6]:
 
 
 json_path = root_dir / "wrk/Alloy718-Co04-104_2_1_1.json"
 assert json_path.exists()
 
 
-# In[239]:
+# In[7]:
 
 
 import xpypact.data_arrays as da
 
 from xpypact.Inventory import Inventory, from_json
 
-# In[240]:
+# In[8]:
 
 
 inventory = from_json(json_path)
 
 
-# In[469]:
+# In[9]:
 
 
 ds = da.create_dataset(inventory)
 
 
-# In[470]:
+# In[10]:
 
 
 ds
 
 
-# In[417]:
-
-
-ds.timestamp
-
-
-# In[243]:
+# In[12]:
 
 
 import duckdb as db
 
-# In[384]:
+# In[13]:
 
 
 db_path = root_dir / "wrk/try-duckdb.duckdb"
@@ -81,33 +75,37 @@ if db_path.exists():
     db_path.unlink()
 
 
-# In[385]:
+# In[14]:
 
 
 con = db.connect(str(db_path))
 
 
-# In[386]:
+# In[15]:
 
 
 material_id = 100
 case_id = 3
 
 
-# In[475]:
+# In[16]:
 
 
 ds = ds.expand_dims(dim={"material_id": [material_id], "case_id": [case_id]})
 ds
 
 
-# In[476]:
+# How to transform xarray to pandas saving indexes as columns
+
+# In[20]:
 
 
-ds.irradiation_time
+ds.irradiation_time.stack(
+    {"idx": ["material_id", "case_id", "time_step_number"]}
+).to_pandas().reset_index()
 
 
-# In[446]:
+# In[21]:
 
 
 def drop_tables(con):
@@ -118,7 +116,7 @@ def drop_tables(con):
     con.execute("drop table if exists rundata")
 
 
-# In[447]:
+# In[22]:
 
 
 def create_tables(con):
@@ -212,14 +210,14 @@ def create_tables(con):
     con.execute(sql)
 
 
-# In[512]:
+# In[23]:
 
 
 drop_tables(con)
 create_tables(con)
 
 
-# In[513]:
+# In[24]:
 
 
 def save_rundata(con, ds):
@@ -241,19 +239,19 @@ def save_rundata(con, ds):
     con.commit()
 
 
-# In[514]:
+# In[25]:
 
 
 save_rundata(con, ds)
 
 
-# In[515]:
+# In[26]:
 
 
 con.execute("select * from rundata").df()
 
 
-# In[516]:
+# In[27]:
 
 
 def save_timesteps(con, ds):
@@ -291,56 +289,74 @@ def save_timesteps(con, ds):
     con.commit()
 
 
-# In[517]:
+# In[28]:
 
 
 save_timesteps(con, ds)
 
 
-# In[518]:
+# In[29]:
 
 
 con.execute("select * from timestep").df()
 
 
-# In[533]:
+# In[55]:
+
+
+columns_all = ["element", "mass_number", "state", "zai", "nuclide_half_life"]
+columns = ["zai", "nuclide_half_life"]
+ds[columns].to_dataframe()[columns].reset_index()[columns_all]
+# .unstack("nuclide")
+# .stack({"idx": ["material_id", "case_id", "element", "mass_number", "state"]}) \
+# .to_dataframe()
+
+# \
+#     .reset_index(["material_id", "case_id"]) \
+#     .to_dataframe() \
+#     .reset_index(
+#         [
+#             "material_id", "case_id"
+#         ],
+#         drop=True
+#     ) \
+#     .reset_index(drop=True)
+
+
+# In[56]:
 
 
 def save_nuclides(con, ds):
-    nuclides_df = (
-        ds[["element", "mass_number", "state", "zai", "nuclide_half_life"]]
-        .reset_index(["material_id", "case_id"])
-        .to_dataframe()
-        .reset_index(["material_id", "case_id"], drop=True)
-        .reset_index(drop=True)
-    )
+    columns_all = ["element", "mass_number", "state", "zai", "nuclide_half_life"]
+    columns = ["zai", "nuclide_half_life"]
+    nuclides_df = ds[columns].to_dataframe()[columns].reset_index()[columns_all]
     sql = "insert or ignore into nuclide select * from nuclides_df"
     con.execute(sql)
     con.commit()
 
 
-# In[534]:
+# In[57]:
 
 
 save_nuclides(con, ds)
 
 
-# In[535]:
+# In[58]:
 
 
 con.execute("select * from nuclide").df()
 
 
-# In[559]:
+# In[91]:
 
 
 columns = [
-    "material_id",
-    "case_id",
-    "time_step_number",
-    "element",
-    "mass_number",
-    "state",
+    # "material_id",
+    # "case_id",
+    # "time_step_number",
+    # "element",
+    # "mass_number",
+    # "state",
     "nuclide_atoms",
     "nuclide_grams",
     "nuclide_activity",
@@ -355,9 +371,21 @@ columns = [
     "nuclide_ingestion",
     "nuclide_inhalation",
 ]
+columns_all = [
+    "material_id",
+    "case_id",
+    "time_step_number",
+    "element",
+    "mass_number",
+    "state",
+] + columns
+
+ds[columns].stack(idx=("material_id", "case_id", "time_step_number")).to_dataframe()[
+    columns
+].reset_index()[columns_all].fillna(0.0)
 # ds[columns].reset_index(["material_id", "case_id"])
 
-ds[columns].coords.to_dataset()
+# ds[columns].coords.to_dataset()
 # .reset_index(["elapsed_time", "zai"])
 # .reset_coords()
 # .drop_indexes(["material_id", "case_id", "time_step_number", "nuclide"])
@@ -369,17 +397,14 @@ ds[columns].coords.to_dataset()
 # ).reset_index(drop=True)[columns].fillna(0.0)
 
 
-# In[540]:
+# In[ ]:
+
+
+# In[92]:
 
 
 def save_timestep_nucludes(con, ds):
     columns = [
-        "material_id",
-        "case_id",
-        "time_step_number",
-        "element",
-        "mass_number",
-        "state",
         "nuclide_atoms",
         "nuclide_grams",
         "nuclide_activity",
@@ -394,18 +419,20 @@ def save_timestep_nucludes(con, ds):
         "nuclide_ingestion",
         "nuclide_inhalation",
     ]
+    columns_all = [
+        "material_id",
+        "case_id",
+        "time_step_number",
+        "element",
+        "mass_number",
+        "state",
+    ] + columns
+
     tn = (
         ds[columns]
-        .reset_index(["material_id", "case_id", "time_step_number", "nuclide"])
-        .to_dataframe()
-        .reset_index(
-            [
-                "material_id",
-                "case_id",
-                "time_step_number",
-            ]
-        )
-        .reset_index(drop=True)[columns]
+        .stack(idx=("material_id", "case_id", "time_step_number"))
+        .to_dataframe()[columns]
+        .reset_index()[columns_all]
         .fillna(0.0)
     )
     sql = "insert into timestep_nuclide select * from tn"
@@ -413,52 +440,60 @@ def save_timestep_nucludes(con, ds):
     con.commit()
 
 
-# In[541]:
+# In[93]:
 
 
 save_timestep_nucludes(con, ds)
 
 
-# In[265]:
+# In[94]:
 
 
 con.execute("select * from timestep_nuclide").df()
 
 
-# In[276]:
+# In[98]:
 
 
-ds.gamma.to_dataframe().reset_index()[["time_step_number", "gamma_boundaries", "gamma"]]
+ds.gamma.to_dataframe().reset_index()[
+    ["material_id", "case_id", "time_step_number", "gamma_boundaries", "gamma"]
+]
 
 
-# In[277]:
+# In[99]:
 
 
 def save_gamma_spectra(con, ds):
-    columns = ["time_step_number", "gamma_boundaries", "gamma"]
+    columns = [
+        "material_id",
+        "case_id",
+        "time_step_number",
+        "gamma_boundaries",
+        "gamma",
+    ]
     tg = ds.gamma.to_dataframe().reset_index()[columns]
     sql = "insert into timestep_gamma select * from tg"
     con.execute(sql)
     con.commit()
 
 
-# In[278]:
+# In[100]:
 
 
 save_gamma_spectra(con, ds)
 
 
-# In[283]:
+# In[101]:
 
 
 con.execute("select * from timestep_gamma").df()
 
 
-# In[284]:
+# In[103]:
 
 
 con.execute(
-    "select boundary, intensity from timestep_gamma where timestep_id = 42"
+    "select boundary, intensity from timestep_gamma where time_step_number = 42"
 ).df()
 
 
