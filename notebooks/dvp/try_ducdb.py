@@ -41,7 +41,7 @@ assert json_path.exists()
 
 import xpypact.data_arrays as da
 
-from xpypact.Inventory import Inventory, from_json
+from xpypact.Inventory import from_json
 
 # In[8]:
 
@@ -255,7 +255,7 @@ con.execute("select * from rundata").df()
 
 
 def save_timesteps(con, ds):
-    timesteps_df = (
+    (
         ds[
             [
                 "material_id",
@@ -329,7 +329,7 @@ ds[columns].to_dataframe()[columns].reset_index()[columns_all]
 def save_nuclides(con, ds):
     columns_all = ["element", "mass_number", "state", "zai", "nuclide_half_life"]
     columns = ["zai", "nuclide_half_life"]
-    nuclides_df = ds[columns].to_dataframe()[columns].reset_index()[columns_all]
+    ds[columns].to_dataframe()[columns].reset_index()[columns_all]
     sql = "insert or ignore into nuclide select * from nuclides_df"
     con.execute(sql)
     con.commit()
@@ -428,7 +428,7 @@ def save_timestep_nucludes(con, ds):
         "state",
     ] + columns
 
-    tn = (
+    (
         ds[columns]
         .stack(idx=("material_id", "case_id", "time_step_number"))
         .to_dataframe()[columns]
@@ -471,7 +471,7 @@ def save_gamma_spectra(con, ds):
         "gamma_boundaries",
         "gamma",
     ]
-    tg = ds.gamma.to_dataframe().reset_index()[columns]
+    ds.gamma.to_dataframe().reset_index()[columns]
     sql = "insert into timestep_gamma select * from tg"
     con.execute(sql)
     con.commit()
@@ -492,9 +492,7 @@ con.execute("select * from timestep_gamma").df()
 # In[103]:
 
 
-con.execute(
-    "select boundary, intensity from timestep_gamma where time_step_number = 42"
-).df()
+con.execute("select boundary, intensity from timestep_gamma where time_step_number = 42").df()
 
 
 # In[104]:

@@ -297,6 +297,21 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
+@session(python="3.11")
+def ruff(s: Session) -> None:
+    """Run ruff linter."""
+    args = s.posargs or ["src", "tests"]
+    s.run(
+        "poetry",
+        "install",
+        "--no-root",
+        "--only",
+        "main,ruff",
+        external=True,
+    )
+    s.run("ruff", *args)
+
+
 @session(name="docs-build", python="3.11")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
