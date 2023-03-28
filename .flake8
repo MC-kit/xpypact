@@ -58,6 +58,9 @@ exclude=
     .cache
     .eggs
     notebooks/dvp/*.py
+    .nox
+    .idea
+
 per-file-ignores =
     benchmarks/*:S101,DAR101
     noxfile.py:ANN,DAR101
