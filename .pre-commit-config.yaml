@@ -93,6 +93,7 @@ repos:
         entry: poetry run ruff --force-exclude --fix --config pyproject.toml
         language: system
         types: [python]
+# Also code format the docs
 #    -   id: blacken-docs
 #        name: blacken-docs
 #        entry: poetry run blacken-docs
