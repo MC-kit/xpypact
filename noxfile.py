@@ -115,7 +115,7 @@ def precommit(s: Session) -> None:
         "install",
         "--no-root",
         "--only",
-        "pre_commit,style,isort,black,flake8",
+        "pre_commit,style,isort,black,ruff",
         external=True,
     )
     s.run("pre-commit", *args)
