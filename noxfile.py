@@ -1,7 +1,4 @@
-"""Nox sessions.
-
-See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-03-linting>`_
-"""
+"""Nox sessions."""
 from __future__ import annotations
 
 from typing import Final
