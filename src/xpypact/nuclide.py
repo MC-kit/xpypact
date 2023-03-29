@@ -5,6 +5,8 @@ from typing import Any
 
 from dataclasses import dataclass
 
+FLOAT_ZERO = 0.0
+
 try:
     from scipy.constants import Avogadro
 except ImportError:  # pragma: no cover
@@ -44,9 +46,9 @@ class Nuclide:  # pylint: disable=too-many-instance-attributes
         _z = z(self.element)
         if self.zai == 0:
             self.zai = _z * 10000 + self.isotope * 10
-            if self.state != "":
+            if self.state:
                 self.zai += 1
-        if self.atoms == 0.0 and 0.0 < self.grams:
+        if self.atoms == FLOAT_ZERO and FLOAT_ZERO < self.grams:
             self.atoms = Avogadro * self.grams / get_nuclide_mass(_z, self.isotope)
 
     @property
@@ -59,7 +61,7 @@ class Nuclide:  # pylint: disable=too-many-instance-attributes
         return self.isotope
 
     @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> "Nuclide":
+    def from_json(cls, json_dict: dict[str, Any]) -> Nuclide:
         """Construct the Nuclide from JSON dictionary.
 
         Args:

@@ -1,8 +1,11 @@
 """Output utilities."""
+from __future__ import annotations
 
-from typing import Any, Iterable, TextIO
+from typing import Any, TextIO
 
 import sys
+
+from collections.abc import Iterable
 
 
 def print_cols(

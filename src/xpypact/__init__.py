@@ -2,6 +2,8 @@
 
 Wraps FISPACT workflow. Transforms FISPACT output to xarray datasets.
 """
+from __future__ import annotations
+
 from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
 

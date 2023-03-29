@@ -1,11 +1,13 @@
 """Test loading Inventory from FISPACT JSON file."""
+from __future__ import annotations
+
 import bz2
 
 import pytest
 
-from xpypact.Inventory import Inventory, RunDataCorrected, from_json  # extract_times,
-from xpypact.RunData import RunData
-from xpypact.TimeStep import DoseRate, TimeStep
+from xpypact.inventory import Inventory, RunDataCorrected, from_json  # extract_times,
+from xpypact.run_data import RunData
+from xpypact.time_step import DoseRate, TimeStep
 
 SECONDS_PER_YEAR = int(365.24 * 24 * 3600)
 

@@ -4,7 +4,7 @@ See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-0
 """
 from __future__ import annotations
 
-from typing import Final, List
+from typing import Final
 
 import re
 import shutil
@@ -207,7 +207,7 @@ def isort(s: Session) -> None:
         "profiles/*.py",
         "adhoc/*.py",
     ]
-    files_to_process: List[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
+    files_to_process: list[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
     if files_to_process:
         s.run(
             "poetry",

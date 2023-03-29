@@ -1,14 +1,16 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from dataclasses import dataclass, field
 
 import numpy as np
 
-from xpypact.Nuclide import Nuclide
+from xpypact.nuclide import Nuclide
 from xpypact.utils.types import NDArrayFloat
+
+FLOAT_ZERO = 0.0
 
 
 @dataclass
@@ -23,14 +25,14 @@ class DoseRate:
         mass: mass for point source, always 1g
     """
 
-    type: str = ""
+    type: str = ""  # noqa: A003
     distance: float = 0.0
     mass: float = 0.0
     dose: float = 0.0
 
     def __post_init__(self) -> None:
         """Correct wrong value coming from FISPACT."""
-        if self.mass == 0.0:
+        if self.mass == FLOAT_ZERO:
             # According to FISPACT manual (both v.4 and v.5 (p.63))
             # should be 1 gram always, but FISPACT shows 0 at the first step
             # and less, than 1 in the following steps. Fixing here.
@@ -52,7 +54,7 @@ class GammaSpectrum:
     intensities: NDArrayFloat
 
     @classmethod
-    def from_json(cls, json: dict[str, list[float]]) -> "GammaSpectrum":
+    def from_json(cls, json: dict[str, list[float]]) -> GammaSpectrum:
         """Construct GammaSpectrum instance from JSON dictionary.
 
         Args:
@@ -95,22 +97,22 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
     inhalation_dose: float = 0.0
     dose_rate: DoseRate = field(default_factory=DoseRate)
     nuclides: list[Nuclide] = field(default_factory=list)
-    gamma_spectrum: Optional[GammaSpectrum] = None
+    gamma_spectrum: GammaSpectrum | None = None
 
     def __post_init__(self) -> None:  # noqa: ignore[CAC001]
         """Correct data missed in FISPACT-4."""
         # workarounds for FISPACT v.4
-        if self.total_mass == 0.0:
+        if self.total_mass == FLOAT_ZERO:
             self.total_mass = 1e-3 * sum(n.grams for n in self.nuclides)
-        if self.total_atoms == 0.0:
+        if self.total_atoms == FLOAT_ZERO:
             self.total_atoms = sum(n.atoms for n in self.nuclides)
-        if self.total_activity == 0.0:
+        if self.total_activity == FLOAT_ZERO:
             self.total_activity = sum(n.activity for n in self.nuclides)
-        if self.alpha_activity == 0.0:
+        if self.alpha_activity == FLOAT_ZERO:
             self.alpha_activity = sum(n.alpha_activity for n in self.nuclides)
-        if self.beta_activity == 0.0:
+        if self.beta_activity == FLOAT_ZERO:
             self.beta_activity = sum(n.beta_activity for n in self.nuclides)
-        if self.gamma_activity == 0.0:
+        if self.gamma_activity == FLOAT_ZERO:
             self.gamma_activity = sum(n.gamma_activity for n in self.nuclides)
 
     @property
@@ -129,10 +131,10 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
         Returns:
             Is the irradiation flux zero?
         """
-        return self.flux == 0.0
+        return self.flux == FLOAT_ZERO
 
     @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> "TimeStep":
+    def from_json(cls, json_dict: dict[str, Any]) -> TimeStep:
         """Construct TimeStep instance from JSON dictionary.
 
         Args:

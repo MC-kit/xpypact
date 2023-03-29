@@ -81,6 +81,7 @@ repos:
         entry: poetry run black
         language: system
         types: [python]
+        exclude: ^notebooks
     # Lint
     # -   id: flake8
     #     name: flake8

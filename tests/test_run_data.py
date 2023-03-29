@@ -1,12 +1,13 @@
 """Tests for FISPACT header."""
+from __future__ import annotations
 
 import pytest
 
-from xpypact.RunData import RunData
+from xpypact.run_data import RunData
 
 
 @pytest.mark.parametrize(
-    "inp, expected",
+    ["inp", "expected"],
     [
         (
             {

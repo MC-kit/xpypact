@@ -41,7 +41,7 @@ assert json_path.exists()
 
 import xpypact.data_arrays as da
 
-from xpypact.Inventory import from_json
+from xpypact.inventory import from_json
 
 # In[8]:
 
@@ -492,7 +492,9 @@ con.execute("select * from timestep_gamma").df()
 # In[103]:
 
 
-con.execute("select boundary, intensity from timestep_gamma where time_step_number = 42").df()
+con.execute(
+    "select boundary, intensity from timestep_gamma where time_step_number = 42"
+).df()
 
 
 # In[104]:

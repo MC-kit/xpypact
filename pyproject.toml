@@ -375,6 +375,7 @@ logging-format-style="new"   # use {} in logging messages
 deprecated-modules=["six"]
 
 [tool.ruff]
+target-version = "py38"
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
 select= [
   "A",
@@ -405,9 +406,20 @@ select= [
 
 # Ignore rules that currently fail on the codebase
 ignore = [
+    "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
+    "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
+    "ANN101", # ANN101 Missing type annotation for self in method
+    "ANN102", # ANN102 Missing type annotation for cls in classmethod
+    "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
+    "ANN204", # ANN204 Missing return type annotation for special method
+    "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    # "C812",   # C812 Missing trailing comma: black compatibility
+    "D105",   # D105 Missing docstring in magic method (__hash__, __eq__)
+    "D107",   # Missing docstring in __init__
+    # "E203",   # E203: Whitespace before ‘:'
     # "E401",  # Multiple imports on one line
     "E402",  # Module level import not at top of file
-    "E501",  # Line too long (<LENGTH> > 88 characters)
+    "E501",  # Line too long (<LENGTH> > 100 characters)
     # "E701",  # Multiple statements on one line (colon)
     # "E702",  # Multiple statements on one line (semicolon)
     # "E703",  # Statement ends with an unnecessary semicolon
@@ -430,6 +442,18 @@ ignore = [
     # "F821",  # Undefined name `VARIABLE`
     # "F823",  # Local variable `VARIABLE` referenced before assignment
     # "F841",  # Local variable `VARIABLE` is assigned to but never used
+
+    "I001",  # import order is controlled by isort
+    # "I101",
+    # "I201",
+    # "I202",
+
+# ignore some questionable pandas-vet warnings
+    # "PD005", # use operator instead of method
+    # "PD008", # We use at() to access single values
+    # "PD009", # And we use iat()
+    # "W503",  # Line break before binary operator: for compatibility with black settings
+    "PT019",   # Fixture `_bin` without value is injected as parameter (false positive?)
 ]
 
 # Same as Black.
@@ -460,7 +484,14 @@ exclude = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["E402"]
-"src/xpypact/Fluxes.py" = ["F811"]
+"src/xpypact/fluxes.py" = ["F811"]
+"benchmarks/*" = ["S101"]
+"noxfile.py" = ["ANN"]
+"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
+"src/xpypact/inventory.py" = ["F811"]
+"src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
+"src/xpypact/utils/resource.py" = ["ANN202"]
+"tools/*" = ["T201"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -473,6 +504,10 @@ strict = true
 known-first-party = ["src"]
 known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy"]
 required-imports = ["from __future__ import annotations"]
+
+
+[tool.ruff.flake8-pytest-style]
+parametrize-names-type = "list"
 
 [tool.ruff.pydocstyle]
 # Use Google-style docstrings.

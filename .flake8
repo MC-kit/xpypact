@@ -66,10 +66,10 @@ per-file-ignores =
     noxfile.py:ANN,DAR101
     tools/clear-prev-dist-info.py:S404,S603,S607
     tests/*:ANN,B950,DAR100,D100,D101,D102,D103,D104,DAR101,DAR103,S101
-    src/xpypact/Inventory.py:F811
+    src/xpypact/inventory.py:F811
     src/xpypact/data_arrays.py:ANN401,PD011
     src/xpypact/utils/resource.py:ANN202
-    src/xpypact/Fluxes.py:F811
+    src/xpypact/fluxes.py:F811
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref

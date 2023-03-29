@@ -1,6 +1,9 @@
 """The Class to represent FISPACT fluxes file content."""
-from typing import Callable, TextIO, Tuple, cast
+from __future__ import annotations
 
+from typing import TextIO, cast
+
+from collections.abc import Callable
 from dataclasses import dataclass
 from io import StringIO, TextIOBase
 from pathlib import Path
@@ -12,6 +15,8 @@ from numpy import allclose, array_equal
 from multipledispatch import dispatch
 from xpypact.utils.io import print_cols
 from xpypact.utils.types import NDArrayFloat
+
+FISPACT_709_BINS_NUMBER = 709
 
 # pylint: disable=function-redefined
 
@@ -232,7 +237,7 @@ def is_709_fluxes(fluxes: Fluxes) -> bool:
     Returns:
         bool: True, if fluxes are 709 kind of fluxes.
     """
-    return fluxes.energy_bins is FISPACT_709_BINS and fluxes.fluxes.size == 709
+    return fluxes.energy_bins is FISPACT_709_BINS and fluxes.fluxes.size == FISPACT_709_BINS_NUMBER
 
 
 def are_fluxes_equal(a: Fluxes, b: Fluxes) -> bool:
@@ -285,7 +290,7 @@ def are_fluxes_close(
 
 def read_fluxes(
     stream: TextIO,
-    define_bins_and_fluxes: Callable[[NDArrayFloat], Tuple[NDArrayFloat, NDArrayFloat]],
+    define_bins_and_fluxes: Callable[[NDArrayFloat], tuple[NDArrayFloat, NDArrayFloat]],
 ) -> Fluxes:
     """Load Fluxes from a stream.
 
@@ -407,7 +412,7 @@ class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
     """The number of float values from arb_flux file should be odd."""
 
 
-def define_arb_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArrayFloat]:
+def define_arb_bins_and_fluxes(data: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
     """Extract energy bins and values of arbitrary flux.
 
     Args:
@@ -434,7 +439,7 @@ class StandardFluxesDataSizeError(FluxesDataSizeError):
     """Invalid data for standard FISPACT 709-group fluxes."""
 
 
-def define_709_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArrayFloat]:
+def define_709_bins_and_fluxes(data: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
     """Strategy to define energy bins and values of standard 709 group flux.
 
     Args:
@@ -446,7 +451,7 @@ def define_709_bins_and_fluxes(data: NDArrayFloat) -> Tuple[NDArrayFloat, NDArra
     Raises:
         StandardFluxesDataSizeError: if size of data is not 709.
     """
-    if data.size != 709:
+    if data.size != FISPACT_709_BINS_NUMBER:
         raise StandardFluxesDataSizeError()
     return FISPACT_709_BINS, data[::-1]
 

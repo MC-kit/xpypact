@@ -15,7 +15,7 @@ the difference with initial state is scaled with a given factor.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TextIO, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, TextIO, cast
 
 from functools import reduce
 from pathlib import Path
@@ -30,9 +30,9 @@ import xarray as xr
 from mckit_nuclides.elements import ELEMENTS_TABLE
 from mckit_nuclides.nuclides import NUCLIDES_TABLE
 from xarray.core.accessor_dt import DatetimeAccessor
-from xpypact.Inventory import Inventory
-from xpypact.Inventory import from_json as inventory_from_json
-from xpypact.TimeStep import TimeStep
+from xpypact.inventory import Inventory
+from xpypact.inventory import from_json as inventory_from_json
+from xpypact.time_step import TimeStep
 from xpypact.utils.types import MayBePath
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -70,18 +70,18 @@ SCALABLE_COLUMNS = [
 ]
 
 
-def _make_var(value, dtype=float) -> Tuple[str, ArrayLike]:
+def _make_var(value, dtype=float) -> tuple[str, ArrayLike]:
     value = np.array([value], dtype=dtype)
     return "time_step_number", value
 
 
-def _make_nuclide_var(getter, nuclides, dtype=float) -> Tuple[str, ArrayLike]:
+def _make_nuclide_var(getter, nuclides, dtype=float) -> tuple[str, ArrayLike]:
     return "nuclide", np.fromiter(map(getter, nuclides), dtype=dtype)
 
 
 def _make_time_step_and_nuclide_var(
     getter, nuclides, dtype=float
-) -> Tuple[Tuple[str, str], ArrayLike]:
+) -> tuple[tuple[str, str], ArrayLike]:
     _data = np.fromiter(map(getter, nuclides), dtype=dtype)
     return ("time_step_number", "nuclide"), _data.reshape(1, _data.size)
 
@@ -148,8 +148,7 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         coords["gamma_boundaries"] = gamma_boundaries
 
     tsr = xr.Dataset(data_vars=data_vars, coords=coords)
-    _ds = xr.merge([_ds, tsr])
-    return _ds
+    return xr.merge([_ds, tsr])
 
 
 def create_dataset(inventory: Inventory) -> xr.Dataset:
@@ -337,8 +336,7 @@ def scale_by_mass(ds: xr.Dataset, scale: float) -> xr.Dataset:
         A new dataset with scaled columns.
     """
     columns = [x for x in SCALABLE_COLUMNS if x in ds.variables]
-    scaled = ds.merge(ds[columns] * scale, overwrite_vars=columns, join="exact")
-    return scaled
+    return ds.merge(ds[columns] * scale, overwrite_vars=columns, join="exact")
 
 
 def _encode_multiindex(ds: xr.Dataset, idx_name: str) -> xr.Dataset:
@@ -402,11 +400,10 @@ def load_nc(
         The loaded dataset
     """
     encoded = xr.load_dataset(cn, engine=engine, **kwargs)
-    ds = _decode_to_multiindex(encoded, "nuclide")
-    return ds
+    return _decode_to_multiindex(encoded, "nuclide")
 
 
-def from_json(path: Union[str, Path, TextIO]) -> xr.Dataset:
+def from_json(path: str | Path | TextIO) -> xr.Dataset:
     """Load Dataset from the FISPACT JSON output.
 
     Args:
