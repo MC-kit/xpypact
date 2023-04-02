@@ -36,7 +36,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.0
 
       - name: Set up Python 3.10  # on 3.11 pip install in unstable: "canonicalize" fails occasionally
         uses: actions/setup-python@v4.5.0
@@ -55,7 +55,7 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             .cache/pypoetry
@@ -85,7 +85,7 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.0
         with:
           fetch-depth: 1
 
@@ -106,7 +106,7 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             .cache/pypoetry
@@ -137,7 +137,7 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.0
         with:
           fetch-depth: 1
 
@@ -158,7 +158,7 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             .cache/pypoetry
@@ -187,7 +187,7 @@ jobs:
     steps:
 
       - name: Check out the repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4.5.0
@@ -201,7 +201,7 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             .cache/pypoetry

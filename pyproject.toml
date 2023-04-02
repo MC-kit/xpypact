@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.1.11"
+version = "0.2.0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
+requires = ["poetry-core >= 1.5.2"]
 build-backend = "poetry.core.masonry.api"
 
 # [tool.poetry.scripts]
@@ -43,7 +43,8 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.8.1,<4.0"
+duckdb = ">=0.7.1"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 numpy = ">=1.24.2"
@@ -105,13 +106,13 @@ numpy = ">=1.23.2"
 
 [tool.poetry.group.flake8.dependencies]
 darglint = ">=1.8.1"
-flake8 = ">=4.0.1"  #TODO dvp: update with flake8-eradicate
+flake8 = ">=6.0.0"
 #flake8 = ">=6.0.0"
 flake8-adjustable-complexity = ">=0.0.6"
 flake8-annotations = ">=2.6.2"
 flake8-annotations-coverage = ">=0.0.6"
 flake8-bandit = ">=4.1.1"
-flake8-bugbear = ">=22.3.23"
+flake8-bugbear = ">=23.3.23"
 flake8-builtins = ">=1.5.3"
 flake8-class-attributes-order = ">=0.1.3"
 flake8-cognitive-complexity = ">=0.1.0"
@@ -119,7 +120,7 @@ flake8-colors = ">=0.1.9"
 flake8-commas = ">=2.1.0"
 flake8-comprehensions = ">=3.10.0"
 flake8-docstrings = ">=1.6.0"
-flake8-eradicate = ">=1.4.0"
+# flake8-eradicate = ">=1.4.0"  #TODO dvp: return with  flake8-eradicate update
 flake8-expression-complexity = ">=0.0.11"
 flake8-functions = ">=0.0.7"
 flake8-import-order = ">=0.18.1"
@@ -145,10 +146,21 @@ sphinx-autodoc-typehints = ">=1.19.5"
 sphinx-autobuild = ">=2021.3.14"
 
 
+[tool.poetry.group.pylsp.dependencies]
+pylsp-mypy = ">=0.6.6"
+pyls-isort = ">=0.2.2"
+python-lsp-black = ">=1.2.1"
+pyls-memestra = ">=0.0.16"
+pylsp-rope = ">=0.1.11"
+ruff-lsp = "^0.0.24"
+
+[tool.poetry.group.ruff.dependencies]
+ruff = ">=0.0.259"
+
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
-known_first_party = "xpypact"
+known_first_party = "src"
 known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -236,7 +248,7 @@ omit = ["*_tab.py", "**/__init__.py"]
 show_missing = true
 skip_covered = true
 fail_under = 100
-omit = ["*_tab.py", "**/__init__.py"]
+omit = ["*_tab.py", "**/__init__.py", "**/types.py"]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma
@@ -250,6 +262,7 @@ exclude_lines = [
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
 ignore_errors = true
 sort = "Cover"
@@ -362,3 +375,168 @@ summary-quotes-same-line = true
 good-names-rgxs=["."]  # a single character variable is okay
 logging-format-style="new"   # use {} in logging messages
 deprecated-modules=["six"]
+
+[tool.ruff]
+target-version = "py38"
+#see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
+select= [
+    "A", # flake8-builtins
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "COM", # flake8-commas
+    "DJ", # flake8-django
+    "D", # pydocstyle
+    "DTZ", # flake8-datetimez
+    "EM", # flake8-errmsg
+    "ERA", # eradicate
+    "E", # pycodestyle
+    "EXE", # flake8-executable
+    "FBT", # flake8-boolean-trap
+    "F", # Pyflakes
+    "G", # flake8-logging-format
+    "ICN", # flake8-import-conventions
+    "I", # isort
+    "INP", # flake8-no-pep420
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "NPY", # NumPy-specific rules
+    "PD", # pandas-vet
+    "PGH", # pygrep-hooks
+    "PIE", # flake8-pie
+    "PL", # Pylint
+    "PT", # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "PYI", # flake8-pyi
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "TRY", # tryceratops
+    "UP", # pyupgrade
+    "W", # pycodestyle 2
+    "YTT", # flake8-2020
+]
+
+# Ignore rules that currently fail on the codebase
+ignore = [
+    "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
+    "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
+    "ANN101", # ANN101 Missing type annotation for self in method
+    "ANN102", # ANN102 Missing type annotation for cls in classmethod
+    "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
+    "ANN204", # ANN204 Missing return type annotation for special method
+    "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    # "C812",   # C812 Missing trailing comma: black compatibility
+    "D105",   # D105 Missing docstring in magic method (__hash__, __eq__)
+    "D107",   # Missing docstring in __init__
+    # "E203",   # E203: Whitespace before ‘:'
+    # "E401",  # Multiple imports on one line
+    # "E402",  # Module level import not at top of file
+    # "E501",  # Line too long (<LENGTH> > 100 characters)
+    # "E701",  # Multiple statements on one line (colon)
+    # "E702",  # Multiple statements on one line (semicolon)
+    # "E703",  # Statement ends with an unnecessary semicolon
+    # "E704",  # Multiple statements on one line (def)
+    # "E711",  # Comparison to `None` should be `cond is not None`
+    # "E712",  # Comparison to `<BOOL>` should be `cond is <BOOL>`
+    # "E713",  # Test for membership should be `not in`
+    # "E714",  # Test for object identity should be `is not`
+    # "E721",  # Do not compare types, use `isinstance()`
+    # "E722",  # Do not use bare `except`
+    # "E731",  # Do not assign a `lambda` expression, use a `def`
+    # "E741",  # Ambiguous variable name: `<VARIABLE>`
+    # "E743",  # Ambiguous function name: `<FUNCTION>`
+    # "F401",  # `<TYPE>` imported but unused
+    # "F403",  # `from <MODULE> import *` used; unable to detect undefined names
+    # "F405",  # `<TYPE>` may be undefined, or defined from star imports: `<MODULE>`
+    # "F523",  # `.format` call has unused arguments at position(s): <INDEX>
+    # "F601",  # Dictionary key literal `'<KEY>'` repeated
+    # "F811",  # Redefinition of unused `<VARIABLE>` from line <LINE>
+    # "F821",  # Undefined name `VARIABLE`
+    # "F823",  # Local variable `VARIABLE` referenced before assignment
+    # "F841",  # Local variable `VARIABLE` is assigned to but never used
+
+    "I001",  # import order is controlled by isort
+    # "I101",
+    # "I201",
+    # "I202",
+
+# ignore some questionable pandas-vet warnings
+    # "PD005", # use operator instead of method
+    # "PD008", # We use at() to access single values
+    # "PD009", # And we use iat()
+    "PT019",   # Fixture `_bin` without value is injected as parameter (false positive?)
+
+    # "W503",  # Line break before binary operator: for compatibility with black settings
+]
+
+# Same as Black.
+line-length = 100
+
+# show an enumeration of all autofixed lint violations
+show-fixes = true
+
+# show source code snippets when reporting violations
+show-source = true
+
+src = ["src", "test"]
+
+# Allow unused variables when underscore-prefixed.
+# dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+dummy-variable-rgx = "^_$"
+exclude = [
+  "docs/source/conf.py",
+  "__pycache__",
+  "adhoc",
+  "wrk",
+  "*.egg-info",
+  ".cache",
+  "notebooks/dvp/*.py"
+]
+# Assume Python 3.10.
+# target-version = "py310"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["E402"]
+"src/xpypact/fluxes.py" = ["F811"]
+"benchmarks/*" = ["S101"]
+"noxfile.py" = ["ANN"]
+"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
+"src/xpypact/inventory.py" = ["F811"]
+"src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
+"src/xpypact/utils/resource.py" = ["ANN202"]
+"tools/*" = [
+    "T201",
+    "INP001",  # file ... is part of implicit namespace ... add __init__.py - there are no modules in tools
+]
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.flake8-type-checking]
+strict = true
+
+[tool.ruff.isort]
+known-first-party = ["src"]
+known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy"]
+required-imports = ["from __future__ import annotations"]
+
+
+[tool.ruff.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.ruff.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"

@@ -1,10 +1,7 @@
-"""Nox sessions.
-
-See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-03-linting>`_
-"""
+"""Nox sessions."""
 from __future__ import annotations
 
-from typing import Final, List
+from typing import TYPE_CHECKING, Final
 
 import re
 import shutil
@@ -16,7 +13,10 @@ from textwrap import dedent
 
 import nox
 
-from nox import Session, session
+from nox import session
+
+if TYPE_CHECKING:
+    from nox import Session
 
 nox.options.sessions = (
     "safety",
@@ -101,7 +101,8 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         return
 
     for hook in filter(
-        lambda x: not x.name.endswith(".sample") and x.is_file(), hook_dir.iterdir()
+        lambda x: not x.name.endswith(".sample") and x.is_file(),
+        hook_dir.iterdir(),
     ):
         _update_hook(hook, virtualenv, s)
 
@@ -115,7 +116,7 @@ def precommit(s: Session) -> None:
         "install",
         "--no-root",
         "--only",
-        "pre_commit,style,isort,black,flake8",
+        "pre_commit,style,isort,black,ruff",
         external=True,
     )
     s.run("pre-commit", *args)
@@ -207,7 +208,7 @@ def isort(s: Session) -> None:
         "profiles/*.py",
         "adhoc/*.py",
     ]
-    files_to_process: List[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
+    files_to_process: list[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
     if files_to_process:
         s.run(
             "poetry",
@@ -295,6 +296,21 @@ def xdoctest(s: Session) -> None:
         external=True,
     )
     s.run("python", "-m", "xdoctest", *args)
+
+
+@session(python="3.11")
+def ruff(s: Session) -> None:
+    """Run ruff linter."""
+    args = s.posargs or ["src", "tests"]
+    s.run(
+        "poetry",
+        "install",
+        "--no-root",
+        "--only",
+        "main,ruff",
+        external=True,
+    )
+    s.run("ruff", *args)
 
 
 @session(name="docs-build", python="3.11")

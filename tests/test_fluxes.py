@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from copy import copy, deepcopy
@@ -10,7 +12,7 @@ from numpy.testing import assert_almost_equal, assert_array_equal
 
 import pytest
 
-from xpypact.Fluxes import (
+from xpypact.fluxes import (
     Fluxes,
     StandardFluxesDataSizeError,
     are_fluxes_close,
@@ -45,10 +47,8 @@ def test_flux_constructor():
     assert flux.norm == 2.0
     assert not is_709_fluxes(flux)
     assert are_fluxes_close(flux, flux)
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match="Incompatible sizes of bins and fluxes"):
         Fluxes(ebins[:-2], bins, "test")
-    assert exc_info.type == ValueError
-    assert exc_info.value.args[0].startswith("Incompatible sizes of bins and fluxes")
     ebins, bins = define_709_bins_and_fluxes(np.ones(709, dtype=float))
     f709 = Fluxes(ebins, bins, "test 709")
     assert f709.total == 709
@@ -59,7 +59,7 @@ def test_flux_constructor():
 
 
 @pytest.mark.parametrize(
-    "_bin, expected_e0, expected_e1,expected_flux",
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1e-5, 1e6, 1),
         (1, 1e6, 1e7, 90),
@@ -93,7 +93,7 @@ def test_eq_and_copy(arb_flux_1, arb_flux_2):
 
 
 @pytest.mark.parametrize(
-    "_bin, expected_e0, expected_e1,expected_flux",
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1.1e-5, 0.25, 3.600000e05),
         (6, 7.800000e06, 1.410000e07, 2.870000e03),
@@ -114,7 +114,7 @@ def fluxes_1(data):
 
 
 @pytest.mark.parametrize(
-    "_bin, expected_e0, expected_e1,expected_flux",
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1e-5, 1.0471e-5, 1.8182e-3),
         (1, 1.0471e-5, 1.0965e-5, 1.8182e-3),
@@ -154,14 +154,16 @@ def test_print_arbitrary_fluxes(data, arb_flux_1):
 
 def test_define_arb_flux_fail():
     data = np.linspace(1, 10, 4)
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="The number of float values from arb_flux file should be odd.",
+    ):
         define_arb_bins_and_fluxes(data)
 
 
 def test_print_709_fluxes_fail(arb_flux_1):
-    with pytest.raises(ValueError) as exc_info:
-        stream = StringIO()
-        print_709_fluxes(arb_flux_1, stream, max_columns=3)
+    with pytest.raises(ValueError, match="Expected 709-group fluxes.") as exc_info:
+        print_709_fluxes(arb_flux_1, StringIO(), max_columns=3)
     assert str(exc_info.value) == "Expected 709-group fluxes."
 
 

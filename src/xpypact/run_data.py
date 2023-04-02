@@ -13,7 +13,7 @@ class RunData:
     flux_name: str
 
     @classmethod
-    def from_json(cls, json_dict: dict[str, str]) -> "RunData":
+    def from_json(cls, json_dict: dict[str, str]) -> RunData:
         """Construct RunData instance from JSON.
 
         Args:

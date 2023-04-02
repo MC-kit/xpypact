@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
@@ -9,7 +11,7 @@ THIS_FILENAME = Path(__file__).name
 
 # noinspection PyCompatibility
 @pytest.mark.parametrize(
-    "package, resource, expected",
+    "package,resource,expected",
     [
         ("tests", "data/Ag-1.json", "data/Ag-1.json"),
     ],
@@ -22,13 +24,13 @@ def test_path_resolver(package, resource, expected) -> None:
 
 
 @pytest.mark.parametrize(
-    "package, resource, expected",
+    "package,resource",
     [
-        ("tests", "data/not_existing", "tests/data/not_existing"),
-        ("xpypact", "data/not_existing", "xpypact/data/not_existing"),
+        ("tests", "data/not_existing"),
+        ("xpypact", "data/not_existing"),
     ],
 )
-def test_path_resolver_when_resource_doesnt_exist(package, resource, expected) -> None:
+def test_path_resolver_when_resource_doesnt_exist(package, resource) -> None:
     resolver = path_resolver(package)
     actual = resolver(resource)
     assert not Path(actual).exists(), f"The resource {resource!r} should not be available"
@@ -36,8 +38,7 @@ def test_path_resolver_when_resource_doesnt_exist(package, resource, expected) -
 
 def test_path_resolver_when_package_doesnt_exist() -> None:
     with pytest.raises(ModuleNotFoundError):
-        resolver = path_resolver("not_existing")
-        resolver("something.txt")
+        path_resolver("not_existing")("something.txt")
 
 
 def test_path_resolver_local() -> None:

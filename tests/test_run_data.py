@@ -1,12 +1,13 @@
 """Tests for FISPACT header."""
+from __future__ import annotations
 
 import pytest
 
-from xpypact.RunData import RunData
+from xpypact.run_data import RunData
 
 
 @pytest.mark.parametrize(
-    "inp, expected",
+    "inp,expected",
     [
         (
             {
@@ -19,7 +20,7 @@ from xpypact.RunData import RunData
                 run_name="* Material Ag, fluxes 1",
                 flux_name="55.F9.10 11-L2-02W HFS_GLRY_08_U",
             ),
-        )
+        ),
     ],
 )
 def test_from_json(inp, expected):

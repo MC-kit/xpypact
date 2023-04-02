@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import sys
 
@@ -16,8 +18,7 @@ def find_version_from_project_toml():
     toml_path = Path(__file__).parent.parent / "pyproject.toml"
     assert toml_path.exists()
     pyproject = tomllib.loads(toml_path.read_text())
-    version = pyproject["tool"]["poetry"]["version"]
-    return version
+    return pyproject["tool"]["poetry"]["version"]
 
 
 _VERSION_NORM_PATTERN = re.compile(r"-(?P<letter>.)[^.]*\.(?P<prepatch>.*)$")
@@ -31,5 +32,5 @@ def test_package():
     """This test checks if only current version is installed in working environment."""
     version = find_version_from_project_toml()
     assert __version__ == normalize_version(
-        version
+        version,
     ), "Run 'poetry install' and, if this doesn't help, run `tools/clear-prev-dist-info.py`"

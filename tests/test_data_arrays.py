@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
-
-import bz2
+from typing import TYPE_CHECKING, cast
 
 from copy import deepcopy
 
@@ -12,11 +10,12 @@ from numpy.testing import assert_array_equal, assert_equal
 
 import pandas as pd
 import pytest
-import xarray as xr
 import xpypact.data_arrays as da
 
-from pytest import approx
-from xpypact.Inventory import Inventory, from_json
+from xpypact.inventory import Inventory, from_json
+
+if TYPE_CHECKING:
+    import xarray as xr
 
 
 @pytest.fixture(scope="module")
@@ -41,9 +40,9 @@ def test_first_time_step(ds):
     ts = ts.isel(nuclide=(ts.nuclide_atoms > 0.0))
     assert ts.nuclide.size == 2, "Only Ag107 and Ag109 present before irradiation"
     assert ts.nuclide_grams.units == "g"
-    assert ts.nuclide_grams.sum().item() == approx(1.0, rel=1e-3), "Expected 1g mass"
+    assert ts.nuclide_grams.sum().item() == pytest.approx(1.0, rel=1e-3), "Expected 1g mass"
     assert ts.total_mass.units == "kg"
-    assert ts.total_mass == approx(1e-3, rel=1e-3), "Total mass is to be about 0.001kg"
+    assert ts.total_mass == pytest.approx(1e-3, rel=1e-3), "Total mass is to be about 0.001kg"
 
 
 def test_elapsed_time(ds: xr.Dataset, inventory: Inventory) -> None:
@@ -78,7 +77,10 @@ def test_atomic_masses_column(ds: xr.Dataset) -> None:
     argentum = ds.sel(nuclide=("Ag", 111, ""))
     assert argentum.element == "Ag"
     a = argentum.a
-    assert a.item() == approx(110.905, rel=1e-4), " the Ag atomic mass is to be about 110.905"
+    assert a.item() == pytest.approx(
+        110.905,
+        rel=1e-4,
+    ), " the Ag atomic mass is to be about 110.905"
 
 
 def test_scale_by_mass(ds):
@@ -148,7 +150,7 @@ def test_scale_by_flux_on_dose_rate(ds):
     assert_equal(actual.attrs, ds.attrs)
 
 
-def test_net_cdf_writing(cd_tmpdir, ds):
+def test_net_cdf_writing(cd_tmpdir, ds):  # noqa: ARG001
     assert ds.total_dose_rate is not None
     da.save_nc(ds, "Ag-1.nc")
     actual = da.load_nc("Ag-1.nc")
@@ -157,7 +159,7 @@ def test_net_cdf_writing(cd_tmpdir, ds):
     assert actual.total_dose_rate.attrs["units"] == "Sv/h"
 
 
-def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
+def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):  # noqa: ARG001
     group = "some-group"
     assert ds.total_dose_rate is not None
     da.save_nc(ds, "Ag-1.nc", mode="a", group=group)
@@ -167,13 +169,12 @@ def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
     assert actual.total_dose_rate.attrs["units"] == "Sv/h"
 
 
-def test_inventory_with_gamma(data):
-    with bz2.open(data / "with-gamma.json.bz2") as fid:
-        ds = da.from_json(fid.read().decode("utf-8"))
-        assert ds.gamma is not None
-        assert ds.gamma.sel(time_step_number=2, gamma_boundaries=1.0).item() == approx(
-            17857.24443195
-        )
+def test_inventory_with_gamma(dataset_with_gamma):
+    assert dataset_with_gamma.gamma is not None
+    assert dataset_with_gamma.gamma.sel(
+        time_step_number=2,
+        gamma_boundaries=1.0,
+    ).item() == pytest.approx(17857.24443195)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+from typing import Dict, List
+
+import sys
+
+from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
 
@@ -10,17 +10,19 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import sys
-
-from pathlib import Path
 
 pkg_path = Path("..", "..", "src").absolute()
 assert pkg_path.exists(), f"Invalid path {pkg_path}"
 sys.path.insert(0, str(pkg_path))
 
-from typing import Dict, List
+import xpypact  # noqa: E402
 
-import mckit_nuclides
+# Configuration file for the Sphinx documentation builder.
+#
+# This file only contains a selection of the most common options. For a full
+# list see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
 
 # -- Project information -----------------------------------------------------
 
@@ -35,9 +37,9 @@ author = "dvp2015"
 # built documents.
 #
 # The short X.Y version.
-version = mckit_nuclides.__version__.rsplit(".", maxsplit=1)[0]
+version = xpypact.__version__.rsplit(".", maxsplit=1)[0]
 # The full version, including alpha/beta/rc tags.
-release = mckit_nuclides.__version__
+release = xpypact.__version__
 
 
 # -- General configuration ---------------------------------------------------

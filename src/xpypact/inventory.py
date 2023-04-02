@@ -1,21 +1,28 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import io
+import io  # noqa: TCH003 - needed for dispatch
 
 from dataclasses import dataclass
 from functools import singledispatch
-from pathlib import Path
+from pathlib import Path  # noqa: TCH003 - needed for dispatch
 
 import numpy as np
 
 import orjson as json
 
-from xpypact.RunData import RunData
-from xpypact.TimeStep import TimeStep
-from xpypact.utils.types import NDArrayFloat
+from xpypact.run_data import RunData
+from xpypact.time_step import TimeStep
+
+if TYPE_CHECKING:
+
+    from collections.abc import Callable, Iterable
+
+    from xpypact.utils.types import NDArrayFloat
+
+FLOAT_ZERO = 0.0
 
 
 @dataclass
@@ -47,21 +54,21 @@ class InventoryError(ValueError):
 
 
 def _create_json_inventory_data_mapper() -> Callable[[dict[str, Any]], TimeStep]:
-    prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
+    prev_irradiation_time = prev_cooling_time = prev_elapsed_time = FLOAT_ZERO
     number = 1
 
     def json_inventory_data_mapper(jts: dict[str, Any]) -> TimeStep:
         nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
         ts = TimeStep.from_json(jts)
         duration = ts.irradiation_time - prev_irradiation_time
-        if duration == 0.0:
+        if duration == FLOAT_ZERO:
             duration = ts.cooling_time - prev_cooling_time
-        if duration < 0.0:
-            raise InventoryNonMonotonicTimesError()  # pragma: no cover
+        if duration < FLOAT_ZERO:
+            raise InventoryNonMonotonicTimesError  # pragma: no cover
         ts.duration = duration
         prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
-        if duration == 0.0:
-            ts.flux = 0.0
+        if duration == FLOAT_ZERO:
+            ts.flux = FLOAT_ZERO
         ts.number = number
         number += 1
         prev_irradiation_time, prev_cooling_time = (
@@ -104,7 +111,7 @@ class Inventory:
         )
 
     @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> "Inventory":
+    def from_json(cls, json_dict: dict[str, Any]) -> Inventory:
         """Construct Inventory instance from JSON dictionary.
 
         Args:

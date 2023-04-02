@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "xpypact-notebooks"
+version = "0.1.0"
+description = "Analyzing and prototyping with xpypact."
+authors = ["dvp2015"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "xpypact_notebooks"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+jupyterlab = "^3.6.2"
+duckdb = "^0.7.1"
+xpypact = {path = "/home/dvp/dev/xpypact"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
