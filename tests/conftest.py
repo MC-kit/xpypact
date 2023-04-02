@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import bz2
 import os
 
 from pathlib import Path
 
 import pytest
+import xpypact.data_arrays as da
 
 from xpypact.utils.resource import path_resolver
 
@@ -34,3 +36,17 @@ def cd_tmpdir(tmpdir):  # noqa: PT004
         yield
     finally:
         os.chdir(old_dir)
+
+
+@pytest.fixture()
+def dataset_with_gamma(data):
+    """Load dataset with gamma information.
+
+    Args:
+        data: fixture - path to test data
+
+    Returns:
+        Dataset with gamma information.
+    """
+    with bz2.open(data / "with-gamma.json.bz2") as fid:
+        return da.from_json(fid.read().decode("utf-8"))

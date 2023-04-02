@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import cast
 
-import bz2
-
 from copy import deepcopy
 
 import numpy as np
@@ -168,13 +166,11 @@ def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
     assert actual.total_dose_rate.attrs["units"] == "Sv/h"
 
 
-def test_inventory_with_gamma(data):
-    with bz2.open(data / "with-gamma.json.bz2") as fid:
-        ds = da.from_json(fid.read().decode("utf-8"))
-        assert ds.gamma is not None
-        assert ds.gamma.sel(time_step_number=2, gamma_boundaries=1.0).item() == pytest.approx(
-            17857.24443195
-        )
+def test_inventory_with_gamma(dataset_with_gamma):
+    assert dataset_with_gamma.gamma is not None
+    assert dataset_with_gamma.gamma.sel(
+        time_step_number=2, gamma_boundaries=1.0
+    ).item() == pytest.approx(17857.24443195)
 
 
 if __name__ == "__main__":
