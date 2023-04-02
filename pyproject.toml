@@ -516,7 +516,10 @@ exclude = [
 "src/xpypact/inventory.py" = ["F811"]
 "src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
 "src/xpypact/utils/resource.py" = ["ANN202"]
-"tools/*" = ["T201"]
+"tools/*" = [
+    "T201",
+    "INP001",  # file ... is part of implicit namespace ... add __init__.py - there are no modules in tools
+]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

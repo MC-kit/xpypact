@@ -1,7 +1,7 @@
 """Nox sessions."""
 from __future__ import annotations
 
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import re
 import shutil
@@ -13,7 +13,10 @@ from textwrap import dedent
 
 import nox
 
-from nox import Session, session
+from nox import session
+
+if TYPE_CHECKING:
+    from nox import Session
 
 nox.options.sessions = (
     "safety",
@@ -98,7 +101,8 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         return
 
     for hook in filter(
-        lambda x: not x.name.endswith(".sample") and x.is_file(), hook_dir.iterdir()
+        lambda x: not x.name.endswith(".sample") and x.is_file(),
+        hook_dir.iterdir(),
     ):
         _update_hook(hook, virtualenv, s)
 
