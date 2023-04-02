@@ -476,8 +476,9 @@ ignore = [
     # "PD005", # use operator instead of method
     # "PD008", # We use at() to access single values
     # "PD009", # And we use iat()
-    # "W503",  # Line break before binary operator: for compatibility with black settings
     "PT019",   # Fixture `_bin` without value is injected as parameter (false positive?)
+
+    # "W503",  # Line break before binary operator: for compatibility with black settings
 ]
 
 # Same as Black.
@@ -531,7 +532,7 @@ required-imports = ["from __future__ import annotations"]
 
 
 [tool.ruff.flake8-pytest-style]
-parametrize-names-type = "list"
+parametrize-names-type = "csv"
 
 [tool.ruff.pydocstyle]
 # Use Google-style docstrings.

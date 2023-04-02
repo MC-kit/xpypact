@@ -7,7 +7,7 @@ from xpypact.run_data import RunData
 
 
 @pytest.mark.parametrize(
-    ["inp", "expected"],
+    "inp,expected",
     [
         (
             {

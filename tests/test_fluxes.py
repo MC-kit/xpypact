@@ -59,7 +59,7 @@ def test_flux_constructor():
 
 
 @pytest.mark.parametrize(
-    ["_bin", "expected_e0", "expected_e1", "expected_flux"],
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1e-5, 1e6, 1),
         (1, 1e6, 1e7, 90),
@@ -93,7 +93,7 @@ def test_eq_and_copy(arb_flux_1, arb_flux_2):
 
 
 @pytest.mark.parametrize(
-    ["_bin", "expected_e0", "expected_e1", "expected_flux"],
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1.1e-5, 0.25, 3.600000e05),
         (6, 7.800000e06, 1.410000e07, 2.870000e03),
@@ -114,7 +114,7 @@ def fluxes_1(data):
 
 
 @pytest.mark.parametrize(
-    ["_bin", "expected_e0", "expected_e1", "expected_flux"],
+    "_bin,expected_e0,expected_e1,expected_flux",
     [
         (0, 1e-5, 1.0471e-5, 1.8182e-3),
         (1, 1.0471e-5, 1.0965e-5, 1.8182e-3),

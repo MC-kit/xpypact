@@ -11,7 +11,7 @@ THIS_FILENAME = Path(__file__).name
 
 # noinspection PyCompatibility
 @pytest.mark.parametrize(
-    ["package", "resource", "expected"],
+    "package,resource,expected",
     [
         ("tests", "data/Ag-1.json", "data/Ag-1.json"),
     ],
@@ -24,7 +24,7 @@ def test_path_resolver(package, resource, expected) -> None:
 
 
 @pytest.mark.parametrize(
-    ["package", "resource"],
+    "package,resource",
     [
         ("tests", "data/not_existing"),
         ("xpypact", "data/not_existing"),
