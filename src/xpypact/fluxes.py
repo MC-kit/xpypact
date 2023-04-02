@@ -1,9 +1,8 @@
 """The Class to represent FISPACT fluxes file content."""
 from __future__ import annotations
 
-from typing import TextIO, cast
+from typing import TYPE_CHECKING, TextIO, cast
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from io import StringIO, TextIOBase
 from pathlib import Path
@@ -14,9 +13,13 @@ from numpy import allclose, array_equal
 
 from multipledispatch import dispatch
 from xpypact.utils.io import print_cols
-from xpypact.utils.types import NDArrayFloat
 
 FISPACT_709_BINS_NUMBER = 709
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from xpypact.utils.types import NDArrayFloat
 
 # pylint: disable=function-redefined
 
@@ -174,10 +177,11 @@ class Fluxes:
             ValueError: if sizes of bins and fluxes are not compatible.
         """
         if self.fluxes.size != self.energy_bins.size - 1:
-            raise ValueError(
+            msg = (
                 "Incompatible sizes of bins and fluxes, "
-                f"{self.fluxes.size} and {self.energy_bins.size}"
+                f"{self.fluxes.size} and {self.energy_bins.size}",
             )
+            raise ValueError(msg)
 
     @property
     def total(self) -> float:
@@ -264,7 +268,7 @@ def are_fluxes_close(
     b: Fluxes,
     rtol: float = 1.0e-5,
     atol: float = 1.0e-8,
-    equal_nan: bool = False,
+    equal_nan: bool = False,  # noqa: FBT - not worse than in allclose()
 ) -> bool:
     """Compare data of fluxes approximately.
 
@@ -426,7 +430,7 @@ def define_arb_bins_and_fluxes(data: NDArrayFloat) -> tuple[NDArrayFloat, NDArra
     """
     sz = data.size
     if sz & 1 == 0:
-        raise ArbitraryFluxesDataSizeError()
+        raise ArbitraryFluxesDataSizeError
     bins_end = sz // 2 + 1
     energy_bins = data[:bins_end]
     fluxes = data[bins_end:]
@@ -452,24 +456,19 @@ def define_709_bins_and_fluxes(data: NDArrayFloat) -> tuple[NDArrayFloat, NDArra
         StandardFluxesDataSizeError: if size of data is not 709.
     """
     if data.size != FISPACT_709_BINS_NUMBER:
-        raise StandardFluxesDataSizeError()
+        raise StandardFluxesDataSizeError
     return FISPACT_709_BINS, data[::-1]
 
 
-def print_fluxes(fluxes: Fluxes, fid: TextIO, arbitrary: bool, max_columns: int = 5) -> None:
-    """Print fluxes for FISPACT.
+def _print_bin_values(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None:
+    """Print fluxes bins for FISPACT.
 
     Args:
-        fluxes: to print
+        fluxes: to print bins from
         fid: a stream to print to
         arbitrary: if True - arbitrary, otherwise 709
         max_columns: max columns in output
     """
-    if arbitrary:
-        sequence = fluxes.energy_bins[::-1]
-        column = print_cols(sequence, fid, max_columns, fmt="{:.6e}")
-        if column != 0:
-            print(file=fid)
     sequence = fluxes.fluxes[::-1]
     column = print_cols(sequence, fid, max_columns, fmt="{:.5e}")
     if column != 0:
@@ -494,8 +493,8 @@ def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 7) -> None:
         NotA709Error: if not a valid 709 group "Fluxes" object is provided.
     """
     if not is_709_fluxes(fluxes):
-        raise NotA709Error()
-    print_fluxes(fluxes, fid, False, max_columns)
+        raise NotA709Error
+    _print_bin_values(fluxes, fid, max_columns)
 
 
 def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None:
@@ -506,4 +505,8 @@ def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) ->
         fid: output stream
         max_columns: max number of columns in a row
     """
-    print_fluxes(fluxes, fid, True, max_columns)
+    sequence = fluxes.energy_bins[::-1]
+    column = print_cols(sequence, fid, max_columns, fmt="{:.6e}")
+    if column != 0:
+        print(file=fid)
+    _print_bin_values(fluxes, fid, max_columns)

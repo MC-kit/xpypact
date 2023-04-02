@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from copy import deepcopy
 
@@ -10,10 +10,12 @@ from numpy.testing import assert_array_equal, assert_equal
 
 import pandas as pd
 import pytest
-import xarray as xr
 import xpypact.data_arrays as da
 
 from xpypact.inventory import Inventory, from_json
+
+if TYPE_CHECKING:
+    import xarray as xr
 
 
 @pytest.fixture(scope="module")
@@ -76,7 +78,8 @@ def test_atomic_masses_column(ds: xr.Dataset) -> None:
     assert argentum.element == "Ag"
     a = argentum.a
     assert a.item() == pytest.approx(
-        110.905, rel=1e-4
+        110.905,
+        rel=1e-4,
     ), " the Ag atomic mass is to be about 110.905"
 
 
@@ -147,7 +150,7 @@ def test_scale_by_flux_on_dose_rate(ds):
     assert_equal(actual.attrs, ds.attrs)
 
 
-def test_net_cdf_writing(cd_tmpdir, ds):
+def test_net_cdf_writing(cd_tmpdir, ds):  # noqa: ARG001
     assert ds.total_dose_rate is not None
     da.save_nc(ds, "Ag-1.nc")
     actual = da.load_nc("Ag-1.nc")
@@ -156,7 +159,7 @@ def test_net_cdf_writing(cd_tmpdir, ds):
     assert actual.total_dose_rate.attrs["units"] == "Sv/h"
 
 
-def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
+def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):  # noqa: ARG001
     group = "some-group"
     assert ds.total_dose_rate is not None
     da.save_nc(ds, "Ag-1.nc", mode="a", group=group)
@@ -169,7 +172,8 @@ def test_net_cdf_writing_with_group_and_appending(cd_tmpdir, ds):
 def test_inventory_with_gamma(dataset_with_gamma):
     assert dataset_with_gamma.gamma is not None
     assert dataset_with_gamma.gamma.sel(
-        time_step_number=2, gamma_boundaries=1.0
+        time_step_number=2,
+        gamma_boundaries=1.0,
     ).item() == pytest.approx(17857.24443195)
 
 

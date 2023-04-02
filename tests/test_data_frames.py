@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pandas as pd
 import pytest
-import xarray as xr
 import xpypact.data_arrays as da
 
 from xpypact.data_frames import (
@@ -12,7 +13,12 @@ from xpypact.data_frames import (
     get_time_steps,
     get_timestep_nuclides,
 )
-from xpypact.inventory import Inventory, from_json
+from xpypact.inventory import from_json
+
+if TYPE_CHECKING:
+    import xarray as xr
+
+    from xpypact.inventory import Inventory
 
 
 @pytest.fixture(scope="module")
@@ -49,7 +55,7 @@ def test_get_nuclides(ds):
 def test_get_timestep_nuclides(ds):
     timestep_nuclides = get_timestep_nuclides(ds)
     timestep_nuclides = timestep_nuclides.set_index(
-        ["time_step_number", "element", "mass_number", "state"]
+        ["time_step_number", "element", "mass_number", "state"],
     )
     assert timestep_nuclides.loc[2, "H", 1, ""].grams == 0.11468776343339874e-10
 

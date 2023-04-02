@@ -1,15 +1,19 @@
 """Output utilities."""
 from __future__ import annotations
 
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
 import sys
 
-from collections.abc import Iterable
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def print_cols(
-    seq: Iterable[Any], fid: TextIO = sys.stdout, max_columns: int = 6, fmt: str = "{}"
+    seq: Iterable[Any],
+    fid: TextIO = sys.stdout,
+    max_columns: int = 6,
+    fmt: str = "{}",
 ) -> int:
     """Print sequence in columns.
 
@@ -22,10 +26,10 @@ def print_cols(
     Returns:
         int: the number of the last column printed on the last row
     """
-    i = 0  # noqa: ignore[SIM113]
+    i = 0
     for s in seq:
         print(fmt.format(s), file=fid, end="")
-        if (0 < i) and (i % max_columns == 0):
+        if (i > 0) and (i % max_columns == 0):
             print(file=fid)
         else:
             print(" ", file=fid, end="")

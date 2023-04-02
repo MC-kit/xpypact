@@ -1,17 +1,21 @@
 """Code to implement DuckDB DAO."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, cast
+
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import duckdb as db
-import pandas as pd
-import xarray as xr
 
 from xpypact import get_gamma, get_nuclides, get_run_data, get_time_steps, get_timestep_nuclides
+from xpypact.dao import DataAccessInterface
 from xpypact.utils.resource import path_resolver
 
-from ...dao import DataAccessInterface
+if TYPE_CHECKING:
+
+    import pandas as pd
+    import xarray as xr
 
 
 # noinspection SqlNoDataSourceInspection
@@ -40,7 +44,7 @@ class DuckDBDAO(DataAccessInterface):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.con.close()
 
-    def get_tables_info(self):
+    def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
         return self.con.execute("select * from information_schema.tables").df()
 
@@ -49,11 +53,11 @@ class DuckDBDAO(DataAccessInterface):
 
         Retain existing tables.
         """
-        sql_path: Path = path_resolver(__package__)("create_schema.sql")
+        sql_path: Path = cast(Path, path_resolver(__package__)("create_schema.sql"))
         sql = sql_path.read_text(encoding="utf-8")
         self.con.execute(sql)
 
-    def drop_schema(self):
+    def drop_schema(self) -> None:
         """Drop our DB objects."""
         tables = [
             "timestep_nuclide",
@@ -111,7 +115,7 @@ class DuckDBDAO(DataAccessInterface):
         """
         return self.con.execute("select * from timestep_nuclide").df()
 
-    def load_gamma(self, time_step_number: int = None) -> pd.DataFrame:
+    def load_gamma(self, time_step_number: int | None = None) -> pd.DataFrame:
         """Load time step x gamma table.
 
         Args:
@@ -157,9 +161,11 @@ class DuckDBDAO(DataAccessInterface):
 
 
 def _add_material_and_case_columns(
-    table: pd.DataFrame, material_id: int, case_id: str
+    table: pd.DataFrame,
+    material_id: int,
+    case_id: str,
 ) -> pd.DataFrame:
-    columns = table.columns.values
+    columns = table.columns.to_numpy()
     table["material_id"] = material_id
     table["case_id"] = case_id
     new_columns = ["material_id", "case_id"]

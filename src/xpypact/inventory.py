@@ -1,14 +1,13 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import io
+import io  # noqa: TCH003 - needed for dispatch
 
-from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import singledispatch
-from pathlib import Path
+from pathlib import Path  # noqa: TCH003 - needed for dispatch
 
 import numpy as np
 
@@ -16,7 +15,12 @@ import orjson as json
 
 from xpypact.run_data import RunData
 from xpypact.time_step import TimeStep
-from xpypact.utils.types import NDArrayFloat
+
+if TYPE_CHECKING:
+
+    from collections.abc import Callable, Iterable
+
+    from xpypact.utils.types import NDArrayFloat
 
 FLOAT_ZERO = 0.0
 
@@ -60,7 +64,7 @@ def _create_json_inventory_data_mapper() -> Callable[[dict[str, Any]], TimeStep]
         if duration == FLOAT_ZERO:
             duration = ts.cooling_time - prev_cooling_time
         if duration < FLOAT_ZERO:
-            raise InventoryNonMonotonicTimesError()  # pragma: no cover
+            raise InventoryNonMonotonicTimesError  # pragma: no cover
         ts.duration = duration
         prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
         if duration == FLOAT_ZERO:

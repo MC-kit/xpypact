@@ -44,6 +44,7 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
+duckdb = ">=0.7.1"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 numpy = ">=1.24.2"
@@ -52,7 +53,6 @@ orjson = ">=3.6.7"
 pandas = ">=1.4.1"
 xarray = ">=2022.3.0"
 multipledispatch = ">=0.6.0"
-duckdb = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -248,7 +248,7 @@ omit = ["*_tab.py", "**/__init__.py"]
 show_missing = true
 skip_covered = true
 fail_under = 100
-omit = ["*_tab.py", "**/__init__.py"]
+omit = ["*_tab.py", "**/__init__.py", "**/types.py"]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma
@@ -262,6 +262,7 @@ exclude_lines = [
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
 ignore_errors = true
 sort = "Cover"
@@ -379,30 +380,52 @@ deprecated-modules=["six"]
 target-version = "py38"
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
 select= [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "I",
-  "N",
-  "PIE",
-  "PT",
-  "PL",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "PYI",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "W",
-  "YTT"
+    "A", # flake8-builtins
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "COM", # flake8-commas
+    "DJ", # flake8-django
+    "D", # pydocstyle
+    "DTZ", # flake8-datetimez
+    "EM", # flake8-errmsg
+    "ERA", # eradicate
+    "E", # pycodestyle
+    "EXE", # flake8-executable
+    "FBT", # flake8-boolean-trap
+    "F", # Pyflakes
+    "G", # flake8-logging-format
+    "ICN", # flake8-import-conventions
+    "I", # isort
+    "INP", # flake8-no-pep420
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "NPY", # NumPy-specific rules
+    "PD", # pandas-vet
+    "PGH", # pygrep-hooks
+    "PIE", # flake8-pie
+    "PL", # Pylint
+    "PT", # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "PYI", # flake8-pyi
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "TRY", # tryceratops
+    "UP", # pyupgrade
+    "W", # pycodestyle 2
+    "YTT", # flake8-2020
 ]
 
 # Ignore rules that currently fail on the codebase
@@ -419,8 +442,8 @@ ignore = [
     "D107",   # Missing docstring in __init__
     # "E203",   # E203: Whitespace before ‘:'
     # "E401",  # Multiple imports on one line
-    "E402",  # Module level import not at top of file
-    "E501",  # Line too long (<LENGTH> > 100 characters)
+    # "E402",  # Module level import not at top of file
+    # "E501",  # Line too long (<LENGTH> > 100 characters)
     # "E701",  # Multiple statements on one line (colon)
     # "E702",  # Multiple statements on one line (semicolon)
     # "E703",  # Statement ends with an unnecessary semicolon

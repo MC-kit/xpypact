@@ -20,7 +20,7 @@ from xpypact.run_data import RunData
                 run_name="* Material Ag, fluxes 1",
                 flux_name="55.F9.10 11-L2-02W HFS_GLRY_08_U",
             ),
-        )
+        ),
     ],
 )
 def test_from_json(inp, expected):

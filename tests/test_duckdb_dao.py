@@ -10,19 +10,19 @@ from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 def test_ddl(tmp_path):
     with DataAccessObject(tmp_path / "test-ddl.duckdb") as dao:
         tables = dao.get_tables_info()
-        assert 5 == len(tables)
+        assert len(tables) == 5
         table_names = tables["table_name"]
         for name in ["rundata", "timestep", "nuclide", "timestep_nuclide", "timestep_gamma"]:
-            assert name in table_names.values
+            assert name in table_names.to_numpy()
         dao.drop_schema()
         tables = dao.get_tables_info()
-        assert 0 == len(tables)
+        assert len(tables) == 0
         dao.create_schema()
         tables = dao.get_tables_info()
-        assert 5 == len(tables)
+        assert len(tables) == 5
     with DataAccessObject(tmp_path / "test-ddl.duckdb", read_only=True) as dao:
         tables = dao.get_tables_info()
-        assert 5 == len(tables)
+        assert len(tables) == 5
         with pytest.raises(InvalidInputException, match="Cannot execute statement"):
             dao.drop_schema()
 
@@ -43,7 +43,12 @@ def test_save(dataset_with_gamma):
         time_step_nuclides = dao.load_time_step_nuclides()
         assert not time_step_nuclides.empty
         time_step_nuclides = time_step_nuclides.set_index(
-            ["time_step_number", "element", "mass_number", "state"]
+            [
+                "time_step_number",
+                "element",
+                "mass_number",
+                "state",
+            ],
         )
         assert not time_step_nuclides.loc[2, "Cu"].empty
         gamma = dao.load_gamma()

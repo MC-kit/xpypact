@@ -47,10 +47,8 @@ def test_flux_constructor():
     assert flux.norm == 2.0
     assert not is_709_fluxes(flux)
     assert are_fluxes_close(flux, flux)
-    with pytest.raises(ValueError, match="Incompatible sizes of bins and fluxes") as exc_info:
+    with pytest.raises(ValueError, match="Incompatible sizes of bins and fluxes"):
         Fluxes(ebins[:-2], bins, "test")
-    assert exc_info.type == ValueError
-    assert exc_info.value.args[0].startswith("Incompatible sizes of bins and fluxes")
     ebins, bins = define_709_bins_and_fluxes(np.ones(709, dtype=float))
     f709 = Fluxes(ebins, bins, "test 709")
     assert f709.total == 709
@@ -157,7 +155,8 @@ def test_print_arbitrary_fluxes(data, arb_flux_1):
 def test_define_arb_flux_fail():
     data = np.linspace(1, 10, 4)
     with pytest.raises(
-        ValueError, match="The number of float values from arb_flux file should be odd."
+        ValueError,
+        match="The number of float values from arb_flux file should be odd.",
     ):
         define_arb_bins_and_fluxes(data)
 

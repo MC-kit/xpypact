@@ -4,9 +4,12 @@ This can be used to store the data in databases or parquet datasets.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
-from xarray import Dataset
+if TYPE_CHECKING:
+    from xarray import Dataset
 
 
 def get_run_data(ds: Dataset) -> pd.DataFrame:
@@ -25,7 +28,7 @@ def get_run_data(ds: Dataset) -> pd.DataFrame:
             "flux_name": ds.attrs["flux_name"],
             "dose_rate_type": ds.attrs["dose_rate_type"],
             "dose_rate_distance": ds.attrs["dose_rate_distance"],
-        }
+        },
     )
 
 
@@ -81,7 +84,7 @@ def get_time_steps(ds: Dataset) -> pd.DataFrame:
                 "total_ingest1ion_dose": "ingest1ion_dose",
                 "total_inhalation_dose": "inhalation_dose",
                 "total_dose_rate": "dose_rate",
-            }
+            },
         )
     )
 
@@ -133,12 +136,7 @@ def get_timestep_nuclides(ds: Dataset) -> pd.DataFrame:
         "nuclide_ingestion",
         "nuclide_inhalation",
     ]
-    columns_all = [
-        "time_step_number",
-        "element",
-        "mass_number",
-        "state",
-    ] + columns
+    columns_all = ["time_step_number", "element", "mass_number", "state", *columns]
 
     return (
         ds[columns]
@@ -160,7 +158,7 @@ def get_timestep_nuclides(ds: Dataset) -> pd.DataFrame:
                 "nuclide_dose": "dose",
                 "nuclide_ingestion": "ingestion",
                 "nuclide_inhalation": "inhalation",
-            }
+            },
         )
     )
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 import bz2
 import os
 
@@ -18,7 +20,7 @@ def data() -> Path:
     Returns:
         Path to tests/data directory
     """
-    return path_resolver("tests")("data")
+    return cast(Path, path_resolver("tests")("data"))
 
 
 @pytest.fixture()

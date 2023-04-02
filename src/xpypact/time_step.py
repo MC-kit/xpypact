@@ -1,14 +1,16 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from dataclasses import dataclass, field
 
 import numpy as np
 
 from xpypact.nuclide import Nuclide
-from xpypact.utils.types import NDArrayFloat
+
+if TYPE_CHECKING:
+    from xpypact.utils.types import NDArrayFloat  # pragma: no cover
 
 FLOAT_ZERO = 0.0
 
@@ -82,7 +84,6 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
     duration: float = 0.0
     elapsed_time: float = 0.0
     flux: float = 0.0
-    # TODO dvp: compute the values in case of FISPACT v.4 to maintain same logic.
     total_atoms: float = 0.0  # FISPACT 5.0
     total_activity: float = 0.0  # -/-
     alpha_activity: float = 0.0  # -/-
@@ -99,7 +100,7 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
     nuclides: list[Nuclide] = field(default_factory=list)
     gamma_spectrum: GammaSpectrum | None = None
 
-    def __post_init__(self) -> None:  # noqa: ignore[CAC001]
+    def __post_init__(self) -> None:
         """Correct data missed in FISPACT-4."""
         # workarounds for FISPACT v.4
         if self.total_mass == FLOAT_ZERO:
@@ -146,10 +147,7 @@ class TimeStep:  # pylint: disable=too-many-instance-attributes
         json_dose_rate = json_dict.pop("dose_rate")
         dose_rate = DoseRate(**json_dose_rate)
         json_nuclides = json_dict.pop("nuclides")
-        if json_nuclides:
-            nuclides = [Nuclide.from_json(n) for n in json_nuclides]
-        else:
-            nuclides = []  # pragma: no cover
+        nuclides = [Nuclide.from_json(n) for n in json_nuclides] if json_nuclides else []
         json_gamma_spectrum = json_dict.pop("gamma_spectrum", None)
         if json_gamma_spectrum:
             gamma_spectrum = GammaSpectrum.from_json(json_gamma_spectrum)

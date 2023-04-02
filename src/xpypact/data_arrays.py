@@ -18,7 +18,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, TextIO, cast
 
 from functools import reduce
-from pathlib import Path
 
 import numpy as np
 
@@ -30,12 +29,11 @@ import xarray as xr
 from mckit_nuclides.elements import ELEMENTS_TABLE
 from mckit_nuclides.nuclides import NUCLIDES_TABLE
 from xarray.core.accessor_dt import DatetimeAccessor
-from xpypact.inventory import Inventory
 from xpypact.inventory import from_json as inventory_from_json
-from xpypact.time_step import TimeStep
-from xpypact.utils.types import MayBePath
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pathlib import Path
+
     try:
         from dask.delayed import Delayed
     except ImportError:
@@ -44,6 +42,10 @@ if TYPE_CHECKING:  # pragma: no cover
         from dask.dataframe import DataFrame as DaskDataFrame
     except ImportError:
         DaskDataFrame = None
+
+    from xpypact.inventory import Inventory
+    from xpypact.time_step import TimeStep
+    from xpypact.utils.types import MayBePath
 
 SCALABLE_COLUMNS = [
     "total_mass",
@@ -80,7 +82,9 @@ def _make_nuclide_var(getter, nuclides, dtype=float) -> tuple[str, ArrayLike]:
 
 
 def _make_time_step_and_nuclide_var(
-    getter, nuclides, dtype=float
+    getter,
+    nuclides,
+    dtype=float,
 ) -> tuple[tuple[str, str], ArrayLike]:
     _data = np.fromiter(map(getter, nuclides), dtype=dtype)
     return ("time_step_number", "nuclide"), _data.reshape(1, _data.size)
@@ -111,13 +115,16 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         "nuclide_grams": _make_time_step_and_nuclide_var(lambda n: n.grams, ts.nuclides),
         "nuclide_activity": _make_time_step_and_nuclide_var(lambda n: n.activity, ts.nuclides),
         "nuclide_alpha_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.alpha_activity, ts.nuclides
+            lambda n: n.alpha_activity,
+            ts.nuclides,
         ),
         "nuclide_beta_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.beta_activity, ts.nuclides
+            lambda n: n.beta_activity,
+            ts.nuclides,
         ),
         "nuclide_gamma_activity": _make_time_step_and_nuclide_var(
-            lambda n: n.gamma_activity, ts.nuclides
+            lambda n: n.gamma_activity,
+            ts.nuclides,
         ),
         "nuclide_heat": _make_time_step_and_nuclide_var(lambda n: n.heat, ts.nuclides),
         "nuclide_alpha_heat": _make_time_step_and_nuclide_var(lambda n: n.alpha_heat, ts.nuclides),
@@ -252,7 +259,8 @@ def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
 
 
 def add_atomic_number_coordinate(
-    ds: xr.Dataset, coordinate_name: str = "atomic_number"
+    ds: xr.Dataset,
+    coordinate_name: str = "atomic_number",
 ) -> xr.Dataset:
     """Add coordinate for Z.
 
