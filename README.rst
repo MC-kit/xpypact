@@ -9,7 +9,7 @@
 .. contents::
 
 
-.. todo::
+.. note::
 
     This document is in progress.
 
@@ -21,7 +21,7 @@ This allows efficient data extraction and aggregation.
 
 .. configures and runs FISPACT, converts FISPACT output to xarray datasets.
 
-.. todo::
+.. note::
 
     Currently available FISPACT v.5 API uses rather old python version (3.6).
     That prevents direct use of their API in our package (>=3.8).
@@ -55,7 +55,7 @@ From source
 Examples
 --------
 
-.. todo::
+.. note::
 
     Add examples
 
@@ -88,7 +88,7 @@ Just follow ordinary practice:
 References
 ----------
 
-.. todo::
+.. note::
 
     add references to FISPACT, pypact and used tools:  poetry etc
 
