@@ -197,7 +197,11 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
     for k, v in to_proces.items():
         path: Path = target_dir / k
         path.mkdir(parents=True, exist_ok=True)
-        frame = _add_material_and_case_columns(v, material_id, case_id)  # noqa: F841
+        frame = _add_material_and_case_columns(  # noqa: F841 - used in query
+            v,
+            material_id,
+            case_id,
+        )
         con = duckdb.connect(":memory:")
         sql = f"""
             copy
@@ -205,7 +209,7 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
             to
             '{path}'
             (format parquet, partition_by (material_id, case_id), allow_overwrite 1)
-            """  # noqa: S608
+            """  # noqa: S608 - sql injection
         con.execute(sql)
         con.close()
 
