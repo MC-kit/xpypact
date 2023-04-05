@@ -14,7 +14,6 @@ from xpypact.dao import DataAccessInterface
 from xpypact.utils.resource import path_resolver
 
 if TYPE_CHECKING:
-
     import pandas as pd
     import xarray as xr
 

@@ -17,7 +17,6 @@ from xpypact.run_data import RunData
 from xpypact.time_step import TimeStep
 
 if TYPE_CHECKING:
-
     from collections.abc import Callable, Iterable
 
     from xpypact.utils.types import NDArrayFloat

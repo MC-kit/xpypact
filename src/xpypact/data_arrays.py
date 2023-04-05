@@ -91,7 +91,6 @@ def _make_time_step_and_nuclide_var(
 
 
 def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
-
     data_vars = {
         "irradiation_time": _make_var(ts.irradiation_time),
         "cooling_time": _make_var(ts.cooling_time),
