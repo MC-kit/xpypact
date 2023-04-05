@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
-from duckdb import InvalidInputException
+from duckdb import InvalidInputException, connect
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
+from xpypact.dao.duckdb import write_parquet
 
 
 def test_ddl(tmp_path):
@@ -57,3 +60,17 @@ def test_save(dataset_with_gamma):
         assert not gamma.loc[2, 1.0].empty
         gamma2 = dao.load_gamma(2)
         assert not gamma2.empty
+
+
+# noinspection SqlNoDataSourceInspection
+def test_write_parquet(tmp_path, dataset_with_gamma):
+    write_parquet(tmp_path, dataset_with_gamma, 1, 1)
+    assert Path(tmp_path / "time_steps/material_id=1").exists()
+    assert Path(tmp_path / "time_steps/material_id=1/case_id=1").exists()
+    write_parquet(tmp_path, dataset_with_gamma, 1, 2)
+    assert Path(tmp_path / "time_steps/material_id=1/case_id=2").exists()
+    con = connect(":memory:")
+    path = tmp_path / "time_steps/*/*/*.parquet"
+    sql = f"select * from read_parquet('{path}', hive_partitioning=true)"  # noqa: S608
+    time_steps = con.execute(sql).df()
+    assert not time_steps.loc[2].empty

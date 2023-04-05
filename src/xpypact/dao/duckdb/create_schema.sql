@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS rundata (
     material_id uinteger not null,
-    case_id varchar not null,
+    case_id     uinteger not null,
     timestamp timestamp not null,
     run_name varchar not null,
     flux_name varchar NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS rundata (
 );
 
 CREATE TABLE IF NOT EXISTS timestep(
-    material_id  uinteger not null,
-    case_id      varchar not null,
+    material_id uinteger not null,
+    case_id     uinteger not null,
     time_step_number uinteger not null,
     elapsed_time float4 not null,
     irradiation_time float4 not null,
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS nuclide(
 );
 
 CREATE TABLE IF NOT EXISTS timestep_nuclide(
-    material_id  uinteger not null,
-    case_id      varchar not null,
+    material_id uinteger not null,
+    case_id     uinteger not null,
     time_step_number uinteger not null,
     element varchar(2) not null,
     mass_number usmallint not null,
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS timestep_nuclide(
 );
 
 CREATE TABLE IF NOT EXISTS timestep_gamma(
-    material_id  uinteger not null,
-    case_id      varchar not null,
+    material_id uinteger not null,
+    case_id     uinteger not null,
     time_step_number uinteger not null,
     boundary real not null check(0 <= boundary),
     rate real not null,

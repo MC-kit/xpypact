@@ -157,6 +157,19 @@ ruff-lsp = "^0.0.24"
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
 
+
+[tool.poetry.group.adhoc]
+optional = true
+
+[tool.poetry.group.adhoc.dependencies]
+pyarrow = "^11.0.0"
+
+[tool.poetry.group.analysis]
+optional = true
+
+[tool.poetry.group.analysis.dependencies]
+jupyterlab = "^3.6.3"  # don't use >= - installs development version 4.0...
+
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
@@ -518,7 +531,7 @@ exclude = [
 "src/xpypact/utils/resource.py" = ["ANN202"]
 "tools/*" = [
     "T201",
-    "INP001",  # file ... is part of implicit namespace ... add __init__.py - there are no modules in tools
+    "INP001",  # file ... is part of implicit namespace ... add demo_duckdb_parquet_access.py - there are no modules in tools
 ]
 
 [tool.ruff.mccabe]
