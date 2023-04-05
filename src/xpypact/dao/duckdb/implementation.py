@@ -197,11 +197,11 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
     for k, v in to_proces.items():
         path: Path = target_dir / k
         path.mkdir(parents=True, exist_ok=True)
-        _add_material_and_case_columns(v, material_id, case_id)
+        frame = _add_material_and_case_columns(v, material_id, case_id)  # noqa: F841
         con = duckdb.connect(":memory:")
         sql = f"""
             copy
-            (select * from _table)
+            (select * from frame)
             to
             '{path}'
             (format parquet, partition_by (material_id, case_id), allow_overwrite 1)
@@ -213,11 +213,10 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
 def _add_material_and_case_columns(
     table: pd.DataFrame,
     material_id: int,
-    case_id: str,
+    case_id: int,
 ) -> pd.DataFrame:
     columns = table.columns.to_numpy()
     table["material_id"] = material_id
     table["case_id"] = case_id
-    new_columns = ["material_id", "case_id"]
-    new_columns.extend(columns)
+    new_columns = ["material_id", "case_id", *columns]
     return table[new_columns]
