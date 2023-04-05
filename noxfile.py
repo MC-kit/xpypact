@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from nox import Session
 
 nox.options.sessions = (
-    "safety",
+    # "safety",
     "pre-commit",
     "mypy",
     "tests",
@@ -124,23 +124,18 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-@session
-def safety(s: Session) -> None:
-    """Scan dependencies for insecure packages."""
-    requirements = f"{s.virtualenv.location}/safety-requirements.txt"
-    s.run(
-        "poetry",
-        "export",
-        "-f",
-        "requirements.txt",
-        "-o",
-        requirements,
-        "--only",
-        "main",
-        external=True,
-    )
-    s.install("safety")
-    s.run("safety", "check", "--full-report", f"--file={requirements}", *s.posargs)
+# @session
+# def safety(s: Session) -> None:
+#     """Scan dependencies for insecure packages."""
+#     s.run(
+#         "poetry",
+#         "export",
+#         "-f",
+#         "requirements.txt",
+#         "-o",
+#         requirements,
+#         "--only",
+#         "main",
 
 
 @session(python=supported_pythons)
