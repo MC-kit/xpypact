@@ -19,6 +19,12 @@ Description
 The module loads FISPACT JSON output as xarray dataset.
 This allows efficient data extraction and aggregation.
 
+Implemented functionality
+-------------------------
+
+- export to DuckDB
+- export to parquet files
+
 .. configures and runs FISPACT, converts FISPACT output to xarray datasets.
 
 .. note::
@@ -75,9 +81,9 @@ Contributing
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
-.. image:: https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black
-   :target: https://github.com/guilatrova/tryceratops
-   :alt: try/except style: tryceratops
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
+   :target: https://github.com/charliermarsh/ruff
+   :alt: linter
 
 Just follow ordinary practice:
 
