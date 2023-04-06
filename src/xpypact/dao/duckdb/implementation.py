@@ -3,10 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
-import duckdb
 import duckdb as db
 
 from xpypact import get_gamma, get_nuclides, get_run_data, get_time_steps, get_timestep_nuclides
@@ -23,30 +22,31 @@ if TYPE_CHECKING:
 class DuckDBDAO(DataAccessInterface):
     """Implementation of DataAccessInterface for DuckDB."""
 
-    path: Path | None = None
-    read_only: bool = False
-    config: dict | None = None
-    con: db.DuckDBPyConnection = field(init=False)
-
-    def __enter__(self):
-        if self.path is not None:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-        database_name = str(self.path) if self.path else ":memory:"
-        # duckdb.connect(... config=None) - doesn't work
-        if self.config is None:
-            self.con = db.connect(database_name, self.read_only)
-        else:
-            self.con = db.connect(database_name, self.read_only, self.config)
-        if not self.read_only:
-            self.create_schema()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.con.close()
+    con: db.DuckDBPyConnection
 
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
         return self.con.execute("select * from information_schema.tables").df()
+
+    @property
+    def tables(self) -> tuple[str, str, str, str, str]:
+        """List tables being used by xpypact dao.
+
+        Returns:
+            Tuple with table names.
+        """
+        return "rundata", "timestep", "nuclide", "timestep_nuclide", "timestep_gamma"
+
+    def has_schema(self) -> bool:
+        """Check if the schema is available in a database."""
+        db_tables = self.get_tables_info()
+
+        if len(db_tables) < len(self.tables):
+            return False
+
+        table_names = db_tables["table_name"].to_numpy()
+
+        return all(name in table_names for name in self.tables)
 
     def create_schema(self) -> None:
         """Create tables to store xpypact dataset.
@@ -189,27 +189,30 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
     """
     to_proces: dict[str, pd.DataFrame] = {
         "run_data": get_run_data(ds),
+        "nuclides": get_nuclides(ds),
         "time_steps": get_time_steps(ds),
         "timestep_nuclides": get_timestep_nuclides(ds),
         "gamma": get_gamma(ds),
     }
-    for k, v in to_proces.items():
-        path: Path = target_dir / k
-        path.mkdir(parents=True, exist_ok=True)
-        frame = _add_material_and_case_columns(  # noqa: F841 - used in query
-            v,
-            material_id,
-            case_id,
-        )
-        con = duckdb.connect(":memory:")
-        sql = f"""
-            copy
-            (select * from frame)
-            to
-            '{path}'
-            (format parquet, partition_by (material_id, case_id), allow_overwrite 1)
-            """  # noqa: S608 - sql injection
-        con.execute(sql)
+    con = db.connect(":memory:")
+    try:
+        for k, v in to_proces.items():
+            path: Path = target_dir / k
+            path.mkdir(parents=True, exist_ok=True)
+            frame = _add_material_and_case_columns(  # noqa: F841 - used in query
+                v,
+                material_id,
+                case_id,
+            )
+            sql = f"""
+                copy
+                (select * from frame)
+                to
+                '{path}'
+                (format parquet, partition_by (material_id, case_id), allow_overwrite 1)
+                """  # noqa: S608 - sql injection
+            con.execute(sql)
+    finally:
         con.close()
 
 

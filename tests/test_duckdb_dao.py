@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import closing
 from pathlib import Path
 
 import pandas as pd
@@ -11,27 +12,28 @@ from xpypact.dao.duckdb import write_parquet
 
 
 def test_ddl(tmp_path):
-    with DataAccessObject(tmp_path / "test-ddl.duckdb") as dao:
-        tables = dao.get_tables_info()
-        assert len(tables) == 5
-        table_names = tables["table_name"]
-        for name in ["rundata", "timestep", "nuclide", "timestep_nuclide", "timestep_gamma"]:
-            assert name in table_names.to_numpy()
-        dao.drop_schema()
-        tables = dao.get_tables_info()
-        assert len(tables) == 0
+    duckdb_path = tmp_path / "test-ddl.duckdb"
+    with closing(connect(str(duckdb_path))) as con:
+        dao = DataAccessObject(con)
+        assert not dao.has_schema()
         dao.create_schema()
-        tables = dao.get_tables_info()
-        assert len(tables) == 5
-    with DataAccessObject(tmp_path / "test-ddl.duckdb", read_only=True) as dao:
-        tables = dao.get_tables_info()
-        assert len(tables) == 5
+        assert dao.has_schema()
+        dao.drop_schema()
+        assert not dao.has_schema()
+        dao.create_schema()
+        assert dao.has_schema()
+
+    with closing(connect(str(duckdb_path), read_only=True)) as con:
+        dao = DataAccessObject(con)
+        assert dao.has_schema()
         with pytest.raises(InvalidInputException, match="Cannot execute statement"):
             dao.drop_schema()
 
 
 def test_save(dataset_with_gamma):
-    with DataAccessObject(config={"default_null_order": "nulls_last"}) as dao:
+    with closing(connect(":memory:")) as con:
+        dao = DataAccessObject(con)
+        dao.create_schema()
         dao.save(dataset_with_gamma)
         run_data = dao.load_rundata()
         assert run_data["timestamp"].item() == pd.Timestamp("2022-02-21 01:52:45")
@@ -70,6 +72,10 @@ def test_write_parquet(tmp_path, dataset_with_gamma):
     write_parquet(tmp_path, dataset_with_gamma, 1, 2)
     assert Path(tmp_path / "time_steps/material_id=1/case_id=2").exists()
     con = connect(":memory:")
+    path = tmp_path / "nuclides/*/*/*.parquet"
+    sql = f"select * from read_parquet('{path}', hive_partitioning=true)"  # noqa: S608
+    nuclides = con.execute(sql).df()
+    assert not nuclides.loc[2].empty
     path = tmp_path / "time_steps/*/*/*.parquet"
     sql = f"select * from read_parquet('{path}', hive_partitioning=true)"  # noqa: S608
     time_steps = con.execute(sql).df()
