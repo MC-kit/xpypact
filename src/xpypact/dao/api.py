@@ -11,19 +11,21 @@ if TYPE_CHECKING:
 
 
 class DataAccessInterface(ABC):
-    """Abstract DAO."""
+    """Abstract DAO for to save/load xpypact dataset.
 
-    @abstractmethod
-    def __enter__(self):
-        """Use DAO as context manager."""
+    The subclasses implement methods to save/load xpypact dataset to/from
+    database or filesystem.
 
-    @abstractmethod
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Use DAO as context manager."""
+    A caller is to provide connection or whatever resource to subclasses.
+    """
 
     @abstractmethod
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
+
+    @abstractmethod
+    def has_schema(self) -> bool:
+        """Check if the schema is available in a database."""
 
     @abstractmethod
     def create_schema(self) -> None:
