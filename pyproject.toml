@@ -13,7 +13,9 @@ keywords = [
     "isotope",
     "abundance",
     "FISPACT",
-    "activation"
+    "activation",
+    "duckdb",
+    "parquet"
 ]
 readme = "README.rst"
 packages = [
