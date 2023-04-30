@@ -204,12 +204,16 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
                 material_id,
                 case_id,
             )
+            time_step_partition = "time_step_number, " if "time_step_number" in v.columns else ""
             sql = f"""
                 copy
                 (select * from frame)
-                to
-                '{path}'
-                (format parquet, partition_by (material_id, case_id), allow_overwrite 1)
+                to '{path}'
+                (
+                    format parquet,
+                    partition_by ({time_step_partition}material_id, case_id),
+                    allow_overwrite 1
+                )
                 """  # noqa: S608 - sql injection
             con.execute(sql)
     finally:

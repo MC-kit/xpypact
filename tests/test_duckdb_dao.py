@@ -67,16 +67,16 @@ def test_save(dataset_with_gamma):
 # noinspection SqlNoDataSourceInspection
 def test_write_parquet(tmp_path, dataset_with_gamma):
     write_parquet(tmp_path, dataset_with_gamma, 1, 1)
-    assert Path(tmp_path / "time_steps/material_id=1").exists()
-    assert Path(tmp_path / "time_steps/material_id=1/case_id=1").exists()
+    assert Path(tmp_path / "time_steps/time_step_number=1/material_id=1").exists()
+    assert Path(tmp_path / "time_steps/time_step_number=1/material_id=1/case_id=1").exists()
     write_parquet(tmp_path, dataset_with_gamma, 1, 2)
-    assert Path(tmp_path / "time_steps/material_id=1/case_id=2").exists()
+    assert Path(tmp_path / "time_steps/time_step_number=1/material_id=1/case_id=2").exists()
     con = connect(":memory:")
     path = tmp_path / "nuclides/*/*/*.parquet"
     sql = f"select * from read_parquet('{path}', hive_partitioning=true)"  # noqa: S608
     nuclides = con.execute(sql).df()
     assert not nuclides.loc[2].empty
-    path = tmp_path / "time_steps/*/*/*.parquet"
+    path = tmp_path / "time_steps/*/*/*/*.parquet"
     sql = f"select * from read_parquet('{path}', hive_partitioning=true)"  # noqa: S608
     time_steps = con.execute(sql).df()
     assert not time_steps.loc[2].empty
