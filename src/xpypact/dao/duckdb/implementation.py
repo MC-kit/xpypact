@@ -212,7 +212,7 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
                 (
                     format parquet,
                     partition_by ({time_step_partition}material_id, case_id),
-                    allow_overwrite 1
+                    overwrite_or_ignore true
                 )
                 """  # noqa: S608 - sql injection
             con.execute(sql)

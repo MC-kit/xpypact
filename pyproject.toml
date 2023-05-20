@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.4.0"
+version = "0.4.1a0"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -46,7 +46,7 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-duckdb = ">=0.7.1"
+duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 numpy = ">=1.24.2"
