@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.4.0"
+version = "0.4.1"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -46,7 +46,7 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-duckdb = ">=0.7.1"
+duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
 numpy = ">=1.24.2"
@@ -412,7 +412,7 @@ select= [
     "ERA", # eradicate
     "E", # pycodestyle
     "EXE", # flake8-executable
-    "FBT", # flake8-boolean-trap
+    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
     "F", # Pyflakes
     "G", # flake8-logging-format
     "ICN", # flake8-import-conventions
@@ -461,6 +461,8 @@ ignore = [
 
     # "C812",   # C812 Missing trailing comma: black compatibility
     # "C901",   # too complex - ...
+
+    # "COM812", #  [*] Trailing comma missing
 
     # "D100",   # Missing docstring in public module
     # "D101",   # Missing docstring in public class
