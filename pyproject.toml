@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.4.1"
+version = "0.4.2"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
