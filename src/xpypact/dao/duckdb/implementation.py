@@ -83,39 +83,39 @@ class DuckDBDAO(DataAccessInterface):
         self._save_time_step_nuclides(ds)
         self._save_gamma(ds)
 
-    def load_rundata(self) -> pd.DataFrame:
+    def load_rundata(self) -> db.DuckDBPyRelation:
         """Load FISPACT run data as table.
 
         Returns:
-            FISPACT run data
+            FISPACT run data ad RelObj
         """
-        return self.con.execute("select * from rundata").df()
+        return self.con.table("rundata")
 
-    def load_nuclides(self) -> pd.DataFrame:
+    def load_nuclides(self) -> db.DuckDBPyRelation:
         """Load nuclide table.
 
         Returns:
             time nuclide
         """
-        return self.con.execute("select * from nuclide").df()
+        return self.con.table("nuclide")
 
-    def load_time_steps(self) -> pd.DataFrame:
+    def load_time_steps(self) -> db.DuckDBPyRelation:
         """Load time step table.
 
         Returns:
             time step table
         """
-        return self.con.execute("select * from timestep").df()
+        return self.con.table("timestep")
 
-    def load_time_step_nuclides(self) -> pd.DataFrame:
+    def load_time_step_nuclides(self) -> db.DuckDBPyRelation:
         """Load time step x nuclides table.
 
         Returns:
             time step x nuclides table
         """
-        return self.con.execute("select * from timestep_nuclide").df()
+        return self.con.table("timestep_nuclide")
 
-    def load_gamma(self, time_step_number: int | None = None) -> pd.DataFrame:
+    def load_gamma(self, time_step_number: int | None = None) -> db.DuckDBPyRelation:
         """Load time step x gamma table.
 
         Args:
@@ -127,37 +127,58 @@ class DuckDBDAO(DataAccessInterface):
         sql = "select * from timestep_gamma"
         if time_step_number is not None:
             sql += f" where time_step_number == {time_step_number}"
-        return self.con.execute(sql).df()
+        return self.con.sql(sql)
 
-    def _save_run_data(self, ds: xr.Dataset, material_id=1, case_id=1):
+    def _save_run_data(self, ds: xr.Dataset, material_id=1, case_id=1) -> None:
         _table = get_run_data(ds)
         _table = _add_material_and_case_columns(_table, material_id, case_id)
-        self.con.execute("insert into rundata from _table")
-        self.con.commit()
+        sql = """
+            begin transaction;
+            insert into rundata from _table;
+            commit;
+            """
+        self.con.sql(sql)
 
     def _save_nuclides(self, ds: xr.Dataset):
         _table = get_nuclides(ds)  # noqa: F841 - used below
-        sql = "insert or ignore into nuclide select * from _table"
-        self.con.execute(sql)
-        self.con.commit()
+        sql = """
+            begin transaction;
+            insert or ignore into nuclide select * from _table;
+            commit;
+        """
+        self.con.sql(sql)
 
     def _save_time_steps(self, ds: xr.Dataset, material_id=1, case_id=1):
         _table = get_time_steps(ds)
         _table = _add_material_and_case_columns(_table, material_id, case_id)
-        self.con.execute("insert into timestep from _table")
+        sql = """
+            begin transaction;
+            insert into timestep from _table;
+            commit;
+            """
+        self.con.execute(sql)
         self.con.commit()
 
     def _save_time_step_nuclides(self, ds: xr.Dataset, material_id=1, case_id=1):
         _table = get_timestep_nuclides(ds)
         _table = _add_material_and_case_columns(_table, material_id, case_id)
-        self.con.execute("insert into timestep_nuclide from _table")
-        self.con.commit()
+        sql = """
+            begin transaction;
+            insert into timestep_nuclide from _table;
+            commit;
+            """
+        self.con.sql(sql)
 
     def _save_gamma(self, ds: xr.Dataset, material_id=1, case_id=1):
         _table = get_gamma(ds)
         _table = _add_material_and_case_columns(_table, material_id, case_id)
-        self.con.execute("insert into timestep_gamma from _table")
-        self.con.commit()
+        self.con.sql(
+            """
+            begin transaction;
+            insert into timestep_gamma from _table;
+            commit;
+            """,
+        )
 
 
 def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: int) -> None:
@@ -194,7 +215,7 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
         "timestep_nuclides": get_timestep_nuclides(ds),
         "gamma": get_gamma(ds),
     }
-    con = db.connect(":memory:")
+    con = db.connect()
     try:
         for k, v in to_proces.items():
             path: Path = target_dir / k

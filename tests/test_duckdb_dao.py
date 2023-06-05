@@ -35,17 +35,17 @@ def test_save(dataset_with_gamma):
         dao = DataAccessObject(con)
         dao.create_schema()
         dao.save(dataset_with_gamma)
-        run_data = dao.load_rundata()
+        run_data = dao.load_rundata().df()
         assert run_data["timestamp"].item() == pd.Timestamp("2022-02-21 01:52:45")
         assert run_data["run_name"].item() == "* Material Cu, fluxes 104_2_1_1"
-        nuclides = dao.load_nuclides()
+        nuclides = dao.load_nuclides().df()
         nuclides = nuclides.set_index(["element", "mass_number", "state"])
         assert not nuclides.loc["Cu"].empty
-        time_steps = dao.load_time_steps()
+        time_steps = dao.load_time_steps().df()
         assert not time_steps.empty
         time_steps = time_steps.set_index("time_step_number")
         assert not time_steps.loc[2].empty
-        time_step_nuclides = dao.load_time_step_nuclides()
+        time_step_nuclides = dao.load_time_step_nuclides().df()
         assert not time_step_nuclides.empty
         time_step_nuclides = time_step_nuclides.set_index(
             [
@@ -56,11 +56,11 @@ def test_save(dataset_with_gamma):
             ],
         )
         assert not time_step_nuclides.loc[2, "Cu"].empty
-        gamma = dao.load_gamma()
+        gamma = dao.load_gamma().df()
         assert not gamma.empty
         gamma = gamma.set_index(["time_step_number", "boundary"])
         assert not gamma.loc[2, 1.0].empty
-        gamma2 = dao.load_gamma(2)
+        gamma2 = dao.load_gamma(2).df()
         assert not gamma2.empty
 
 
