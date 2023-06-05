@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 from dataclasses import dataclass
+from multiprocessing import cpu_count
 from pathlib import Path
 
 import duckdb as db
@@ -181,15 +182,25 @@ class DuckDBDAO(DataAccessInterface):
         )
 
 
+def _compute_optimal_row_group_size(
+    frame_size: int,
+    _cpu_count: int = 0,
+    min_row_group_size=2048,
+) -> int:
+    if not _cpu_count:
+        _cpu_count = max(4, cpu_count())
+    return min(max(min_row_group_size, frame_size // _cpu_count), 1_000_000)
+
+
 def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: int) -> None:
     """Store xpypact dataset to parquet directories.
 
-    Create in 4 subdirectories in `target_dir` for run_data, time_steps,
+    Create in 4 subdirectories in `target_dir` for data subjects run_data, time_steps,
     time_step_nuclides, and gamma dataframes.
-    Save the dataframes as parquet files. The arguments material_id and case_id
-    allow to organize two level Hive partitioning. Other inventories can be
-    saved in the same `target_dir` as long as the material_id and case_id are
-    unique for an inventory.
+    Save the dataframes as parquet files.
+    Hive partiotioning is not used in this version, because resulting partions are too small.
+    The data for  can be  saved in the same `target_dir` as long as the material_id and case_id are
+    unique for an data subject.
 
     This structure can be easily and efficiently accessed from DuckDB as external data.
     For instance to collect all the inventories:
@@ -199,6 +210,8 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
 
     We use in memory DuckDB instance to transfer data to parquet to ensure compatibility
     for later reading back to DuckDB.
+
+    See about row_group_size: https://duckdb.org/docs/data/parquet/tips
 
     Args:
         target_dir: root directory to store a dataset in subdirectories
@@ -220,20 +233,21 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
         for k, v in to_proces.items():
             path: Path = target_dir / k
             path.mkdir(parents=True, exist_ok=True)
-            frame = _add_material_and_case_columns(  # noqa: F841 - used in query
+            frame = _add_material_and_case_columns(
                 v,
                 material_id,
                 case_id,
             )
-            time_step_partition = "time_step_number, " if "time_step_number" in v.columns else ""
             sql = f"""
                 copy
                 (select * from frame)
                 to '{path}'
                 (
                     format parquet,
-                    partition_by ({time_step_partition}material_id, case_id),
-                    overwrite_or_ignore true
+                    per_thread_output true,
+                    overwrite_or_ignore true,
+                    filename_pattern "data_material_id={material_id}_case_id={case_id}_{{i}}",
+                    row_group_size {_compute_optimal_row_group_size(frame.shape[0])}
                 )
                 """  # noqa: S608 - sql injection
             con.execute(sql)
