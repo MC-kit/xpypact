@@ -3,8 +3,6 @@ from __future__ import annotations
 from contextlib import closing
 from pathlib import Path
 
-import numpy as np
-
 import pandas as pd
 import pytest
 
@@ -80,7 +78,7 @@ def test_write_parquet(tmp_path, dataset_with_gamma):
     path = tmp_path / "time_steps/*.parquet"
     sql = f"select * from read_parquet('{path}')"  # noqa: S608
     time_steps = con.execute(sql).df()
-    assert time_steps.dtypes.time_step_number == np.dtype(
-        "int64",
+    assert time_steps.dtypes.time_step_number.name.starts_with(  # Windows: int32, Linux: int64
+        "int",
     ), "Make sure it's not converted to string"
     assert not time_steps.loc[2].empty
