@@ -18,6 +18,10 @@ if TYPE_CHECKING:
     import xarray as xr
 
 
+# On using DuckDB with multiple threads, see
+# https://duckdb.org/docs/guides/python/multiple_threads.html
+
+
 # noinspection SqlNoDataSourceInspection
 @dataclass
 class DuckDBDAO(DataAccessInterface):
@@ -182,14 +186,11 @@ class DuckDBDAO(DataAccessInterface):
         )
 
 
-def _compute_optimal_row_group_size(
-    frame_size: int,
-    _cpu_count: int = 0,
-    min_row_group_size=2048,
-) -> int:
+def _compute_optimal_row_group_size(frame_size: int, _cpu_count: int = 0) -> int:
     if not _cpu_count:
         _cpu_count = max(4, cpu_count())
-    return min(max(min_row_group_size, frame_size // _cpu_count), 1_000_000)
+    size = frame_size // _cpu_count
+    return min(max(size, 2048), 1_000_000)
 
 
 def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: int) -> None:
