@@ -186,7 +186,18 @@ class DuckDBDAO(DataAccessInterface):
         )
 
 
-def _compute_optimal_row_group_size(frame_size: int, _cpu_count: int = 0) -> int:
+def compute_optimal_row_group_size(frame_size: int, _cpu_count: int = 0) -> int:
+    """Compute DuckDB row group size for writing to parquet files.
+
+    This should optimize speed of reading from parquet files.
+
+    Args:
+        frame_size: length of rows to be writed
+        _cpu_count: number to split the rows
+
+    Returns:
+        the row group size
+    """
     if not _cpu_count:
         _cpu_count = max(4, cpu_count())
     size = frame_size // _cpu_count
@@ -248,7 +259,7 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
                     per_thread_output true,
                     overwrite_or_ignore true,
                     filename_pattern "data_material_id={material_id}_case_id={case_id}_{{i}}",
-                    row_group_size {_compute_optimal_row_group_size(frame.shape[0])}
+                    row_group_size {compute_optimal_row_group_size(frame.shape[0])}
                 )
                 """  # noqa: S608 - sql injection
             con.execute(sql)

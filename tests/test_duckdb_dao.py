@@ -10,6 +10,7 @@ import pytest
 from duckdb import InvalidInputException, connect
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 from xpypact.dao.duckdb import write_parquet
+from xpypact.dao.duckdb.implementation import compute_optimal_row_group_size
 
 
 def test_ddl(tmp_path):
@@ -90,3 +91,9 @@ def test_write_parquet(tmp_path, dataset_with_gamma):
         "int",
     ), "Make sure it's not converted to string"
     assert not time_steps.loc[2].empty
+
+
+def test__compute_optimal_row_group_size():
+    assert compute_optimal_row_group_size(40, 5) == 2048
+    assert compute_optimal_row_group_size(500_000, 5) == 100000
+    assert compute_optimal_row_group_size(100_000_000, 5) == 1_000_000
