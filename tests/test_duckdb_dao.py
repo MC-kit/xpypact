@@ -1,3 +1,4 @@
+"""Tests for DuckDB DAO."""
 from __future__ import annotations
 
 from contextlib import closing
@@ -12,6 +13,7 @@ from xpypact.dao.duckdb import write_parquet
 
 
 def test_ddl(tmp_path):
+    """Test schema creation."""
     duckdb_path = tmp_path / "test-ddl.duckdb"
     with closing(connect(str(duckdb_path))) as con:
         dao = DataAccessObject(con)
@@ -30,7 +32,12 @@ def test_ddl(tmp_path):
             dao.drop_schema()
 
 
-def test_save(dataset_with_gamma):
+def test_save(dataset_with_gamma) -> None:
+    """Test saving of dataset to a database.
+
+    Args:
+        dataset_with_gamma: dataset to save (fixture)
+    """
     with closing(connect()) as con:
         dao = DataAccessObject(con)
         dao.create_schema()
@@ -66,6 +73,7 @@ def test_save(dataset_with_gamma):
 
 # noinspection SqlNoDataSourceInspection
 def test_write_parquet(tmp_path, dataset_with_gamma):
+    """Test saving to parquet files."""
     write_parquet(tmp_path, dataset_with_gamma, 1, 1)
     assert Path(tmp_path / "time_steps/data_material_id=1_case_id=1_0.parquet").is_file()
     write_parquet(tmp_path, dataset_with_gamma, 1, 2)
@@ -78,7 +86,7 @@ def test_write_parquet(tmp_path, dataset_with_gamma):
     path = tmp_path / "time_steps/*.parquet"
     sql = f"select * from read_parquet('{path}')"  # noqa: S608
     time_steps = con.execute(sql).df()
-    assert time_steps.dtypes.time_step_number.name.starts_with(  # Windows: int32, Linux: int64
+    assert time_steps.dtypes.time_step_number.name.startswith(  # Windows: int32, Linux: int64
         "int",
     ), "Make sure it's not converted to string"
     assert not time_steps.loc[2].empty
