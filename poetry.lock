@@ -871,8 +871,6 @@ files = [
     {file = "duckdb-0.8.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:297226c0dadaa07f7c5ae7cbdb9adba9567db7b16693dbd1b406b739ce0d7924"},
     {file = "duckdb-0.8.1-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:5792cf777ece2c0591194006b4d3e531f720186102492872cb32ddb9363919cf"},
     {file = "duckdb-0.8.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:12803f9f41582b68921d6b21f95ba7a51e1d8f36832b7d8006186f58c3d1b344"},
-    {file = "duckdb-0.8.1-cp310-cp310-win32.whl", hash = "sha256:d0953d5a2355ddc49095e7aef1392b7f59c5be5cec8cdc98b9d9dc1f01e7ce2b"},
-    {file = "duckdb-0.8.1-cp310-cp310-win_amd64.whl", hash = "sha256:6e6583c98a7d6637e83bcadfbd86e1f183917ea539f23b6b41178f32f813a5eb"},
     {file = "duckdb-0.8.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:fad7ed0d4415f633d955ac24717fa13a500012b600751d4edb050b75fb940c25"},
     {file = "duckdb-0.8.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:81ae602f34d38d9c48dd60f94b89f28df3ef346830978441b83c5b4eae131d08"},
     {file = "duckdb-0.8.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:7d75cfe563aaa058d3b4ccaaa371c6271e00e3070df5de72361fd161b2fe6780"},
@@ -881,8 +879,6 @@ files = [
     {file = "duckdb-0.8.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1b188b80b70d1159b17c9baaf541c1799c1ce8b2af4add179a9eed8e2616be96"},
     {file = "duckdb-0.8.1-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:5ad481ee353f31250b45d64b4a104e53b21415577943aa8f84d0af266dc9af85"},
     {file = "duckdb-0.8.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:d1d1b1729993611b1892509d21c21628917625cdbe824a61ce891baadf684b32"},
-    {file = "duckdb-0.8.1-cp311-cp311-win32.whl", hash = "sha256:2d8f9cc301e8455a4f89aa1088b8a2d628f0c1f158d4cf9bc78971ed88d82eea"},
-    {file = "duckdb-0.8.1-cp311-cp311-win_amd64.whl", hash = "sha256:07457a43605223f62d93d2a5a66b3f97731f79bbbe81fdd5b79954306122f612"},
     {file = "duckdb-0.8.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d2c8062c3e978dbcd80d712ca3e307de8a06bd4f343aa457d7dd7294692a3842"},
     {file = "duckdb-0.8.1-cp36-cp36m-win32.whl", hash = "sha256:fad486c65ae944eae2de0d590a0a4fb91a9893df98411d66cab03359f9cba39b"},
     {file = "duckdb-0.8.1-cp36-cp36m-win_amd64.whl", hash = "sha256:86fa4506622c52d2df93089c8e7075f1c4d0ba56f4bf27faebde8725355edf32"},
@@ -892,8 +888,6 @@ files = [
     {file = "duckdb-0.8.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a413d5267cb41a1afe69d30dd6d4842c588256a6fed7554c7e07dad251ede095"},
     {file = "duckdb-0.8.1-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:3784680df59eadd683b0a4c2375d451a64470ca54bd171c01e36951962b1d332"},
     {file = "duckdb-0.8.1-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:67a1725c2b01f9b53571ecf3f92959b652f60156c1c48fb35798302e39b3c1a2"},
-    {file = "duckdb-0.8.1-cp37-cp37m-win32.whl", hash = "sha256:197d37e2588c5ad063e79819054eedb7550d43bf1a557d03ba8f8f67f71acc42"},
-    {file = "duckdb-0.8.1-cp37-cp37m-win_amd64.whl", hash = "sha256:3843feb79edf100800f5037c32d5d5a5474fb94b32ace66c707b96605e7c16b2"},
     {file = "duckdb-0.8.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:624c889b0f2d656794757b3cc4fc58030d5e285f5ad2ef9fba1ea34a01dab7fb"},
     {file = "duckdb-0.8.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:fcbe3742d77eb5add2d617d487266d825e663270ef90253366137a47eaab9448"},
     {file = "duckdb-0.8.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:47516c9299d09e9dbba097b9fb339b389313c4941da5c54109df01df0f05e78c"},
@@ -903,7 +897,6 @@ files = [
     {file = "duckdb-0.8.1-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:1fb9bf0b6f63616c8a4b9a6a32789045e98c108df100e6bac783dc1e36073737"},
     {file = "duckdb-0.8.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:12fc13ecd5eddd28b203b9e3999040d3a7374a8f4b833b04bd26b8c5685c2635"},
     {file = "duckdb-0.8.1-cp38-cp38-win32.whl", hash = "sha256:a12bf4b18306c9cb2c9ba50520317e6cf2de861f121d6f0678505fa83468c627"},
-    {file = "duckdb-0.8.1-cp38-cp38-win_amd64.whl", hash = "sha256:e4e809358b9559c00caac4233e0e2014f3f55cd753a31c4bcbbd1b55ad0d35e4"},
     {file = "duckdb-0.8.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:7acedfc00d97fbdb8c3d120418c41ef3cb86ef59367f3a9a30dff24470d38680"},
     {file = "duckdb-0.8.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:99bfe264059cdc1e318769103f656f98e819cd4e231cd76c1d1a0327f3e5cef8"},
     {file = "duckdb-0.8.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:538b225f361066231bc6cd66c04a5561de3eea56115a5dd773e99e5d47eb1b89"},
@@ -912,8 +905,6 @@ files = [
     {file = "duckdb-0.8.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:780a34559aaec8354e83aa4b7b31b3555f1b2cf75728bf5ce11b89a950f5cdd9"},
     {file = "duckdb-0.8.1-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:01f0d4e9f7103523672bda8d3f77f440b3e0155dd3b2f24997bc0c77f8deb460"},
     {file = "duckdb-0.8.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:31f692decb98c2d57891da27180201d9e93bb470a3051fcf413e8da65bca37a5"},
-    {file = "duckdb-0.8.1-cp39-cp39-win32.whl", hash = "sha256:e7fe93449cd309bbc67d1bf6f6392a6118e94a9a4479ab8a80518742e855370a"},
-    {file = "duckdb-0.8.1-cp39-cp39-win_amd64.whl", hash = "sha256:81d670bc6807672f038332d9bf587037aabdd741b0810de191984325ed307abd"},
     {file = "duckdb-0.8.1.tar.gz", hash = "sha256:a54d37f4abc2afc4f92314aaa56ecf215a411f40af4bffe1e86bd25e62aceee9"},
 ]
 
@@ -1520,13 +1511,13 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "6.6.0"
+version = "6.7.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "importlib_metadata-6.6.0-py3-none-any.whl", hash = "sha256:43dd286a2cd8995d5eaef7fee2066340423b818ed3fd70adf0bad5f1fac53fed"},
-    {file = "importlib_metadata-6.6.0.tar.gz", hash = "sha256:92501cdf9cc66ebd3e612f1b4f0c0765dfa42f0fa38ffb319b6bd84dd675d705"},
+    {file = "importlib_metadata-6.7.0-py3-none-any.whl", hash = "sha256:cb52082e659e97afc5dac71e79de97d8681de3aa07ff18578330904a9d18e5b5"},
+    {file = "importlib_metadata-6.7.0.tar.gz", hash = "sha256:1aaf550d4f73e5d6783e7acb77aec43d49da8017410afae93822cc9cca98c4d4"},
 ]
 
 [package.dependencies]
@@ -1535,7 +1526,7 @@ zipp = ">=0.5"
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
 perf = ["ipython"]
-testing = ["flake8 (<5)", "flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)"]
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)", "pytest-ruff"]
 
 [[package]]
 name = "importlib-resources"
@@ -2094,7 +2085,6 @@ files = [
     {file = "libcst-0.4.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f3e9d9fdd9a9b9b8991936ff1c07527ce7ef396c8233280ba9a7137e72c2e48e"},
     {file = "libcst-0.4.10-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7e1b4cbaf7b1cdad5fa3eababe42d5b46c0d52afe13c5ba4eac2495fc57630ea"},
     {file = "libcst-0.4.10-cp39-cp39-win_amd64.whl", hash = "sha256:bcbd07cec3d7a7be6f0299b0c246e085e3d6cc8af367e2c96059183b97c2e2fe"},
-    {file = "libcst-0.4.10.tar.gz", hash = "sha256:b98a829d96e8b209fb761b00cd1bacc27c70eae77d00e57976e5ae2c718c3f81"},
 ]
 
 [package.dependencies]
@@ -2915,13 +2905,13 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.5.3"
+version = "3.6.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.5.3-py3-none-any.whl", hash = "sha256:0ade98a4895e87dc51d47151f7d2ec290365a585151d97b4d8d6312ed6132fed"},
-    {file = "platformdirs-3.5.3.tar.gz", hash = "sha256:e48fabd87db8f3a7df7150a4a5ea22c546ee8bc39bc2473244730d4b56d2cc4e"},
+    {file = "platformdirs-3.6.0-py3-none-any.whl", hash = "sha256:ffa199e3fbab8365778c4a10e1fbf1b9cd50707de826eb304b50e57ec0cc8d38"},
+    {file = "platformdirs-3.6.0.tar.gz", hash = "sha256:57e28820ca8094678b807ff529196506d7a21e17156cb1cddb3e74cebce54640"},
 ]
 
 [package.extras]
@@ -4834,4 +4824,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "deb30b67b57fd4f6ac59531444b8d4025c2da369dc87d80a6182bc3ccda945f2"
+content-hash = "c32060e84b6325279104eca7031aedc4428e8a97c7fe5a0b65feb437f1fe6328"
