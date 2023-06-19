@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.4.2"
+version = "0.4.3"
 description = "\"Python tools to work with elements and isotopes\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -71,14 +71,13 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
 rstcheck = ">=3.3.1"
-pydocstringformatter = "^0.7.3"
+pydocstringformatter = ">=0.7.3"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"  #TODO dvp: update with safety and packaging
 
 [tool.poetry.group.isort.dependencies]
 isort = ">=5.9.3"
-pycln = {version = "^2.1.1", extras = ["click"]}
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.1"
@@ -328,7 +327,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = [
     "tomllib",
-    "tomli"
+    "tomli",
 ]
 allow_redefinition = true
 disable_error_code = "no-redef"
