@@ -268,7 +268,8 @@ def are_fluxes_close(
     b: Fluxes,
     rtol: float = 1.0e-5,
     atol: float = 1.0e-8,
-    equal_nan: bool = False,  # noqa: FBT - not worse than in allclose()
+    *,
+    equal_nan: bool = False,
 ) -> bool:
     """Compare data of fluxes approximately.
 
