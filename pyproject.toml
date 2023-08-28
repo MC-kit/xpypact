@@ -162,7 +162,7 @@ ruff = ">=0.0.259"
 optional = true
 
 [tool.poetry.group.adhoc.dependencies]
-pyarrow = "^11.0.0"
+pyarrow = ">=11,<14"
 
 [tool.poetry.group.analysis]
 optional = true
