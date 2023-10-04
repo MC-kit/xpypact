@@ -467,7 +467,6 @@ def _print_bin_values(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None
     Args:
         fluxes: to print bins from
         fid: a stream to print to
-        arbitrary: if True - arbitrary, otherwise 709
         max_columns: max columns in output
     """
     sequence = fluxes.fluxes[::-1]
