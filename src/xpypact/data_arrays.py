@@ -134,15 +134,9 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         "nuclide_inhalation": _make_time_step_and_nuclide_var(lambda n: n.inhalation, ts.nuclides),
     }
 
-    nuclide_coordinate = pd.MultiIndex.from_tuples(
-        ((n.element, n.a, n.state) for n in ts.nuclides),
-        names=["element", "mass_number", "state"],
-    )
-
     coords = {
         "time_step_number": _make_var(ts.number, dtype=int),
         "elapsed_time": _make_var(ts.elapsed_time),
-        "nuclide": nuclide_coordinate,
         "zai": _make_nuclide_var(lambda n: n.zai, ts.nuclides, dtype=int),
     }
 
@@ -154,6 +148,18 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         coords["gamma_boundaries"] = gamma_boundaries
 
     tsr = xr.Dataset(data_vars=data_vars, coords=coords)
+
+    nuclide_coordinate = pd.MultiIndex.from_tuples(
+        ((n.element, n.a, n.state) for n in ts.nuclides),
+        names=["element", "mass_number", "state"],
+    )
+
+    nuclide_coordinate_idx = xr.Coordinates.from_pandas_multiindex(
+        nuclide_coordinate,
+        dim="nuclide",
+    )
+
+    tsr = tsr.assign_coords(nuclide_coordinate_idx)
     return xr.merge([_ds, tsr])
 
 
@@ -361,8 +367,8 @@ def _decode_to_multiindex(encoded: xr.Dataset, idx_name: str) -> xr.Dataset:
     columns = encoded.attrs.pop(idx_name + "_columns")
     mi_columns = [encoded.attrs.pop(idx_name + f"_{c}") for c in columns]
     mi = pd.MultiIndex.from_arrays(mi_columns, names=columns)
-    encoded.coords[idx_name] = mi
-    return encoded
+    mi_idx = xr.Coordinates.from_pandas_multiindex(mi, dim=idx_name)
+    return encoded.assign_coords(mi_idx)
 
 
 # noinspection PyShadowingBuiltins
