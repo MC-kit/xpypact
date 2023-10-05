@@ -1,7 +1,7 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Iterator, cast
 
 import io  # noqa: TCH003 - needed for dispatch
 
@@ -135,7 +135,7 @@ class Inventory:
         """
         return extract_times(self.inventory_data)
 
-    def __iter__(self) -> Iterable[TimeStep]:
+    def __iter__(self) -> Iterator[TimeStep]:
         """Iterate over time steps.
 
         Returns:

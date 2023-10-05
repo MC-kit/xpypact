@@ -192,7 +192,7 @@ def compute_optimal_row_group_size(frame_size: int, _cpu_count: int = 0) -> int:
     This should optimize speed of reading from parquet files.
 
     Args:
-        frame_size: length of rows to be writed
+        frame_size: length of rows to be written
         _cpu_count: number to split the rows
 
     Returns:
@@ -215,10 +215,10 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
     unique for an data subject.
 
     This structure can be easily and efficiently accessed from DuckDB as external data.
-    For instance to collect all the inventories:
-    ```
+
+    For instance to collect all the inventories::
+
         select * from read_parquet('<target_dir>/inventory/*/*/*.parquet', hive_partitioning=true)
-    ```
 
     We use in memory DuckDB instance to transfer data to parquet to ensure compatibility
     for later reading back to DuckDB.

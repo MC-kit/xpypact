@@ -268,7 +268,8 @@ def are_fluxes_close(
     b: Fluxes,
     rtol: float = 1.0e-5,
     atol: float = 1.0e-8,
-    equal_nan: bool = False,  # noqa: FBT - not worse than in allclose()
+    *,
+    equal_nan: bool = False,
 ) -> bool:
     """Compare data of fluxes approximately.
 
@@ -466,7 +467,6 @@ def _print_bin_values(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None
     Args:
         fluxes: to print bins from
         fid: a stream to print to
-        arbitrary: if True - arbitrary, otherwise 709
         max_columns: max columns in output
     """
     sequence = fluxes.fluxes[::-1]
