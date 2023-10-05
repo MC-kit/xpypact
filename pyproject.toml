@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "xpypact"
 version = "0.4.4"
-description = "\"Python tools to work with elements and isotopes\""
+description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
 homepage = "https://github.com/MC-kit/xpypact"
@@ -48,7 +48,8 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 python = ">=3.9,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
-mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
+# mckit-nuclides = {version = ">=0.2.5", allow-prereleases = true}
+mckit-nuclides = ">=0.2.3"
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 orjson = ">=3.6.7"
