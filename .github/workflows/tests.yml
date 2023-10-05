@@ -128,7 +128,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11']  # h5py-3.9.0 doesn't have wheels for python 3.12, check on updates
 
     steps:
 
