@@ -134,7 +134,7 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
         "nuclide_inhalation": _make_time_step_and_nuclide_var(lambda n: n.inhalation, ts.nuclides),
     }
 
-    coords = {
+    coords: dict[str, Any] = {
         "time_step_number": _make_var(ts.number, dtype=int),
         "elapsed_time": _make_var(ts.elapsed_time),
         "zai": _make_nuclide_var(lambda n: n.zai, ts.nuclides, dtype=int),
