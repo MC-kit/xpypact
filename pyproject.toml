@@ -45,11 +45,11 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.9,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 mckit-nuclides = {version = ">=0.1.1", allow-prereleases = true}
-numpy = ">=1.24.2"
+numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 orjson = ">=3.6.7"
 pandas = ">=2.0.0"
@@ -95,13 +95,14 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 
 [tool.poetry.group.typeguard.dependencies]
+# typeguard = ">=4.1.5"  # pygls (1.0.2) depends on typeguard (>=3,<4), check on updates
 typeguard = ">=3.0.2"
 
 [tool.poetry.group.mypy.dependencies]
 mypy = ">=1.2.0"
 pep8-naming = ">=0.12.1"
 types-setuptools = ">=57.4.2"
-numpy = ">=1.23.2"
+numpy = ">=1.26.0"
 
 [tool.poetry.group.flake8.dependencies]
 darglint = ">=1.8.1"
