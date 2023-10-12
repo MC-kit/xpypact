@@ -169,7 +169,7 @@ pyarrow = "^11.0.0"
 optional = true
 
 [tool.poetry.group.analysis.dependencies]
-jupyterlab = "^3.6.3"  # don't use >= - installs development version 4.0...
+jupyterlab = ">=3.6.3,<5.0.0"  # don't use >= - installs development version 4.0...
 
 [tool.isort]
 atomic = true
