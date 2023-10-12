@@ -73,6 +73,7 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 pre-commit = ">=2.15.0"
 rstcheck = ">=6.1.2"
 pydocstringformatter = ">=0.7.3"
+sqlfluff = ">=2.3.2"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"
@@ -578,3 +579,45 @@ parametrize-names-type = "csv"
 [tool.ruff.pydocstyle]
 # Use Google-style docstrings.
 convention = "google"
+
+[tool.sqlfluff.core]
+dialect = "duckdb"
+max_line_length = 120
+
+[tool.sqlfluff.indentation]
+# While implicit indents are not enabled by default. Many of the
+# SQLFluff maintainers do use them in their projects.
+allow_implicit_indents = true
+
+# The default configuration for aliasing rules is "consistent"
+# which will auto-detect the setting from the rest of the file. This
+# is less desirable in a new project and you may find this (slightly
+# more strict) setting more useful.
+[tool.sqlfluff.rules.aliasing.table]
+aliasing = "explicit"
+
+[tool.sqlfluff.rules.aliasing.column]
+aliasing = "explicit"
+
+[tool.sqlfluff.rules.aliasing.length]
+min_alias_length = 3
+
+# The default configuration for capitalisation rules is "consistent"
+# which will auto-detect the setting from the rest of the file. This
+# is less desirable in a new project and you may find this (slightly
+# more strict) setting more useful.
+# Typically we find users rely on syntax highlighting rather than
+# capitalisation to distinguish between keywords and identifiers.
+# Clearly, if your organisation has already settled on uppercase
+# formatting for any of these syntax elements then set them to "upper".
+# See https://stackoverflow.com/questions/608196/why-should-i-capitalize-my-sql-keywords-is-there-a-good-reason
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.identifiers]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.functions]
+extended_capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.literals]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.types]
+extended_capitalisation_policy = "lower"
