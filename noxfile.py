@@ -7,7 +7,6 @@ import re
 import shutil
 import sys
 
-from glob import glob
 from pathlib import Path
 from textwrap import dedent
 
@@ -60,7 +59,7 @@ def find_my_name() -> str:
 package: Final = find_my_name()
 locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
-supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
+supported_pythons: Final = "3.9", "3.10", "3.11"
 
 
 def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
@@ -116,7 +115,7 @@ def precommit(s: Session) -> None:
         "install",
         "--no-root",
         "--only",
-        "pre_commit,style,isort,black,ruff",
+        "pre_commit,isort,black,ruff",
         external=True,
     )
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -189,7 +188,10 @@ def isort(s: Session) -> None:
         "profiles/*.py",
         "adhoc/*.py",
     ]
-    files_to_process: list[str] = sum((glob(p, recursive=True) for p in search_patterns), [])
+    cwd = Path()
+    files_to_process: list[str] = [
+        str(x) for x in sum((list(cwd.glob(p)) for p in search_patterns), [])
+    ]
     if files_to_process:
         s.run(
             "poetry",
@@ -197,13 +199,6 @@ def isort(s: Session) -> None:
             "--no-root",
             "--only",
             "isort",
-            external=True,
-        )
-        s.run(
-            "pycln",
-            "--check",
-            "--diff",
-            *files_to_process,
             external=True,
         )
         s.run(
@@ -329,7 +324,7 @@ def docs(s: Session) -> None:
 
 
 @nox.session(python=False)
-def clean(_):
+def clean(_: Session) -> None:
     """Clean folders with reproducible content."""
     to_clean = [
         ".benchmarks",
@@ -346,7 +341,7 @@ def clean(_):
     _clean_docs_build_folder()
 
 
-def _clean_docs_build_folder():
+def _clean_docs_build_folder() -> None:
     build_dir = Path("docs", "_build")
     if build_dir.exists():
         shutil.rmtree(build_dir)

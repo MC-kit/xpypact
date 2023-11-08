@@ -82,10 +82,12 @@ def arb_flux_2(data):
 
 def test_eq_and_copy(arb_flux_1, arb_flux_2):
     def assert_one(_: Any, f: Any) -> Any:
-        assert hash(f) == hash(f)
-        assert f == f
-        assert f == copy(f)
-        assert f == deepcopy(f)
+        """Check if equivalence to itself and copies works."""
+        t = f  # to make ruff happy for PLR0124
+        assert hash(t) == hash(f)
+        assert t == f
+        assert t == copy(f)
+        assert t == deepcopy(f)
 
     reduce(assert_one, [arb_flux_1, arb_flux_2])
     assert hash(arb_flux_1) != hash(arb_flux_2)
