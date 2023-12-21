@@ -5,13 +5,12 @@ from typing import TYPE_CHECKING, Any, cast
 
 import io  # - needed for dispatch
 
-from dataclasses import dataclass
 from functools import singledispatch
 from pathlib import Path  # - needed for dispatch
 
 import numpy as np
 
-import orjson as json
+import msgspec as ms
 
 from xpypact.run_data import RunData
 from xpypact.time_step import TimeStep
@@ -24,8 +23,7 @@ if TYPE_CHECKING:
 FLOAT_ZERO = 0.0
 
 
-@dataclass
-class RunDataCorrected:
+class RunDataCorrected(ms.Struct):
     """Common data for an FISPACT inventory.
 
     Note:
@@ -83,8 +81,7 @@ class InventoryNonMonotonicTimesError(InventoryError):
     """Irradiation and cooling times in FISPACT output should be monotonically increasing."""
 
 
-@dataclass
-class Inventory:
+class Inventory(ms.Struct):
     """Helper class to load FISPACT inventory (output) from JSON file.
 
     Implements list interface over time steps.
@@ -109,23 +106,23 @@ class Inventory:
             ts.dose_rate.distance,
         )
 
-    @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> Inventory:
-        """Construct Inventory instance from JSON dictionary.
-
-        Args:
-            json_dict: a JSON dictionary
-
-        Returns:
-            Inventory: the new instance
-        """
-        json_run_data = json_dict.pop("run_data")
-        run_data = RunData.from_json(json_run_data)
-        json_inventory_data = json_dict.pop("inventory_data")
-        mapper = _create_json_inventory_data_mapper()
-        inventory_data = [mapper(ts) for ts in json_inventory_data]
-
-        return cls(run_data, inventory_data)
+    # @classmethod
+    # def from_json(cls, json_dict: dict[str, Any]) -> Inventory:
+    #     """Construct Inventory instance from JSON dictionary.
+    #
+    #     Args:
+    #         json_dict: a JSON dictionary
+    #
+    #     Returns:
+    #         Inventory: the new instance
+    #     """
+    #     json_run_data = json_dict.pop("run_data")
+    #     run_data = RunData.from_json(json_run_data)
+    #     json_inventory_data = json_dict.pop("inventory_data")
+    #     mapper = _create_json_inventory_data_mapper()
+    #     inventory_data = [mapper(ts) for ts in json_inventory_data]
+    #
+    #     return cls(run_data, inventory_data)
 
     def extract_times(self) -> NDArrayFloat:
         """Create vector of elapsed time for all the time steps in the inventory.
@@ -186,8 +183,9 @@ def from_json(text: str) -> Inventory:
     Returns:
         The loaded Inventory instance.
     """
-    json_dict = json.loads(text)  # pylint: disable=no-member
-    return Inventory.from_json(json_dict)
+    # json_dict = json.loads(text)  # pylint: disable=no-member
+    # return Inventory.from_json(json_dict)
+    return ms.json.decode(text, type=Invento)
 
 
 @from_json.register

@@ -1,22 +1,16 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-from dataclasses import dataclass, field
-
-import numpy as np
+import msgspec as ms
 
 from xpypact.nuclide import Nuclide
-
-if TYPE_CHECKING:
-    from xpypact.utils.types import NDArrayFloat  # pragma: no cover
 
 FLOAT_ZERO = 0.0
 
 
-@dataclass
-class DoseRate:
+class DoseRate(ms.Struct, frozen=True, gc=False):
     """Dose rate attributes.
 
     Don't scale by mass, for point source mass is always 1g, for contact dose mass is meaningless.
@@ -41,8 +35,7 @@ class DoseRate:
             self.mass = 1.0e-3
 
 
-@dataclass
-class GammaSpectrum:
+class GammaSpectrum(ms.Struct):
     """Data on gamma emission.
 
     Attrs:
@@ -52,27 +45,30 @@ class GammaSpectrum:
             Gamma emission intensity.
     """
 
-    boundaries: NDArrayFloat
-    intensities: NDArrayFloat
+    boundaries: list[float]
+    values: list[float]
 
-    @classmethod
-    def from_json(cls, json: dict[str, list[float]]) -> GammaSpectrum:
-        """Construct GammaSpectrum instance from JSON dictionary.
+    @property
+    def intensities(self) -> list[float]:
+        return self.values
 
-        Args:
-            json: dictionary
+    # @classmethod
+    # def from_json(cls, json: dict[str, list[float]]) -> GammaSpectrum:
+    #     """Construct GammaSpectrum instance from JSON dictionary.
+    #
+    #     Args:
+    #         json: dictionary
+    #
+    #     Returns:
+    #         The new GammaSpectrum instance with loaded boundaries and values.
+    #     """
+    #     return cls(
+    #         boundaries=np.array(json["boundaries"], dtype=float),
+    #         intensities=np.array(json["values"], dtype=float),
+    #     )
 
-        Returns:
-            The new GammaSpectrum instance with loaded boundaries and values.
-        """
-        return cls(
-            boundaries=np.array(json["boundaries"], dtype=float),
-            intensities=np.array(json["values"], dtype=float),
-        )
 
-
-@dataclass
-class TimeStep:  # pylint: disable=too-many-instance-attributes
+class TimeStep(ms.Struct):  # pylint: disable=too-many-instance-attributes
     """Time step attributes.
 
     All names must be the same as in FISPACT JSON file.

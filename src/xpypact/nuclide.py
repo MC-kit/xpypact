@@ -1,9 +1,7 @@
 """Nuclide specification in FISPACT JSON."""
 from __future__ import annotations
 
-from typing import Any
-
-from dataclasses import dataclass
+import msgspec as ms
 
 try:
     from scipy.constants import Avogadro
@@ -18,8 +16,7 @@ __all__ = ["Avogadro", "Nuclide"]
 FLOAT_ZERO = 0.0
 
 
-@dataclass
-class Nuclide:  # pylint: disable=too-many-instance-attributes
+class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
     """Nuclide properties from FISPACT JSON."""
 
     element: str
@@ -60,14 +57,14 @@ class Nuclide:  # pylint: disable=too-many-instance-attributes
         """
         return self.isotope
 
-    @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> Nuclide:
-        """Construct the Nuclide from JSON dictionary.
-
-        Args:
-            json_dict: information in json
-
-        Returns:
-            Nuclide: the Nuclide object
-        """
-        return cls(**json_dict)
+    # @classmethod
+    # def from_json(cls, json_dict: dict[str, Any]) -> Nuclide:
+    #     """Construct the Nuclide from JSON dictionary.
+    #
+    #     Args:
+    #         json_dict: information in json
+    #
+    #     Returns:
+    #         Nuclide: the Nuclide object
+    #     """
+    #     return cls(**json_dict)
