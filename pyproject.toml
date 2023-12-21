@@ -76,6 +76,7 @@ pre-commit = ">=2.15.0"
 rstcheck = ">=6.1.2"
 pydocstringformatter = ">=0.7.3"
 sqlfluff = ">=2.3.2"
+pyupgrade = ">=3.15.0"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"
@@ -99,8 +100,7 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 
 [tool.poetry.group.typeguard.dependencies]
-# typeguard = ">=4.1.5"  # pygls (1.0.2) depends on typeguard (>=3,<4), check on updates
-typeguard = ">=3.0.2"
+typeguard = ">=4.1.5"
 
 [tool.poetry.group.mypy.dependencies]
 mypy = ">=1.2.0"
@@ -134,8 +134,6 @@ flake8-scream = ">=0.1.0"
 flake8-simplify = ">=0.19.3"
 flake8-use-fstring = ">=1.4"
 flake8-use-pathlib = ">=0.3.0"
-pandas-vet = ">=0.2.3"
-tryceratops = ">=1.0.1"
 pylint = ">=2.15.10"
 flake8-pylint = ">=0.1.3"
 # TODO dvp: check/use flake8-pyprojecttoml plugin
@@ -176,7 +174,7 @@ jupyterlab = "^3.6.3"  # don't use >= - installs development version 4.0...
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
-known_first_party = "src"
+known_first_party = "xpypact"
 known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -310,7 +308,6 @@ module = [
     "click",
     "click.testing",
     "dask.*",
-    "importlib_resources",
     "loguru",
     "mckit_nuclides.*",
     "multipledispatch",
@@ -350,7 +347,6 @@ context=5
 [tool.tryceratops]
 include = ["src"]
 experimental = true
-
 
 [tool.pydocstringformatter]
 write = true
@@ -564,7 +560,10 @@ exclude = [
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10
+max-complexity = 15
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true  # skip return type for __init__() methods
 
 [tool.ruff.flake8-type-checking]
 strict = true
@@ -579,8 +578,7 @@ required-imports = ["from __future__ import annotations"]
 parametrize-names-type = "csv"
 
 [tool.ruff.pydocstyle]
-# Use Google-style docstrings.
-convention = "google"
+convention = "google"  # Use Google-style docstrings.
 
 [tool.sqlfluff.core]
 dialect = "duckdb"
