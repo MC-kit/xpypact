@@ -185,7 +185,7 @@ def from_json(text: str) -> Inventory:
     """
     # json_dict = json.loads(text)  # pylint: disable=no-member
     # return Inventory.from_json(json_dict)
-    return ms.json.decode(text, type=Invento)
+    return ms.json.decode(text, type=Inventory)
 
 
 @from_json.register

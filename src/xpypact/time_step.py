@@ -1,8 +1,6 @@
 """Classes to read a FISPACT time step attributes from JSON."""
 from __future__ import annotations
 
-from typing import Any
-
 import msgspec as ms
 
 from xpypact.nuclide import Nuclide
@@ -10,7 +8,7 @@ from xpypact.nuclide import Nuclide
 FLOAT_ZERO = 0.0
 
 
-class DoseRate(ms.Struct, frozen=True, gc=False):
+class DoseRate(ms.Struct, gc=False):
     """Dose rate attributes.
 
     Don't scale by mass, for point source mass is always 1g, for contact dose mass is meaningless.
@@ -92,8 +90,8 @@ class TimeStep(ms.Struct):  # pylint: disable=too-many-instance-attributes
     gamma_heat: float = 0.0
     ingestion_dose: float = 0.0
     inhalation_dose: float = 0.0
-    dose_rate: DoseRate = field(default_factory=DoseRate)
-    nuclides: list[Nuclide] = field(default_factory=list)
+    dose_rate: DoseRate = ms.field(default_factory=DoseRate)
+    nuclides: list[Nuclide] = ms.field(default_factory=list)
     gamma_spectrum: GammaSpectrum | None = None
 
     def __post_init__(self) -> None:
@@ -130,28 +128,28 @@ class TimeStep(ms.Struct):  # pylint: disable=too-many-instance-attributes
         """
         return self.flux == FLOAT_ZERO
 
-    @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> TimeStep:
-        """Construct TimeStep instance from JSON dictionary.
-
-        Args:
-            json_dict: source dictionary
-
-        Returns:
-            The new TimeStep instance.
-        """
-        json_dose_rate = json_dict.pop("dose_rate")
-        dose_rate = DoseRate(**json_dose_rate)
-        json_nuclides = json_dict.pop("nuclides")
-        nuclides = [Nuclide.from_json(n) for n in json_nuclides] if json_nuclides else []
-        json_gamma_spectrum = json_dict.pop("gamma_spectrum", None)
-        if json_gamma_spectrum:
-            gamma_spectrum = GammaSpectrum.from_json(json_gamma_spectrum)
-        else:
-            gamma_spectrum = None
-        return cls(
-            dose_rate=dose_rate,
-            nuclides=nuclides,
-            gamma_spectrum=gamma_spectrum,
-            **json_dict,
-        )
+    # @classmethod
+    # def from_json(cls, json_dict: dict[str, Any]) -> TimeStep:
+    #     """Construct TimeStep instance from JSON dictionary.
+    #
+    #     Args:
+    #         json_dict: source dictionary
+    #
+    #     Returns:
+    #         The new TimeStep instance.
+    #     """
+    #     json_dose_rate = json_dict.pop("dose_rate")
+    #     dose_rate = DoseRate(**json_dose_rate)
+    #     json_nuclides = json_dict.pop("nuclides")
+    #     nuclides = [Nuclide.from_json(n) for n in json_nuclides] if json_nuclides else []
+    #     json_gamma_spectrum = json_dict.pop("gamma_spectrum", None)
+    #     if json_gamma_spectrum:
+    #         gamma_spectrum = GammaSpectrum.from_json(json_gamma_spectrum)
+    #     else:
+    #         gamma_spectrum = None
+    #     return cls(
+    #         dose_rate=dose_rate,
+    #         nuclides=nuclides,
+    #         gamma_spectrum=gamma_spectrum,
+    #         **json_dict,
+    #     )
