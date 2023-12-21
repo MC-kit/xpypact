@@ -1,13 +1,13 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterator, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import io  # noqa: TCH003 - needed for dispatch
+import io  # - needed for dispatch
 
 from dataclasses import dataclass
 from functools import singledispatch
-from pathlib import Path  # noqa: TCH003 - needed for dispatch
+from pathlib import Path  # - needed for dispatch
 
 import numpy as np
 
@@ -17,7 +17,7 @@ from xpypact.run_data import RunData
 from xpypact.time_step import TimeStep
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Iterable, Iterator
 
     from xpypact.utils.types import NDArrayFloat
 
