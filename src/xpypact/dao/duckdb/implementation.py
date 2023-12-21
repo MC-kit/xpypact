@@ -243,6 +243,11 @@ def write_parquet(target_dir: Path, ds: xr.Dataset, material_id: int, case_id: i
     con = db.connect()
     try:
         for k, v in to_proces.items():
+            if v is None:
+                if k != "gamma":
+                    msg = f"Not found data {k!r}"
+                    raise ValueError(msg)
+                continue
             path: Path = target_dir / k
             path.mkdir(parents=True, exist_ok=True)
             frame = _add_material_and_case_columns(
