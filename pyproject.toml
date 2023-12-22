@@ -15,7 +15,6 @@ keywords = [
     "FISPACT",
     "activation",
     "duckdb",
-    "parquet"
 ]
 readme = "README.rst"
 packages = [
@@ -52,7 +51,6 @@ h5netcdf = ">=0.13.1"
 mckit-nuclides = ">=0.2.3"
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
-orjson = ">=3.6.7"
 pandas = ">=2.0.0"
 xarray = ">=2022.3.0"
 multipledispatch = ">=0.6.0"

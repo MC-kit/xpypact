@@ -11,9 +11,22 @@ except ImportError:  # pragma: no cover
 from mckit_nuclides.elements import z
 from mckit_nuclides.nuclides import get_nuclide_mass
 
-__all__ = ["Avogadro", "Nuclide"]
+__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO"]
 
 FLOAT_ZERO = 0.0
+
+
+class NuclideInfo(ms.Struct):
+    """Basic information on a nuclide.
+
+    This is extracted as a separate database entity to improve normalization.
+    """
+
+    element: str
+    isotope: int
+    state: str = ""
+    zai: int = 0
+    half_life: float = 0.0
 
 
 class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
@@ -57,14 +70,11 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
         """
         return self.isotope
 
-    # @classmethod
-    # def from_json(cls, json_dict: dict[str, Any]) -> Nuclide:
-    #     """Construct the Nuclide from JSON dictionary.
-    #
-    #     Args:
-    #         json_dict: information in json
-    #
-    #     Returns:
-    #         Nuclide: the Nuclide object
-    #     """
-    #     return cls(**json_dict)
+    @property
+    def info(self) -> NuclideInfo:
+        """Extract a nuclide specific information.
+
+        Returns:
+            element, a, state, zai, half_life
+        """
+        return NuclideInfo(self.element, self.a, self.state, self.zai, self.half_life)

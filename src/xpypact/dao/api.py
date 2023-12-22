@@ -7,7 +7,8 @@ from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
     import pandas as pd
-    import xarray as xr
+
+    from xpypact.inventory import Inventory
 
 
 class DataAccessInterface(ABC):
@@ -39,12 +40,12 @@ class DataAccessInterface(ABC):
         """Drop our DB objects."""
 
     @abstractmethod
-    def save(self, ds: xr.Dataset, material_id=1, case_id="") -> None:
-        """Save xpypact dataset to database.
+    def save(self, inventory: Inventory, material_id: int = 1, case_id: str = "") -> None:
+        """Save xpypact inventory to database.
 
         Args:
-            ds: xpypact dataset to save
-            material_id: additional key to distinguish multiple FISPACT run
+            inventory: what to save
+            material_id: additional key to distinguish multiple FISPACT runs
             case_id: second additional key
         """
 

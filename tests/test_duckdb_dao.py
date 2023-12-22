@@ -2,15 +2,12 @@
 from __future__ import annotations
 
 from contextlib import closing
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from duckdb import InvalidInputException, connect
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
-from xpypact.dao.duckdb import write_parquet
-from xpypact.dao.duckdb.implementation import compute_optimal_row_group_size
 
 
 def test_ddl(tmp_path):
@@ -33,7 +30,7 @@ def test_ddl(tmp_path):
             dao.drop_schema()
 
 
-def test_save(dataset_with_gamma) -> None:
+def test_save(inventory_with_gamma) -> None:
     """Test saving of dataset to a database.
 
     Args:
@@ -42,7 +39,7 @@ def test_save(dataset_with_gamma) -> None:
     with closing(connect()) as con:
         dao = DataAccessObject(con)
         dao.create_schema()
-        dao.save(dataset_with_gamma)
+        dao.save(inventory_with_gamma)
         run_data = dao.load_rundata().df()
         assert run_data["timestamp"].item() == pd.Timestamp("2022-02-21 01:52:45")
         assert run_data["run_name"].item() == "* Material Cu, fluxes 104_2_1_1"
@@ -70,30 +67,3 @@ def test_save(dataset_with_gamma) -> None:
         assert not gamma.loc[2, 1.0].empty
         gamma2 = dao.load_gamma(2).df()
         assert not gamma2.empty
-
-
-# noinspection SqlNoDataSourceInspection
-def test_write_parquet(tmp_path, dataset_with_gamma):
-    """Test saving to parquet files."""
-    write_parquet(tmp_path, dataset_with_gamma, 1, 1)
-    assert Path(tmp_path / "time_steps/data_material_id=1_case_id=1_0.parquet").is_file()
-    write_parquet(tmp_path, dataset_with_gamma, 1, 2)
-    assert Path(tmp_path / "time_steps/data_material_id=1_case_id=2_0.parquet").is_file()
-    con = connect()
-    path = tmp_path / "nuclides/*.parquet"
-    sql = f"select * from read_parquet('{path}')"  # noqa: S608
-    nuclides = con.execute(sql).df()
-    assert not nuclides.loc[2].empty
-    path = tmp_path / "time_steps/*.parquet"
-    sql = f"select * from read_parquet('{path}')"  # noqa: S608
-    time_steps = con.execute(sql).df()
-    assert time_steps.dtypes.time_step_number.name.startswith(  # Windows: int32, Linux: int64
-        "int",
-    ), "Make sure it's not converted to string"
-    assert not time_steps.loc[2].empty
-
-
-def test__compute_optimal_row_group_size():
-    assert compute_optimal_row_group_size(40, 5) == 2048
-    assert compute_optimal_row_group_size(500_000, 5) == 100000
-    assert compute_optimal_row_group_size(100_000_000, 5) == 1_000_000

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import cast
-
 import bz2
 import os
 
@@ -10,7 +8,10 @@ from pathlib import Path
 import pytest
 import xpypact.data_arrays as da
 
-from xpypact.utils.resource import path_resolver
+from xpypact import inventory
+
+HERE = Path(__file__).parent
+DATA = HERE / "data"
 
 
 @pytest.fixture(scope="session")
@@ -20,7 +21,7 @@ def data() -> Path:
     Returns:
         Path to tests/data directory
     """
-    return cast(Path, path_resolver("tests")("data"))
+    return DATA
 
 
 @pytest.fixture()
@@ -38,6 +39,17 @@ def cd_tmpdir(tmpdir):  # noqa: PT004
         yield
     finally:
         os.chdir(old_dir)
+
+
+@pytest.fixture()
+def inventory_with_gamma() -> inventory.Inventory:
+    """Load inventory with gamma information.
+
+    Returns:
+        Inventory with gamma information.
+    """
+    with bz2.open(DATA / "with-gamma.json.bz2") as fid:
+        return inventory.from_json(fid.read().decode("utf-8"))
 
 
 @pytest.fixture()

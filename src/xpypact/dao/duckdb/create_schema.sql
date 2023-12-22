@@ -42,7 +42,7 @@ create table if not exists nuclide (
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
     state varchar(1) not null,
-    zai integer not null check (10010 <= zai) unique,
+    zai uinteger not null check (10010 <= zai) unique,
     half_life float4 not null check (0 <= half_life),
     primary key (element, mass_number, state)
 );
@@ -51,29 +51,27 @@ create table if not exists timestep_nuclide (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
-    element varchar(2) not null,
-    mass_number usmallint not null,
-
-    state varchar(1) not null,
+    zai uinteger not null,
     atoms float4 not null,
     grams float4 not null,
+
     activity float4 not null,
     alpha_activity float4 not null,
-
     beta_activity float4 not null,
     gamma_activity float4 not null,
+
     heat float4 not null,
     alpha_heat float4 not null,
     beta_heat float4 not null,
-
     gamma_heat float4 not null,
+
     dose float4 not null,
     ingestion float4 not null,
     inhalation float4 not null,
 
-    primary key (material_id, case_id, time_step_number, element, mass_number, state),
+    primary key (material_id, case_id, time_step_number, zai),
     foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number),
-    foreign key (element, mass_number, state) references nuclide (element, mass_number, state)
+    foreign key (zai) references nuclide (zai)
 );
 
 create table if not exists timestep_gamma (

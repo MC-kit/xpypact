@@ -1,7 +1,7 @@
 """Classes to load information from FISPACT output JSON file."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 import io  # - needed for dispatch
 
@@ -12,12 +12,12 @@ import numpy as np
 
 import msgspec as ms
 
-from xpypact.run_data import RunData
 from xpypact.time_step import TimeStep
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Iterator
+    from collections.abc import Iterable, Iterator
 
+    from xpypact.nuclide import NuclideInfo
     from xpypact.utils.types import NDArrayFloat
 
 FLOAT_ZERO = 0.0
@@ -37,6 +37,14 @@ class RunDataCorrected(ms.Struct):
     dose_rate_type: str
     dose_rate_distance: float
 
+    def asdict(self) -> dict[str, str]:
+        """Get dict representation."""
+        return ms.structs.asdict(self)
+
+    def astuple(self) -> tuple[str, str, str]:
+        """Get tuple representation."""
+        return ms.structs.astuple(self)
+
 
 class InventoryError(ValueError):
     """Base class for inventory exception."""
@@ -48,33 +56,6 @@ class InventoryError(ValueError):
             The __doc__ of the exception class.
         """
         return cast(str, self.__class__.__doc__)  # pragma: no cover
-
-
-def _create_json_inventory_data_mapper() -> Callable[[dict[str, Any]], TimeStep]:
-    prev_irradiation_time = prev_cooling_time = prev_elapsed_time = FLOAT_ZERO
-    number = 1
-
-    def json_inventory_data_mapper(jts: dict[str, Any]) -> TimeStep:
-        nonlocal number, prev_irradiation_time, prev_cooling_time, prev_elapsed_time
-        ts = TimeStep.from_json(jts)
-        duration = ts.irradiation_time - prev_irradiation_time
-        if duration == FLOAT_ZERO:
-            duration = ts.cooling_time - prev_cooling_time
-        if duration < FLOAT_ZERO:
-            raise InventoryNonMonotonicTimesError  # pragma: no cover
-        ts.duration = duration
-        prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
-        if duration == FLOAT_ZERO:
-            ts.flux = FLOAT_ZERO
-        ts.number = number
-        number += 1
-        prev_irradiation_time, prev_cooling_time = (
-            ts.irradiation_time,
-            ts.cooling_time,
-        )
-        return ts
-
-    return json_inventory_data_mapper
 
 
 class InventoryNonMonotonicTimesError(InventoryError):
@@ -106,24 +87,6 @@ class Inventory(ms.Struct):
             ts.dose_rate.distance,
         )
 
-    # @classmethod
-    # def from_json(cls, json_dict: dict[str, Any]) -> Inventory:
-    #     """Construct Inventory instance from JSON dictionary.
-    #
-    #     Args:
-    #         json_dict: a JSON dictionary
-    #
-    #     Returns:
-    #         Inventory: the new instance
-    #     """
-    #     json_run_data = json_dict.pop("run_data")
-    #     run_data = RunData.from_json(json_run_data)
-    #     json_inventory_data = json_dict.pop("inventory_data")
-    #     mapper = _create_json_inventory_data_mapper()
-    #     inventory_data = [mapper(ts) for ts in json_inventory_data]
-    #
-    #     return cls(run_data, inventory_data)
-
     def extract_times(self) -> NDArrayFloat:
         """Create vector of elapsed time for all the time steps in the inventory.
 
@@ -131,6 +94,43 @@ class Inventory(ms.Struct):
             Vector with elapsed times.
         """
         return extract_times(self.inventory_data)
+
+    def extract_nuclides(self) -> set[NuclideInfo]:
+        """Extract.
+
+        Returns:
+            Set of nuclides present in this inventory.
+        """
+        nuclides: set[NuclideInfo] = set()
+        for ts in self:
+            for nuclide in ts.nuclides:
+                nuclides.add(nuclide.info)
+        return nuclides
+
+    def __post_init__(self) -> None:
+        """Define time steps durations and elapsed time.
+
+        Raises:
+            InventoryNonMonotonicTimesError: if time sequences in JSON are not in order
+        """
+        number = 1
+        prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
+        for ts in self.inventory_data:
+            duration = ts.irradiation_time - prev_irradiation_time
+            if duration == FLOAT_ZERO:
+                duration = ts.cooling_time - prev_cooling_time
+            if duration < FLOAT_ZERO:
+                raise InventoryNonMonotonicTimesError  # pragma: no cover
+            ts.duration = duration
+            prev_elapsed_time = ts.elapsed_time = prev_elapsed_time + duration
+            if duration == FLOAT_ZERO:
+                ts.flux = FLOAT_ZERO
+            ts.number = number
+            number += 1
+            prev_irradiation_time, prev_cooling_time = (
+                ts.irradiation_time,
+                ts.cooling_time,
+            )
 
     def __iter__(self) -> Iterator[TimeStep]:
         """Iterate over time steps.
@@ -148,7 +148,7 @@ class Inventory(ms.Struct):
         """
         return len(self.inventory_data)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> TimeStep:
         """List interface delegated to the time steps.
 
         Args:
@@ -183,8 +183,6 @@ def from_json(text: str) -> Inventory:
     Returns:
         The loaded Inventory instance.
     """
-    # json_dict = json.loads(text)  # pylint: disable=no-member
-    # return Inventory.from_json(json_dict)
     return ms.json.decode(text, type=Inventory)
 
 
@@ -212,3 +210,31 @@ def _(path: Path) -> Inventory:  # type: ignore[misc]
         The loaded Inventory instance.
     """
     return from_json(path.read_text(encoding="utf8"))
+
+
+class RunData(ms.Struct, frozen=True, gc=False):
+    """FISPACT run title data."""
+
+    timestamp: str
+    run_name: str
+    flux_name: str
+
+    def asdict(self) -> dict[str, str]:
+        """Get dict representation."""
+        return ms.structs.asdict(self)
+
+    def astuple(self) -> tuple[str, str, str]:
+        """Get tuple representation."""
+        return ms.structs.astuple(self)
+
+    @classmethod
+    def from_json(cls, json_dict: dict[str, str]) -> RunData:
+        """Construct RunData instance from JSON.
+
+        Args:
+            json_dict: source dictionary
+
+        Returns:
+            The loaded instance of RunData
+        """
+        return ms.convert(json_dict, cls)
