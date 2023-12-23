@@ -12,7 +12,8 @@ import numpy as np
 
 import msgspec as ms
 
-from xpypact.time_step import TimeStep
+# noinspection PyUnresolvedReferences
+from xpypact.time_step import TimeStep  # noqa: TCH001  - required for Struct field
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
