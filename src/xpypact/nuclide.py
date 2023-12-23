@@ -16,7 +16,7 @@ __all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO"]
 FLOAT_ZERO = 0.0
 
 
-class NuclideInfo(ms.Struct):
+class NuclideInfo(ms.Struct, frozen=True, gc=False):
     """Basic information on a nuclide.
 
     This is extracted as a separate database entity to improve normalization.

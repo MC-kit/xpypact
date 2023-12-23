@@ -34,7 +34,7 @@ def test_save(inventory_with_gamma) -> None:
     """Test saving of dataset to a database.
 
     Args:
-        dataset_with_gamma: dataset to save (fixture)
+        inventory_with_gamma: inventory to save (fixture)
     """
     with closing(connect()) as con:
         dao = DataAccessObject(con)
@@ -55,12 +55,10 @@ def test_save(inventory_with_gamma) -> None:
         time_step_nuclides = time_step_nuclides.set_index(
             [
                 "time_step_number",
-                "element",
-                "mass_number",
-                "state",
+                "zai",
             ],
         )
-        assert not time_step_nuclides.loc[2, "Cu"].empty
+        assert not time_step_nuclides.loc[2, 290630].empty
         gamma = dao.load_gamma().df()
         assert not gamma.empty
         gamma = gamma.set_index(["time_step_number", "boundary"])
