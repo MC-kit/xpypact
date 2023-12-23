@@ -555,6 +555,7 @@ exclude = [
 "src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
 "src/xpypact/utils/resource.py" = ["ANN202"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
+"docs/source/conf.py" = ["A001", "D100", "ERA001", "INP001"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

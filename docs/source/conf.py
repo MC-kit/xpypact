@@ -1,4 +1,4 @@
-from typing import Dict, List
+from __future__ import annotations
 
 import sys
 
@@ -12,7 +12,9 @@ from pathlib import Path
 #
 
 pkg_path = Path("..", "..", "src").absolute()
-assert pkg_path.exists(), f"Invalid path {pkg_path}"
+if not pkg_path.exists():
+    msg = f"Invalid path {pkg_path}"
+    raise ValueError(msg)
 sys.path.insert(0, str(pkg_path))
 
 import xpypact  # noqa: E402
