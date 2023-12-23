@@ -157,7 +157,7 @@ def _save_run_data(
             ?, ?, strptime(?, '%H:%M:%S %d %B %Y'), ?, ?, ?, ?
         )
     """
-    record = (material_id, case_id, *(mi.astuple()))
+    record = (material_id, case_id, *(ms.structs.astuple(mi)))
     cursor.execute(sql, record)
 
 

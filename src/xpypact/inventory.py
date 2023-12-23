@@ -38,14 +38,6 @@ class RunDataCorrected(ms.Struct):
     dose_rate_type: str
     dose_rate_distance: float
 
-    def asdict(self) -> dict[str, str]:
-        """Get dict representation."""
-        return ms.structs.asdict(self)
-
-    def astuple(self) -> tuple[str, str, str]:
-        """Get tuple representation."""
-        return ms.structs.astuple(self)
-
 
 class InventoryError(ValueError):
     """Base class for inventory exception."""

@@ -113,11 +113,3 @@ class TimeStep(ms.Struct):  # pylint: disable=too-many-instance-attributes
             Is the irradiation flux zero?
         """
         return self.flux == FLOAT_ZERO
-
-    def asdict(self) -> dict[str, str]:
-        """Get dict representation."""
-        return ms.structs.asdict(self)
-
-    def astuple(self) -> tuple[str, str, str]:
-        """Get tuple representation."""
-        return ms.structs.astuple(self)

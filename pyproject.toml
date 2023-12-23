@@ -44,7 +44,7 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 # mckit-nuclides = {version = ">=0.2.5", allow-prereleases = true}
