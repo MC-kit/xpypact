@@ -141,8 +141,8 @@ def _add_time_step_record(_ds: xr.Dataset, ts: TimeStep) -> xr.Dataset:
     }
 
     if ts.gamma_spectrum is not None:
-        gamma_boundaries = ts.gamma_spectrum.boundaries
-        gamma_value = ts.gamma_spectrum.intensities
+        gamma_boundaries = np.asarray(ts.gamma_spectrum.boundaries, dtype=float)
+        gamma_value = np.asarray(ts.gamma_spectrum.intensities, dtype=float)
         gamma_value = np.insert(gamma_value, 0, 0.0).reshape(1, len(gamma_boundaries))
         data_vars["gamma"] = (("time_step_number", "gamma_boundaries"), gamma_value)
         coords["gamma_boundaries"] = gamma_boundaries
