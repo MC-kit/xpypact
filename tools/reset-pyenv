@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ~/.bash-functions.rc
+. $HOME/.bash-functions.rc
 # set -o nounset
 # set -o errexit
 # set -o verbose

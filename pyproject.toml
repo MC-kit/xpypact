@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.4.4"
+version = "0.5.0"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -15,7 +15,6 @@ keywords = [
     "FISPACT",
     "activation",
     "duckdb",
-    "parquet"
 ]
 readme = "README.rst"
 packages = [
@@ -45,17 +44,18 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 # mckit-nuclides = {version = ">=0.2.5", allow-prereleases = true}
 mckit-nuclides = ">=0.2.3"
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
-orjson = ">=3.6.7"
 pandas = ">=2.0.0"
 xarray = ">=2022.3.0"
 multipledispatch = ">=0.6.0"
+msgspec = ">=0.18.5"
+rich = ">=13.7.0"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -73,6 +73,8 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 pre-commit = ">=2.15.0"
 rstcheck = ">=6.1.2"
 pydocstringformatter = ">=0.7.3"
+sqlfluff = ">=2.3.2"
+pyupgrade = ">=3.15.0"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"
@@ -96,8 +98,7 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 
 [tool.poetry.group.typeguard.dependencies]
-# typeguard = ">=4.1.5"  # pygls (1.0.2) depends on typeguard (>=3,<4), check on updates
-typeguard = ">=3.0.2"
+typeguard = ">=4.1.5"
 
 [tool.poetry.group.mypy.dependencies]
 mypy = ">=1.2.0"
@@ -131,8 +132,6 @@ flake8-scream = ">=0.1.0"
 flake8-simplify = ">=0.19.3"
 flake8-use-fstring = ">=1.4"
 flake8-use-pathlib = ">=0.3.0"
-pandas-vet = ">=0.2.3"
-tryceratops = ">=1.0.1"
 pylint = ">=2.15.10"
 flake8-pylint = ">=0.1.3"
 # TODO dvp: check/use flake8-pyprojecttoml plugin
@@ -173,7 +172,7 @@ jupyterlab = "^3.6.3"  # don't use >= - installs development version 4.0...
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
-known_first_party = "src"
+known_first_party = "xpypact"
 known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -307,7 +306,6 @@ module = [
     "click",
     "click.testing",
     "dask.*",
-    "importlib_resources",
     "loguru",
     "mckit_nuclides.*",
     "multipledispatch",
@@ -347,7 +345,6 @@ context=5
 [tool.tryceratops]
 include = ["src"]
 experimental = true
-
 
 [tool.pydocstringformatter]
 write = true
@@ -558,10 +555,14 @@ exclude = [
 "src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
 "src/xpypact/utils/resource.py" = ["ANN202"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
+"docs/source/conf.py" = ["A001", "D100", "ERA001", "INP001"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10
+max-complexity = 15
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true  # skip return type for __init__() methods
 
 [tool.ruff.flake8-type-checking]
 strict = true
@@ -576,5 +577,46 @@ required-imports = ["from __future__ import annotations"]
 parametrize-names-type = "csv"
 
 [tool.ruff.pydocstyle]
-# Use Google-style docstrings.
-convention = "google"
+convention = "google"  # Use Google-style docstrings.
+
+[tool.sqlfluff.core]
+dialect = "duckdb"
+max_line_length = 120
+
+[tool.sqlfluff.indentation]
+# While implicit indents are not enabled by default. Many of the
+# SQLFluff maintainers do use them in their projects.
+allow_implicit_indents = true
+
+# The default configuration for aliasing rules is "consistent"
+# which will auto-detect the setting from the rest of the file. This
+# is less desirable in a new project and you may find this (slightly
+# more strict) setting more useful.
+[tool.sqlfluff.rules.aliasing.table]
+aliasing = "explicit"
+
+[tool.sqlfluff.rules.aliasing.column]
+aliasing = "explicit"
+
+[tool.sqlfluff.rules.aliasing.length]
+min_alias_length = 3
+
+# The default configuration for capitalisation rules is "consistent"
+# which will auto-detect the setting from the rest of the file. This
+# is less desirable in a new project and you may find this (slightly
+# more strict) setting more useful.
+# Typically we find users rely on syntax highlighting rather than
+# capitalisation to distinguish between keywords and identifiers.
+# Clearly, if your organisation has already settled on uppercase
+# formatting for any of these syntax elements then set them to "upper".
+# See https://stackoverflow.com/questions/608196/why-should-i-capitalize-my-sql-keywords-is-there-a-good-reason
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.identifiers]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.functions]
+extended_capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.literals]
+capitalisation_policy = "lower"
+[tool.sqlfluff.rules.capitalisation.types]
+extended_capitalisation_policy = "lower"

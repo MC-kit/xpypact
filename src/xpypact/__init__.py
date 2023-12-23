@@ -8,13 +8,6 @@ from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
 
 from .data_arrays import from_json, scale_by_flux, scale_by_mass
-from .data_frames import (
-    get_gamma,
-    get_nuclides,
-    get_run_data,
-    get_time_steps,
-    get_timestep_nuclides,
-)
 
 try:
     __version__ = version(__name__)
@@ -38,11 +31,6 @@ __all__ = [
     "__license__",
     "__summary__",
     "__copyright__",
-    "get_run_data",
-    "get_gamma",
-    "get_nuclides",
-    "get_timestep_nuclides",
-    "get_time_steps",
     "from_json",
     "scale_by_flux",
     "scale_by_mass",

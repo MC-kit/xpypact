@@ -1,9 +1,7 @@
 """Nuclide specification in FISPACT JSON."""
 from __future__ import annotations
 
-from typing import Any
-
-from dataclasses import dataclass
+import msgspec as ms
 
 try:
     from scipy.constants import Avogadro
@@ -13,13 +11,25 @@ except ImportError:  # pragma: no cover
 from mckit_nuclides.elements import z
 from mckit_nuclides.nuclides import get_nuclide_mass
 
-__all__ = ["Avogadro", "Nuclide"]
+__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO"]
 
 FLOAT_ZERO = 0.0
 
 
-@dataclass
-class Nuclide:  # pylint: disable=too-many-instance-attributes
+class NuclideInfo(ms.Struct, frozen=True, gc=False):
+    """Basic information on a nuclide.
+
+    This is extracted as a separate database entity to improve normalization.
+    """
+
+    element: str
+    isotope: int
+    state: str = ""
+    zai: int = 0
+    half_life: float = 0.0
+
+
+class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
     """Nuclide properties from FISPACT JSON."""
 
     element: str
@@ -60,14 +70,11 @@ class Nuclide:  # pylint: disable=too-many-instance-attributes
         """
         return self.isotope
 
-    @classmethod
-    def from_json(cls, json_dict: dict[str, Any]) -> Nuclide:
-        """Construct the Nuclide from JSON dictionary.
-
-        Args:
-            json_dict: information in json
+    @property
+    def info(self) -> NuclideInfo:
+        """Extract a nuclide specific information.
 
         Returns:
-            Nuclide: the Nuclide object
+            element, a, state, zai, half_life
         """
-        return cls(**json_dict)
+        return NuclideInfo(self.element, self.a, self.state, self.zai, self.half_life)
