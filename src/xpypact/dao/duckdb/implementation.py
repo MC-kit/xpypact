@@ -1,21 +1,12 @@
 """Code to implement DuckDB DAO."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from dataclasses import dataclass
 from pathlib import Path
 
 import duckdb as db
 import msgspec as ms
-import pandas as pd
 
 from xpypact.dao import DataAccessInterface
-
-if TYPE_CHECKING:
-    import pandas as pd
-    import xarray as xr
-
 
 HERE = Path(__file__).parent
 
@@ -75,7 +66,7 @@ class DuckDBDAO(DataAccessInterface):
         for table in tables:
             self.con.execute(f"drop table if exists {table}")
 
-    def save(self, inventory: xr.Dataset, material_id=1, case_id=1) -> None:
+    def save(self, inventory: Inventory, material_id=1, case_id=1) -> None:
         """Save xpypact dataset to database.
 
         Args:
@@ -146,15 +137,18 @@ def _save_run_data(
     case_id=1,
 ) -> None:
     mi = inventory.meta_info
-    timestamp = pd.date_range(mi.timestamp, periods=1)[0].asm8
-
+    # Time stamp in run data:
+    # "23:01:19 12 July 2020"
+    # Format:
+    # '%H:%M:%S %d %B %Y'
+    # https://duckdb.org/docs/sql/functions/dateformat
     sql = """
         insert into rundata values
         (
-            ?, ?, ?, ?, ?, ?, ?
+            ?, ?, strptime(?, '%H:%M:%S %d %B %Y'), ?, ?, ?, ?
         )
     """
-    record = (material_id, case_id, timestamp, *(mi.astuple()[1:]))
+    record = (material_id, case_id, *(mi.astuple()[1:]))
     cursor.execute(sql, record)
 
 
@@ -211,7 +205,7 @@ def _save_time_steps(cursor: db.DuckDBPyConnection, inventory: Inventory, materi
 
 def _save_time_step_nuclides(
     cursor: db.DuckDBPyConnection,
-    ds: xr.Dataset,
+    ds: Inventory,
     material_id=1,
     case_id=1,
 ):
