@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
+
 import msgspec as ms
 
 from xpypact.dao import DataAccessInterface
@@ -89,7 +91,6 @@ class DuckDBDAO(DataAccessInterface):
         _save_nuclides(cursor, inventory)
         _save_time_steps(cursor, inventory, material_id, case_id)
         _save_time_step_nuclides(cursor, inventory, material_id, case_id)
-        _save_gbins(cursor, inventory)
         _save_gamma(cursor, inventory, material_id, case_id)
 
     def load_rundata(self) -> db.DuckDBPyRelation:
@@ -268,27 +269,26 @@ def _save_time_step_nuclides(
 
 
 # noinspection SqlNoDataSourceInspection
-def _save_gbins(cursor: db.DuckDBPyConnection, inventory: Inventory) -> None:
+def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
     gs = inventory[0].gamma_spectrum
     if gs is None:
-        return
+        return  # pragma: no coverage
     sql = """
         insert into gbins values(?, ?);
     """
-    cursor.executemany(sql, enumerate(gs.boundaries))
-
-
-# noinspection SqlNoDataSourceInspection
-def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
+    boundaries = np.asarray(gs.boundaries, dtype=float)
+    cursor.executemany(sql, enumerate(boundaries))
     sql = """
         insert into timestep_gamma values(?, ?, ?, ?, ?);
     """
+    mids = 0.5 * (boundaries[:-1] + boundaries[1:])
     cursor.executemany(
         sql,
         (
-            (material_id, case_id, t.number, x[0] + 1, x[1][1])  # timestep number  # g  # rate
+            (material_id, case_id, t.number, x[0] + 1, x[1])  # use gbins index for upper boundary
             for t in inventory.inventory_data
             if t.gamma_spectrum
-            for x in enumerate(zip(t.gamma_spectrum.boundaries[1:], t.gamma_spectrum.values))
+            for x in enumerate(np.asarray(t.gamma_spectrum.values, dtype=float) / mids)
+            # convert rate MeV/s -> photon/s
         ),
     )
