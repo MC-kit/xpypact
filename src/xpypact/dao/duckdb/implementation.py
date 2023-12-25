@@ -89,6 +89,7 @@ class DuckDBDAO(DataAccessInterface):
         _save_nuclides(cursor, inventory)
         _save_time_steps(cursor, inventory, material_id, case_id)
         _save_time_step_nuclides(cursor, inventory, material_id, case_id)
+        _save_gbins(cursor, inventory)
         _save_gamma(cursor, inventory, material_id, case_id)
 
     def load_rundata(self) -> db.DuckDBPyRelation:
@@ -122,6 +123,14 @@ class DuckDBDAO(DataAccessInterface):
             time step x nuclides table
         """
         return self.con.table("timestep_nuclide")
+
+    def load_gbins(self) -> db.DuckDBPyRelation:
+        """Load gbins table.
+
+        Returns:
+            gbins table
+        """
+        return self.con.table("gbins")
 
     def load_gamma(self, time_step_number: int | None = None) -> db.DuckDBPyRelation:
         """Load time step x gamma table.
@@ -259,23 +268,27 @@ def _save_time_step_nuclides(
 
 
 # noinspection SqlNoDataSourceInspection
-def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
-    """Material_id uinteger not null,.
-
-    case_id uinteger not null,
-    time_step_number uinteger not null,
-    boundary real not null check (0 <= boundary),
-    rate real not null,
+def _save_gbins(cursor: db.DuckDBPyConnection, inventory: Inventory) -> None:
+    gs = inventory[0].gamma_spectrum
+    if gs is None:
+        return
+    sql = """
+        insert into gbins values(?, ?);
     """
+    cursor.executemany(sql, enumerate(gs.boundaries))
+
+
+# noinspection SqlNoDataSourceInspection
+def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
     sql = """
         insert into timestep_gamma values(?, ?, ?, ?, ?);
     """
     cursor.executemany(
         sql,
         (
-            (material_id, case_id, t.number, x[0], x[1])
+            (material_id, case_id, t.number, x[0] + 1, x[1][1])  # timestep number  # g  # rate
             for t in inventory.inventory_data
             if t.gamma_spectrum
-            for x in zip(t.gamma_spectrum.boundaries[1:], t.gamma_spectrum.values)
+            for x in enumerate(zip(t.gamma_spectrum.boundaries[1:], t.gamma_spectrum.values))
         ),
     )

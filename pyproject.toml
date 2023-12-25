@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.5.1"
+version = "0.5.2"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -605,7 +605,7 @@ min_alias_length = 3
 # which will auto-detect the setting from the rest of the file. This
 # is less desirable in a new project and you may find this (slightly
 # more strict) setting more useful.
-# Typically we find users rely on syntax highlighting rather than
+# Typically, we find users rely on syntax highlighting rather than
 # capitalisation to distinguish between keywords and identifiers.
 # Clearly, if your organisation has already settled on uppercase
 # formatting for any of these syntax elements then set them to "upper".

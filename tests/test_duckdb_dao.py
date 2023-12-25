@@ -61,7 +61,7 @@ def test_save(inventory_with_gamma) -> None:
         assert not time_step_nuclides.loc[2, 290630].empty
         gamma = dao.load_gamma().df()
         assert not gamma.empty
-        gamma = gamma.set_index(["time_step_number", "boundary"])
-        assert not gamma.loc[2, 1.0].empty
+        gamma = gamma.set_index(["time_step_number", "g"])
+        assert not gamma.loc[2, 1].empty
         gamma2 = dao.load_gamma(2).df()
         assert not gamma2.empty
