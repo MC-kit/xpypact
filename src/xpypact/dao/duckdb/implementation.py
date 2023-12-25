@@ -271,7 +271,7 @@ def _save_time_step_nuclides(
 def _save_gbins(cursor: db.DuckDBPyConnection, inventory: Inventory) -> None:
     gs = inventory[0].gamma_spectrum
     if gs is None:
-        return
+        return  # pragma: no coverage
     sql = """
         insert into gbins values(?, ?);
     """

@@ -59,6 +59,8 @@ def test_save(inventory_with_gamma) -> None:
             ],
         )
         assert not time_step_nuclides.loc[2, 290630].empty
+        gbins = dao.load_gbins().df().set_index("g")
+        assert gbins.loc[0].boundary == pytest.approx(1e-11)
         gamma = dao.load_gamma().df()
         assert not gamma.empty
         gamma = gamma.set_index(["time_step_number", "g"])
