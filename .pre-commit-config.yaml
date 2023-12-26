@@ -196,7 +196,8 @@ repos:
 - repo: https://github.com/sqlfluff/sqlfluff
   rev: 3.0.0a4
   hooks:
-      # TODO dvp: sqlfluff-lint fails on 'create or replace table'
+      # https://docs.sqlfluff.com/en/latest/rules.html
+      # https://davidmarquis.hashnode.dev/strengthen-query-consistency-with-sqlfluff-learn-to-lint-sql-queries-and-adapt-rules-for-data-teams
     - id: sqlfluff-lint
       # For dbt projects, this installs the dbt "extras".
       # You will need to select the relevant dbt adapter for your dialect

@@ -279,7 +279,11 @@ def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id
     if gs is None:
         return  # pragma: no coverage
     boundaries = np.asarray(gs.boundaries, dtype=float)
-    gbins_already_stored = cursor.sql("select count(*) from gbins").fetchone()[0]
+    gbins_already_stored_fetch = cursor.sql("select count(*) from gbins").fetchone()
+    if gbins_already_stored_fetch is None:
+        msg = "Unable to count records in table 'gbins'"
+        raise DuckDBDAOSaveError(msg)
+    gbins_already_stored = gbins_already_stored_fetch[0]
     if gbins_already_stored == 0:
         sql = """
             insert into gbins values(?, ?);
