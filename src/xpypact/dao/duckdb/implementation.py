@@ -24,6 +24,10 @@ HERE = Path(__file__).parent
 # https://duckdb.org/docs/guides/python/multiple_threads.html
 
 
+class DuckDBDAOSaveError(ValueError):
+    """Error on accessing/saving FISPACT data."""
+
+
 # noinspection SqlNoDataSourceInspection
 @dataclass
 class DuckDBDAO(DataAccessInterface):
@@ -273,11 +277,20 @@ def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id
     gs = inventory[0].gamma_spectrum
     if gs is None:
         return  # pragma: no coverage
-    sql = """
-        insert into gbins values(?, ?);
-    """
     boundaries = np.asarray(gs.boundaries, dtype=float)
-    cursor.executemany(sql, enumerate(boundaries))
+    gbins_already_stored = cursor.sql("select count(*) from gbins").fetchone()[0]
+    if gbins_already_stored == 0:
+        sql = """
+            insert into gbins values(?, ?);
+        """
+        cursor.executemany(sql, enumerate(boundaries))
+    elif gbins_already_stored != boundaries.size:  # pragma: no cover
+        msg = (
+            f"Incompatible number of gamma spectrum boundaries found at {material_id}/{case_id}: "
+            f"{gbins_already_stored}!={boundaries.size}."
+        )
+        raise DuckDBDAOSaveError(msg)
+
     sql = """
         insert into timestep_gamma values(?, ?, ?, ?, ?);
     """
