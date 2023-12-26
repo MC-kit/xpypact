@@ -3,7 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from dataclasses import dataclass
+import threading
+
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
     import duckdb as db
     import pandas as pd
 
-    from xpypact.inventory import Inventory
+    from xpypact.inventory import Inventory, NuclideInfo
 
 HERE = Path(__file__).parent
 
@@ -34,6 +36,8 @@ class DuckDBDAO(DataAccessInterface):
     """Implementation of DataAccessInterface for DuckDB."""
 
     con: db.DuckDBPyConnection
+    nuclides: set[NuclideInfo] = field(default_factory=set)
+    nuclides_lock: threading.RLock = field(default_factory=threading.RLock)
 
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
@@ -81,8 +85,10 @@ class DuckDBDAO(DataAccessInterface):
         for table in tables:
             self.con.execute(f"drop table if exists {table}")
 
-    def save(self, inventory: Inventory, material_id=1, case_id=1) -> None:
+    def save(self, inventory: Inventory, material_id: int = 1, case_id: int = 1) -> None:
         """Save xpypact dataset to database.
+
+        This can be used in multithreading mode.
 
         Args:
             inventory: xpypact dataset to save
@@ -93,10 +99,29 @@ class DuckDBDAO(DataAccessInterface):
         # https://duckdb.org/docs/api/python/dbapi
         cursor = self.con.cursor()
         _save_run_data(cursor, inventory, material_id, case_id)
-        _save_nuclides(cursor, inventory)
         _save_time_steps(cursor, inventory, material_id, case_id)
         _save_time_step_nuclides(cursor, inventory, material_id, case_id)
         _save_gamma(cursor, inventory, material_id, case_id)
+        # accumulate nuclides for saving when multithreading is done
+        with self.nuclides_lock:
+            self.nuclides.update(inventory.extract_nuclides())
+
+    def on_save_complete(self) -> None:
+        """Save information accumulated on multithreading processing all the inventories."""
+        self.save_nuclides()
+
+    def save_nuclides(self) -> None:
+        """Save nuclides on multithreading saving is complete.
+
+        Call this when all the inventories are saved.
+        """
+        sql = """
+            insert or ignore
+            into nuclide
+            values (?,?,?,?,?)
+            ;
+        """
+        self.con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
 
     def load_rundata(self) -> db.DuckDBPyRelation:
         """Load FISPACT run data as table.
@@ -177,14 +202,6 @@ def _save_run_data(
 
 
 # noinspection SqlNoDataSourceInspection
-def _save_nuclides(cursor: db.DuckDBPyConnection, inventory: Inventory):
-    nuclides = inventory.extract_nuclides()
-    sql = """
-        insert or ignore
-        into nuclide
-        values (?,?,?,?,?)
-    """
-    cursor.executemany(sql, (ms.structs.astuple(x) for x in nuclides))
 
 
 # noinspection SqlNoDataSourceInspection

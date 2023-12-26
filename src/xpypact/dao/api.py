@@ -40,13 +40,20 @@ class DataAccessInterface(ABC):
         """Drop our DB objects."""
 
     @abstractmethod
-    def save(self, inventory: Inventory, material_id: int = 1, case_id: str = "") -> None:
+    def save(self, inventory: Inventory, material_id: int = 1, case_id: int = 1) -> None:
         """Save xpypact inventory to database.
 
         Args:
             inventory: what to save
             material_id: additional key to distinguish multiple FISPACT runs
             case_id: second additional key
+        """
+
+    @abstractmethod
+    def on_save_complete(self) -> None:
+        """Execute on saving all the innventories.
+
+        Save information that is to be saved after multithreading processing.
         """
 
     @abstractmethod

@@ -16,7 +16,13 @@ __all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO"]
 FLOAT_ZERO = 0.0
 
 
-class NuclideInfo(ms.Struct, frozen=True, gc=False):
+class _NuclideID(ms.Struct, order=True, frozen=True, gc=False):
+    """The class organizes NuclideInfo equality and ordering on zai."""
+
+    zai: int
+
+
+class NuclideInfo(_NuclideID, frozen=True, gc=False):
     """Basic information on a nuclide.
 
     This is extracted as a separate database entity to improve normalization.
@@ -25,7 +31,6 @@ class NuclideInfo(ms.Struct, frozen=True, gc=False):
     element: str
     isotope: int
     state: str = ""
-    zai: int = 0
     half_life: float = 0.0
 
 
@@ -53,13 +58,14 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
 
     def __post_init__(self) -> None:
         """Make the values consistent in data from old FISPACT."""
-        _z = z(self.element)
-        if self.zai == 0:
-            self.zai = _z * 10000 + self.isotope * 10
-            if self.state:
-                self.zai += 1
-        if self.atoms == FLOAT_ZERO and self.grams > FLOAT_ZERO:
-            self.atoms = Avogadro * self.grams / get_nuclide_mass(_z, self.isotope)
+        if self.zai == 0 or self.atoms == FLOAT_ZERO and self.grams > FLOAT_ZERO:
+            _z = z(self.element)
+            if self.zai == 0:
+                self.zai = _z * 10000 + self.isotope * 10
+                if self.state:
+                    self.zai += 1
+            if self.atoms == FLOAT_ZERO and self.grams > FLOAT_ZERO:
+                self.atoms = Avogadro * self.grams / get_nuclide_mass(_z, self.isotope)
 
     @property
     def a(self) -> int:
@@ -77,4 +83,4 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
         Returns:
             element, a, state, zai, half_life
         """
-        return NuclideInfo(self.element, self.a, self.state, self.zai, self.half_life)
+        return NuclideInfo(self.zai, self.element, self.a, self.state, self.half_life)
