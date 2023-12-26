@@ -39,13 +39,14 @@ create table timestep (
 
 
 create table nuclide (
+    zai uinteger not null check (10010 <= zai) primary key,
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
     state varchar(1) not null,
-    zai uinteger not null check (10010 <= zai) unique,
-    half_life real not null check (0 <= half_life),
-    primary key (element, mass_number, state)
+    half_life real not null check (0 <= half_life)
 );
+
+create unique index nuclide_ems on nuclide (element, mass_number, state);
 
 create table timestep_nuclide (
     material_id uinteger not null,
@@ -70,8 +71,7 @@ create table timestep_nuclide (
     inhalation real not null,
 
     primary key (material_id, case_id, time_step_number, zai),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number),
-    foreign key (zai) references nuclide (zai)
+    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
 
 create table gbins (
