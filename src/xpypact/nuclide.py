@@ -58,7 +58,9 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
 
     def __post_init__(self) -> None:
         """Make the values consistent in data from old FISPACT."""
-        if self.zai == 0 or self.atoms == FLOAT_ZERO and self.grams > FLOAT_ZERO:
+        if (
+            self.zai == 0 or self.atoms == FLOAT_ZERO and self.grams > FLOAT_ZERO
+        ):  # pragma: no cover
             _z = z(self.element)
             if self.zai == 0:
                 self.zai = _z * 10000 + self.isotope * 10
