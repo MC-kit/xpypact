@@ -1,9 +1,5 @@
 -- sqlfluff:dialect:duckdb
 
-create table ttt (
-    i uinteger
-);
-
 create table rundata (
     material_id uinteger not null,
     case_id uinteger not null,

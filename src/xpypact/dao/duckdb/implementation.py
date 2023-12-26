@@ -73,6 +73,7 @@ class DuckDBDAO(DataAccessInterface):
         tables = [
             "timestep_nuclide",
             "timestep_gamma",
+            "gbins",
             "timestep",
             "nuclide",
             "rundata",
