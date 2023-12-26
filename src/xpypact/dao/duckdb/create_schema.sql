@@ -1,6 +1,10 @@
 -- sqlfluff:dialect:duckdb
 
-create or replace table rundata (
+create table ttt (
+    i uinteger
+);
+
+create table rundata (
     material_id uinteger not null,
     case_id uinteger not null,
     timestamp timestamp not null,
@@ -11,7 +15,7 @@ create or replace table rundata (
     primary key (material_id, case_id)
 );
 
-create or replace table timestep (
+create table timestep (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -38,7 +42,7 @@ create or replace table timestep (
 );
 
 
-create or replace table nuclide (
+create table nuclide (
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
     state varchar(1) not null,
@@ -47,7 +51,7 @@ create or replace table nuclide (
     primary key (element, mass_number, state)
 );
 
-create or replace table timestep_nuclide (
+create table timestep_nuclide (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -74,12 +78,12 @@ create or replace table timestep_nuclide (
     foreign key (zai) references nuclide (zai)
 );
 
-create or replace table gbins (
+create table gbins (
     g utinyint primary key,
     boundary real not null check (0.0 <= boundary) unique
 );
 
-create or replace table timestep_gamma (
+create table timestep_gamma (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
