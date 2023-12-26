@@ -274,27 +274,17 @@ def _save_time_step_nuclides(
 
 
 # noinspection SqlNoDataSourceInspection
-def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
+def _save_gamma(
+    cursor: db.DuckDBPyConnection,
+    inventory: Inventory,
+    material_id=1,
+    case_id=1,
+) -> None:
     gs = inventory[0].gamma_spectrum
     if gs is None:
         return  # pragma: no coverage
     boundaries = np.asarray(gs.boundaries, dtype=float)
-    gbins_already_stored_fetch = cursor.sql("select count(*) from gbins").fetchone()
-    if gbins_already_stored_fetch is None:
-        msg = "Unable to count records in table 'gbins'"
-        raise DuckDBDAOSaveError(msg)
-    gbins_already_stored = gbins_already_stored_fetch[0]
-    if gbins_already_stored == 0:
-        sql = """
-            insert into gbins values(?, ?);
-        """
-        cursor.executemany(sql, enumerate(boundaries))
-    elif gbins_already_stored != boundaries.size:  # pragma: no cover
-        msg = (
-            f"Incompatible number of gamma spectrum boundaries found at {material_id}/{case_id}: "
-            f"{gbins_already_stored}!={boundaries.size}."
-        )
-        raise DuckDBDAOSaveError(msg)
+    _save_gbins(cursor, boundaries, material_id, case_id)
 
     sql = """
         insert into timestep_gamma values(?, ?, ?, ?, ?);
@@ -310,3 +300,30 @@ def _save_gamma(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id
             # convert rate MeV/s -> photon/s
         ),
     )
+
+
+def _save_gbins(
+    cursor: db.DuckDBPyConnection,
+    boundaries: np.ndarray,
+    material_id: int,
+    case_id: int,
+) -> None:
+    gbins_already_stored_fetch = cursor.sql("select count(*) from gbins").fetchone()
+
+    if gbins_already_stored_fetch is None:  # pragma: no cover
+        msg = "Unable to count records in table 'gbins'"
+        raise DuckDBDAOSaveError(msg)
+
+    gbins_already_stored = gbins_already_stored_fetch[0]
+
+    if gbins_already_stored == 0:
+        sql = """
+            insert into gbins values(?, ?);
+        """
+        cursor.executemany(sql, enumerate(boundaries))
+    elif gbins_already_stored != boundaries.size:  # pragma: no cover
+        msg = (
+            f"Incompatible number of gamma spectrum boundaries found at {material_id}/{case_id}: "
+            f"{gbins_already_stored}!={boundaries.size}."
+        )
+        raise DuckDBDAOSaveError(msg)
