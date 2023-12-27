@@ -1,6 +1,6 @@
 -- sqlfluff:dialect:duckdb
 
-create table if not exists rundata (
+create table rundata (
     material_id uinteger not null,
     case_id uinteger not null,
     timestamp timestamp not null,
@@ -11,7 +11,9 @@ create table if not exists rundata (
     primary key (material_id, case_id)
 );
 
-create table if not exists timestep (
+-- the "total_" prefix is removed from fields
+-- to have all the field names consistent
+create table timestep (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -20,17 +22,17 @@ create table if not exists timestep (
     cooling_time real not null,
     duration real not null,
     flux real not null,
-    total_atoms real not null,
-    total_activity real not null,
+    atoms real not null,
+    activity real not null,
     alpha_activity real not null,
     beta_activity real not null,
     gamma_activity real not null,
-    total_mass real not null,
-    total_heat real not null,
+    mass real not null,
+    heat real not null,
     alpha_heat real null,
     beta_heat real not null,
     gamma_heat real not null,
-    ingest1ion real not null,
+    ingestion real not null,
     inhalation real not null,
     dose real not null,
     primary key (material_id, case_id, time_step_number),
@@ -38,16 +40,17 @@ create table if not exists timestep (
 );
 
 
-create table if not exists nuclide (
+create table nuclide (
+    zai uinteger not null check (10010 <= zai) primary key,
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
     state varchar(1) not null,
-    zai uinteger not null check (10010 <= zai) unique,
-    half_life real not null check (0 <= half_life),
-    primary key (element, mass_number, state)
+    half_life real not null check (0 <= half_life)
 );
 
-create table if not exists timestep_nuclide (
+create unique index nuclide_ems on nuclide (element, mass_number, state);
+
+create table timestep_nuclide (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -70,22 +73,20 @@ create table if not exists timestep_nuclide (
     inhalation real not null,
 
     primary key (material_id, case_id, time_step_number, zai),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number),
-    foreign key (zai) references nuclide (zai)
+    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
 
-create table if not exists gbins (
+create table gbins (
     g utinyint primary key,
     boundary real not null check (0.0 <= boundary) unique
 );
 
-create table if not exists timestep_gamma (
+create table timestep_gamma (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
     g utinyint not null, -- only upper bin boundaries in this table
     rate real not null,
     primary key (material_id, case_id, time_step_number, g),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number),
-    foreign key (g) references gbins (g)
+    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );

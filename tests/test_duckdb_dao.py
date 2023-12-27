@@ -39,10 +39,12 @@ def test_save(inventory_with_gamma) -> None:
     with closing(connect()) as con:
         dao = DataAccessObject(con)
         dao.create_schema()
-        dao.save(inventory_with_gamma)
-        run_data = dao.load_rundata().df()
-        assert run_data["timestamp"].item() == pd.Timestamp("2022-02-21 01:52:45")
-        assert run_data["run_name"].item() == "* Material Cu, fluxes 104_2_1_1"
+        dao.save(inventory_with_gamma, material_id=1, case_id=1)
+        dao.save(inventory_with_gamma, material_id=2, case_id=1)
+        dao.on_save_complete()
+        run_data = dao.load_rundata().df().loc[0]
+        assert run_data["timestamp"] == pd.Timestamp("2022-02-21 01:52:45")
+        assert run_data["run_name"] == "* Material Cu, fluxes 104_2_1_1"
         nuclides = dao.load_nuclides().df()
         nuclides = nuclides.set_index(["element", "mass_number", "state"])
         assert not nuclides.loc["Cu"].empty
@@ -50,7 +52,7 @@ def test_save(inventory_with_gamma) -> None:
         assert not time_steps.empty
         time_steps = time_steps.set_index("time_step_number")
         assert not time_steps.loc[2].empty
-        time_step_nuclides = dao.load_time_step_nuclides().df()
+        time_step_nuclides = dao.load_time_step_nuclides().filter("material_id=1").df()
         assert not time_step_nuclides.empty
         time_step_nuclides = time_step_nuclides.set_index(
             [
@@ -61,7 +63,7 @@ def test_save(inventory_with_gamma) -> None:
         assert not time_step_nuclides.loc[2, 290630].empty
         gbins = dao.load_gbins().df().set_index("g")
         assert gbins.loc[0].boundary == pytest.approx(1e-11)
-        gamma = dao.load_gamma().df()
+        gamma = dao.load_gamma().filter("material_id=1").df()
         assert not gamma.empty
         gamma = gamma.set_index(["time_step_number", "g"])
         assert not gamma.loc[2, 1].empty
