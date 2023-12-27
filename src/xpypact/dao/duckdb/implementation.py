@@ -38,6 +38,8 @@ class DuckDBDAO(DataAccessInterface):
     con: db.DuckDBPyConnection
     nuclides: set[NuclideInfo] = field(default_factory=set)
     nuclides_lock: threading.RLock = field(default_factory=threading.RLock)
+    gbins_boundaries: np.ndarray | None = None
+    gbins_boundaries_lock: threading.RLock = field(default_factory=threading.RLock)
 
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
@@ -105,10 +107,18 @@ class DuckDBDAO(DataAccessInterface):
         # accumulate nuclides for saving when multithreading is done
         with self.nuclides_lock:
             self.nuclides.update(inventory.extract_nuclides())
+        # save gbins boundaries
+        gs = inventory[-1].gamma_spectrum
+        if gs:  # pragma: no coverage
+            with self.gbins_boundaries_lock:
+                if self.gbins_boundaries is None:
+                    self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
 
     def on_save_complete(self) -> None:
         """Save information accumulated on multithreading processing all the inventories."""
         self.save_nuclides()
+        if self.gbins_boundaries is not None:  # pragma: no coverage
+            _save_gbins(self.con, self.gbins_boundaries)
 
     def save_nuclides(self) -> None:
         """Save nuclides on multithreading saving is complete.
@@ -301,7 +311,6 @@ def _save_gamma(
     if gs is None:
         return  # pragma: no coverage
     boundaries = np.asarray(gs.boundaries, dtype=float)
-    _save_gbins(cursor, boundaries, material_id, case_id)
 
     sql = """
         insert into timestep_gamma values(?, ?, ?, ?, ?);
@@ -319,28 +328,8 @@ def _save_gamma(
     )
 
 
-def _save_gbins(
-    cursor: db.DuckDBPyConnection,
-    boundaries: np.ndarray,
-    material_id: int,
-    case_id: int,
-) -> None:
-    gbins_already_stored_fetch = cursor.sql("select count(*) from gbins").fetchone()
-
-    if gbins_already_stored_fetch is None:  # pragma: no cover
-        msg = "Unable to count records in table 'gbins'"
-        raise DuckDBDAOSaveError(msg)
-
-    gbins_already_stored = gbins_already_stored_fetch[0]
-
-    if gbins_already_stored == 0:
-        sql = """
-            insert into gbins values(?, ?);
-        """
-        cursor.executemany(sql, enumerate(boundaries))
-    elif gbins_already_stored != boundaries.size:  # pragma: no cover
-        msg = (
-            f"Incompatible number of gamma spectrum boundaries found at {material_id}/{case_id}: "
-            f"{gbins_already_stored}!={boundaries.size}."
-        )
-        raise DuckDBDAOSaveError(msg)
+def _save_gbins(cursor: db.DuckDBPyConnection, boundaries: np.ndarray) -> None:
+    sql = """
+        insert into gbins values(?, ?);
+    """
+    cursor.executemany(sql, enumerate(boundaries))

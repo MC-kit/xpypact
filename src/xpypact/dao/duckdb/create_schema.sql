@@ -11,6 +11,8 @@ create table rundata (
     primary key (material_id, case_id)
 );
 
+-- the "total_" prefix is removed from fields
+-- to have all the field names consistent
 create table timestep (
     material_id uinteger not null,
     case_id uinteger not null,
@@ -20,17 +22,17 @@ create table timestep (
     cooling_time real not null,
     duration real not null,
     flux real not null,
-    total_atoms real not null,
-    total_activity real not null,
+    atoms real not null,
+    activity real not null,
     alpha_activity real not null,
     beta_activity real not null,
     gamma_activity real not null,
-    total_mass real not null,
-    total_heat real not null,
+    mass real not null,
+    heat real not null,
     alpha_heat real null,
     beta_heat real not null,
     gamma_heat real not null,
-    ingest1ion real not null,
+    ingestion real not null,
     inhalation real not null,
     dose real not null,
     primary key (material_id, case_id, time_step_number),
@@ -86,6 +88,5 @@ create table timestep_gamma (
     g utinyint not null, -- only upper bin boundaries in this table
     rate real not null,
     primary key (material_id, case_id, time_step_number, g),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number),
-    foreign key (g) references gbins (g)
+    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
