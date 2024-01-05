@@ -157,12 +157,6 @@ ruff-lsp = ">=0.0.35"
 ruff = ">=0.0.259"
 
 
-[tool.poetry.group.adhoc]
-optional = true
-
-[tool.poetry.group.adhoc.dependencies]
-pyarrow = "^11.0.0"
-
 [tool.poetry.group.analysis]
 optional = true
 
