@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.5.5"
+version = "0.5.7"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -157,17 +157,11 @@ ruff-lsp = ">=0.0.35"
 ruff = ">=0.0.259"
 
 
-[tool.poetry.group.adhoc]
-optional = true
-
-[tool.poetry.group.adhoc.dependencies]
-pyarrow = "^11.0.0"
-
 [tool.poetry.group.analysis]
 optional = true
 
 [tool.poetry.group.analysis.dependencies]
-jupyterlab = "^3.6.3"  # don't use >= - installs development version 4.0...
+jupyterlab = ">=3.6.3,<5.0.0"  # don't use >= - installs development version 4.0...
 
 [tool.isort]
 atomic = true
