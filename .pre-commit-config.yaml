@@ -47,7 +47,6 @@ repos:
     rev: "v1.5.4"
     hooks:
       - id: remove-tabs
-
   # Format doc strings
   - repo: https://github.com/DanielNoord/pydocstringformatter
     rev: "v0.7.3"
@@ -57,7 +56,6 @@ repos:
 
   - repo: local
     hooks:
-
       # Upgrade Python code
       - id: pyupgrade
         name: pyupgrade
@@ -112,4 +110,3 @@ repos:
     hooks:
       - id: shellcheck
         stages: [ manual ]
-
