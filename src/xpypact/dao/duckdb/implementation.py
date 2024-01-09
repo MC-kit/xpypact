@@ -10,15 +10,14 @@ from pathlib import Path
 
 import numpy as np
 
+import duckdb as db
 import msgspec as ms
 
-from xpypact.dao import DataAccessInterface
-
 if TYPE_CHECKING:
-    import duckdb as db
     import pandas as pd
 
     from xpypact.inventory import Inventory, NuclideInfo
+    from xpypact.time_step import GammaSpectrum
 
 HERE = Path(__file__).parent
 
@@ -30,22 +29,65 @@ class DuckDBDAOSaveError(ValueError):
     """Error on accessing/saving FISPACT data."""
 
 
-# noinspection SqlNoDataSourceInspection
 @dataclass
-class DuckDBDAO(DataAccessInterface):
-    """Implementation of DataAccessInterface for DuckDB."""
+class CommonDataCollector:
+    """Class to collect nuclides and gamma bins on multiple run of save() method."""
 
-    con: db.DuckDBPyConnection
     nuclides: set[NuclideInfo] = field(default_factory=set)
     nuclides_lock: threading.RLock = field(default_factory=threading.RLock)
     gbins_boundaries: np.ndarray | None = None
     gbins_boundaries_lock: threading.RLock = field(default_factory=threading.RLock)
 
+    def update_nuclides(self, nuclides: set[NuclideInfo]) -> None:
+        """Collect nuclides."""
+        with self.nuclides_lock:
+            self.nuclides.update(nuclides)
+
+    def store_gbins(self, gs: GammaSpectrum) -> None:
+        """Store gbins once - should be the same on all save() runs."""
+        with self.gbins_boundaries_lock:
+            if self.gbins_boundaries is None:
+                self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
+
+    def save(self, con: db.DuckDBPyConnection) -> None:
+        """Save information accumulated on multithreading processing all the inventories.
+
+        Args:
+            con: connection to store the two 'nuclide' and 'gbins' tables.
+
+        Call this after all the JSON files are imported.
+        """
+        self._save_nuclides(con)
+        if self.gbins_boundaries is not None:  # pragma: no coverage
+            _save_gbins(con, self.gbins_boundaries)
+
+    def _save_nuclides(self, con: db.DuckDBPyConnection) -> None:
+        """Save nuclides on multithreading saving is complete.
+
+        Call this when all the inventories are saved.
+
+        Args:
+            con: where to save
+        """
+        sql = """
+            insert or ignore
+            into nuclide
+            values (?,?,?,?,?)
+            ;
+        """
+        con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
+
+
+# noinspection SqlNoDataSourceInspection
+class DuckDBDAO(ms.Struct):
+    """Implementation of DataAccessInterface for DuckDB."""
+
+    con: db.DuckDBPyConnection
+
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
         return self.con.execute("select * from information_schema.tables").df()
 
-    @property
     def tables(self) -> tuple[str, str, str, str, str]:
         """List tables being used by xpypact dao.
 
@@ -58,12 +100,12 @@ class DuckDBDAO(DataAccessInterface):
         """Check if the schema is available in a database."""
         db_tables = self.get_tables_info()
 
-        if len(db_tables) < len(self.tables):
+        if len(db_tables) < len(self.tables()):
             return False
 
         table_names = db_tables["table_name"].to_numpy()
 
-        return all(name in table_names for name in self.tables)
+        return all(name in table_names for name in self.tables())
 
     def create_schema(self) -> None:
         """Create tables to store xpypact dataset.
@@ -87,7 +129,13 @@ class DuckDBDAO(DataAccessInterface):
         for table in tables:
             self.con.execute(f"drop table if exists {table}")
 
-    def save(self, inventory: Inventory, material_id: int = 1, case_id: int = 1) -> None:
+    def save(
+        self,
+        inventory: Inventory,
+        material_id: int,
+        case_id: int,
+        cdc: CommonDataCollector,
+    ) -> None:
         """Save xpypact dataset to database.
 
         This can be used in multithreading mode.
@@ -96,42 +144,20 @@ class DuckDBDAO(DataAccessInterface):
             inventory: xpypact dataset to save
             material_id: additional key to distinguish multiple FISPACT run
             case_id: second additional key
+            cdc: common data collector to store nuclides and gbins
+                 over multiple and multithreaded runs
         """
-        # use separate cursor for multiprocessing (single connection is locked for a query)
+        # use separate cursor for multithreading (single connection is locked for a query)
         # https://duckdb.org/docs/api/python/dbapi
         cursor = self.con.cursor()
         _save_run_data(cursor, inventory, material_id, case_id)
         _save_time_steps(cursor, inventory, material_id, case_id)
         _save_time_step_nuclides(cursor, inventory, material_id, case_id)
         _save_gamma(cursor, inventory, material_id, case_id)
-        # accumulate nuclides for saving when multithreading is done
-        with self.nuclides_lock:
-            self.nuclides.update(inventory.extract_nuclides())
-        # save gbins boundaries
+        cdc.update_nuclides(inventory.extract_nuclides())
         gs = inventory[-1].gamma_spectrum
         if gs:  # pragma: no coverage
-            with self.gbins_boundaries_lock:
-                if self.gbins_boundaries is None:
-                    self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
-
-    def on_save_complete(self) -> None:
-        """Save information accumulated on multithreading processing all the inventories."""
-        self.save_nuclides()
-        if self.gbins_boundaries is not None:  # pragma: no coverage
-            _save_gbins(self.con, self.gbins_boundaries)
-
-    def save_nuclides(self) -> None:
-        """Save nuclides on multithreading saving is complete.
-
-        Call this when all the inventories are saved.
-        """
-        sql = """
-            insert or ignore
-            into nuclide
-            values (?,?,?,?,?)
-            ;
-        """
-        self.con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
+            cdc.store_gbins(gs)
 
     def load_rundata(self) -> db.DuckDBPyRelation:
         """Load FISPACT run data as table.
@@ -333,3 +359,88 @@ def _save_gbins(cursor: db.DuckDBPyConnection, boundaries: np.ndarray) -> None:
         insert into gbins values(?, ?);
     """
     cursor.executemany(sql, enumerate(boundaries))
+
+
+def write_parquets(
+    intermediate_dir: Path,
+    inventory: Inventory,
+    material_id: int,
+    case_id: int,
+    cdc: CommonDataCollector,
+) -> None:
+    """Save an Inventory as parquet files.
+
+    Also creates SQL files to create and load the data.
+
+    Args:
+        intermediate_dir: where to save parquets
+        inventory: what to save
+        material_id: ... to distinguish runs by material
+        case_id: ... to distinguish runs by case
+        cdc: common data collector
+    """
+    case_dir_path = intermediate_dir / f"material_id={material_id}/case_id={case_id}"
+    if case_dir_path.is_dir():
+        msg = f"Directory {case_dir_path} already exists"
+        raise ValueError(msg)
+    case_dir_path.mkdir(parents=True, exist_ok=True)
+    con = db.connect()
+    dao = DuckDBDAO(con)
+    dao.create_schema()
+    dao.save(inventory, material_id, case_id, cdc)
+    con.execute(
+        f"""
+        export database {str(case_dir_path)!r}
+        (
+            format 'parquet',
+            row_group_size 100000,
+            per_thread_output 'true',
+            compression 'ZSTD'
+        );
+        """,
+    )
+
+
+def load_parquets(con: db.DuckDBPyConnection, intermediate_dir: Path) -> DuckDBDAO:
+    """Load parquet files in bulk mode.
+
+    Args:
+        con: destination
+        intermediate_dir: where to look for parquets
+        cdc: common data collected
+    """
+    dao = DuckDBDAO(con)
+    dao.drop_schema()
+    dao.create_schema()
+    for table in dao.tables():
+        suffix = f"*/*/{table}.parquet/*.parquet"
+        con.execute(
+            f"""
+            copy {table} from {str(intermediate_dir / suffix)!r}
+            (
+                format 'parquet',
+                compression 'ZSTD'
+            )
+            """,
+        )
+    return dao
+
+
+def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
+    """Create primary key like indices on tables after loading."""
+    return con.execute(
+        """
+        create unique index rundata_pk on rundata(
+            material_id, case_id
+        );
+        create unique index timestep_pk on timestep(
+            material_id, case_id, time_step_number
+        );
+        create unique index timestep_nuclide_pk on timestep_nuclide(
+            material_id, case_id, time_step_number, zai
+        );
+        create unique index timestep_gamma_pk on timestep_gamma(
+            material_id, case_id, time_step_number, g
+        );
+        """,
+    )

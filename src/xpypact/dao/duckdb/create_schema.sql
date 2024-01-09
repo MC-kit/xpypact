@@ -1,6 +1,13 @@
 -- sqlfluff:dialect:duckdb
+-- sqlfluff:max_line_length:120
 
-create table rundata (
+
+-- We don't create indices and primary keys here intentionally
+-- The data will be transformed to parquet for bulk ingestion in R2S application
+-- and indices are just waste of time and low performance for that operation
+-- For other applications user can add indices later
+
+create table rundata (      -- noqa: PRS
     material_id uinteger not null,
     case_id uinteger not null,
     timestamp timestamp not null,
@@ -8,7 +15,7 @@ create table rundata (
     flux_name varchar not null,
     dose_rate_type varchar not null,
     dose_rate_distance real not null,
-    primary key (material_id, case_id)
+    -- primary key (material_id, case_id)
 );
 
 -- the "total_" prefix is removed from fields
@@ -34,9 +41,9 @@ create table timestep (
     gamma_heat real not null,
     ingestion real not null,
     inhalation real not null,
-    dose real not null,
-    primary key (material_id, case_id, time_step_number),
-    foreign key (material_id, case_id) references rundata (material_id, case_id)
+    dose real not null
+--    primary key (material_id, case_id, time_step_number),
+--    foreign key (material_id, case_id) references rundata (material_id, case_id)
 );
 
 
@@ -70,10 +77,10 @@ create table timestep_nuclide (
 
     dose real not null,
     ingestion real not null,
-    inhalation real not null,
+    inhalation real not null
 
-    primary key (material_id, case_id, time_step_number, zai),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
+--    primary key (material_id, case_id, time_step_number, zai),
+--    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
 
 create table gbins (
@@ -86,7 +93,8 @@ create table timestep_gamma (
     case_id uinteger not null,
     time_step_number uinteger not null,
     g utinyint not null, -- only upper bin boundaries in this table
-    rate real not null,
-    primary key (material_id, case_id, time_step_number, g),
-    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
+    rate real not null
+
+--    primary key (material_id, case_id, time_step_number, g),
+--    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
