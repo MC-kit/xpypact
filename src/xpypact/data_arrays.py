@@ -26,8 +26,6 @@ from numpy.typing import ArrayLike
 import pandas as pd
 import xarray as xr
 
-from mckit_nuclides.elements import ELEMENTS_TABLE
-from mckit_nuclides.nuclides import NUCLIDES_TABLE
 from xarray.core.accessor_dt import DatetimeAccessor
 from xpypact.inventory import from_json as inventory_from_json
 

@@ -100,6 +100,34 @@ class Inventory(ms.Struct):
                 nuclides.add(nuclide.info)
         return nuclides
 
+    def iterate_time_step_nuclides(self) -> Iterator[tuple]:
+        """Scan the time steps and nuclides in these steps.
+
+        Returns:
+            Iterator over all the nuclides collected in the Inventory.
+        """
+        return (
+            (
+                t.number,
+                n.zai,
+                n.atoms,
+                n.grams,
+                n.activity,
+                n.alpha_activity,
+                n.beta_activity,
+                n.gamma_activity,
+                n.heat,
+                n.alpha_heat,
+                n.beta_heat,
+                n.gamma_heat,
+                n.dose,
+                n.ingestion,
+                n.inhalation,
+            )
+            for t in self.inventory_data
+            for n in t.nuclides
+        )
+
     def __post_init__(self) -> None:
         """Define time steps durations and elapsed time.
 
@@ -218,7 +246,7 @@ class RunData(ms.Struct, frozen=True, gc=False):
 
     def astuple(self) -> tuple[str, str, str]:
         """Get tuple representation."""
-        return ms.structs.astuple(self)
+        return cast(tuple[str, str, str], ms.structs.astuple(self))
 
     @classmethod
     def from_json(cls, json_dict: dict[str, str]) -> RunData:

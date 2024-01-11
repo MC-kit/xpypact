@@ -12,6 +12,7 @@ from duckdb import InvalidInputException, connect
 from xpypact.dao.duckdb import CommonDataCollector
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 from xpypact.dao.duckdb import create_indices, load_parquets, write_parquets
+from xpypact.dao.duckdb.implementation import save
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -49,8 +50,8 @@ def test_save(inventory_with_gamma) -> None:
         dao = DataAccessObject(con)
         dao.create_schema()
         cdc = CommonDataCollector()
-        dao.save(inventory_with_gamma, material_id=1, case_id=1, cdc=cdc)
-        dao.save(inventory_with_gamma, material_id=2, case_id=1, cdc=cdc)
+        save(dao.con.cursor(), inventory_with_gamma, material_id=1, case_id=1, cdc=cdc)
+        save(dao.con.cursor(), inventory_with_gamma, material_id=2, case_id=1, cdc=cdc)
         cdc.save(con)
         run_data = dao.load_rundata().df().loc[0]
         assert run_data["timestamp"] == pd.Timestamp("2022-02-21 01:52:45")

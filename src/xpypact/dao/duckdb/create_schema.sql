@@ -2,10 +2,17 @@
 -- sqlfluff:max_line_length:120
 
 
--- We don't create indices and primary keys here intentionally
--- The data will be transformed to parquet for bulk ingestion in R2S application
--- and indices are just waste of time and low performance for that operation
--- For other applications user can add indices later
+-- DuckDB doesn't recomment to use primary keys and indices
+-- https://duckdb.org/docs/guides/performance/indexing
+--
+--Best Practices:
+--
+--Only use primary keys, foreign keys, or unique constraints,
+--if these are necessary for enforcing constraints on your data.
+--Do not define explicit indexes unless you have highly selective queries.
+--If you define an ART index, do so after bulk loading the data to the table.
+--
+-- However, for testing and debugging the constraints  are useful.
 
 create table rundata (      -- noqa: PRS
     material_id uinteger not null,
@@ -14,8 +21,7 @@ create table rundata (      -- noqa: PRS
     run_name varchar not null,
     flux_name varchar not null,
     dose_rate_type varchar not null,
-    dose_rate_distance real not null,
-    -- primary key (material_id, case_id)
+    dose_rate_distance real not null
 );
 
 -- the "total_" prefix is removed from fields
@@ -42,20 +48,16 @@ create table timestep (
     ingestion real not null,
     inhalation real not null,
     dose real not null
---    primary key (material_id, case_id, time_step_number),
---    foreign key (material_id, case_id) references rundata (material_id, case_id)
 );
 
 
 create table nuclide (
-    zai uinteger not null check (10010 <= zai) primary key,
+    zai uinteger not null check (10010 <= zai),
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
     state varchar(1) not null,
     half_life real not null check (0 <= half_life)
 );
-
-create unique index nuclide_ems on nuclide (element, mass_number, state);
 
 create table timestep_nuclide (
     material_id uinteger not null,
@@ -78,14 +80,11 @@ create table timestep_nuclide (
     dose real not null,
     ingestion real not null,
     inhalation real not null
-
---    primary key (material_id, case_id, time_step_number, zai),
---    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );
 
 create table gbins (
-    g utinyint primary key,
-    boundary real not null check (0.0 <= boundary) unique
+    g utinyint,
+    boundary real not null check (0.0 <= boundary)
 );
 
 create table timestep_gamma (
@@ -94,7 +93,4 @@ create table timestep_gamma (
     time_step_number uinteger not null,
     g utinyint not null, -- only upper bin boundaries in this table
     rate real not null
-
---    primary key (material_id, case_id, time_step_number, g),
---    foreign key (material_id, case_id, time_step_number) references timestep (material_id, case_id, time_step_number)
 );

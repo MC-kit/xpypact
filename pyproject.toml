@@ -52,7 +52,6 @@ python = ">=3.10,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
 # mckit-nuclides = {version = ">=0.2.5", allow-prereleases = true}
-mckit-nuclides = ">=0.2.3"
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
@@ -60,6 +59,7 @@ xarray = ">=2022.3.0"
 multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
 rich = ">=13.7.0"
+polars = {version = "^0.20.3", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
