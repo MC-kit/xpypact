@@ -89,4 +89,4 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
         return NuclideInfo(self.zai, self.element, self.a, self.state, self.half_life)
 
 
-__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO", "eV"]
+__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO", "eV", "MeV"]

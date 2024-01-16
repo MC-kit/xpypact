@@ -128,6 +128,23 @@ class Inventory(ms.Struct):
             for n in t.nuclides
         )
 
+    def iterate_time_step_gamma(self) -> Iterator[tuple]:
+        """Scan the time steps and gamma spectrum.
+
+        Returns:
+            Iterator over all the gamma bins presented in the Inventory.
+        """
+        return (
+            (
+                t.number,
+                g + 1,  # g + 1 corresponds to index of the upper bound of a bin in gbins table
+                rate,
+            )
+            for t in self.inventory_data
+            if t.gamma_spectrum
+            for g, rate in enumerate(t.gamma_spectrum.values)
+        )
+
     def __post_init__(self) -> None:
         """Define time steps durations and elapsed time.
 

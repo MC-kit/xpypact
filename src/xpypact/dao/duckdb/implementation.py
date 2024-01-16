@@ -78,59 +78,6 @@ class CommonDataCollector:
         con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
 
 
-# class FullDataCollector(ms.Struct):
-#     """Class to collect nuclides and gamma bins on multiple run of save() method."""
-#     rundata: list[tuple[int, int, RunDataCorrected]] = ms.field(default_factory=list)
-#     rundata_lock = threading.RLock()
-#     timesteps: list[tuple[int, int, TimeStep]] = ms.field(default_factory=list)
-#     timesteps_lock = threading.RLock()
-#     timestep_nuclides: list[tuple[int, int, list[TimeStep]] = ms.field(default_factory=list)
-#     timestep_nuclides_lock = threading.RLock()
-#     nuclides: set[NuclideInfo] = ms.field(default_factory=set)
-#     nuclides_lock: threading.RLock = threading.RLock()
-#     gbins_boundaries: np.ndarray | None = None
-#     gbins_boundaries_lock: threading.RLock = threading.RLock()
-#
-#     def update_nuclides(self, nuclides: set[NuclideInfo]) -> None:
-#         """Collect nuclides."""
-#         with self.nuclides_lock:
-#             self.nuclides.update(nuclides)
-#
-#     def store_gbins(self, gs: GammaSpectrum) -> None:
-#         """Store gbins once - should be the same on all save() runs."""
-#         with self.gbins_boundaries_lock:
-#             if self.gbins_boundaries is None:
-#                 self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
-#
-#     def save(self, con: db.DuckDBPyConnection) -> None:
-#         """Save information accumulated on multithreading processing all the inventories.
-#
-#         Args:
-#             con: connection to store the two 'nuclide' and 'gbins' tables.
-#
-#         Call this after all the JSON files are imported.
-#         """
-#         self._save_nuclides(con)
-#         if self.gbins_boundaries is not None:  # pragma: no coverage
-#             _save_gbins(con, self.gbins_boundaries)
-#
-#     def _save_nuclides(self, con: db.DuckDBPyConnection) -> None:
-#         """Save nuclides on multithreading saving is complete.
-#
-#         Call this when all the inventories are saved.
-#
-#         Args:
-#             con: where to save
-#         """
-#         sql = """
-#             insert or ignore
-#             into nuclide
-#             values (?,?,?,?,?)
-#             ;
-#         """
-#         con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
-
-
 # noinspection SqlNoDataSourceInspection
 class DuckDBDAO(ms.Struct):
     """Implementation of DataAccessInterface for DuckDB."""
