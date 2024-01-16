@@ -21,16 +21,17 @@ from functools import reduce
 
 import numpy as np
 
-from numpy.typing import ArrayLike
-
 import pandas as pd
 import xarray as xr
 
+from mckit_nuclides import get_nuclide_mass, z
 from xarray.core.accessor_dt import DatetimeAccessor
 from xpypact.inventory import from_json as inventory_from_json
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
+
+    import numpy.typing as npt
 
     try:
         from dask.delayed import Delayed
@@ -70,12 +71,12 @@ SCALABLE_COLUMNS = [
 ]
 
 
-def _make_var(value, dtype=float) -> tuple[str, ArrayLike]:
+def _make_var(value, dtype=float) -> tuple[str, npt.ArrayLike]:
     value = np.array([value], dtype=dtype)
     return "time_step_number", value
 
 
-def _make_nuclide_var(getter, nuclides, dtype=float) -> tuple[str, ArrayLike]:
+def _make_nuclide_var(getter, nuclides, dtype=float) -> tuple[str, npt.ArrayLike]:
     return "nuclide", np.fromiter(map(getter, nuclides), dtype=dtype)
 
 
@@ -83,7 +84,7 @@ def _make_time_step_and_nuclide_var(
     getter,
     nuclides,
     dtype=float,
-) -> tuple[tuple[str, str], ArrayLike]:
+) -> tuple[tuple[str, str], npt.ArrayLike]:
     _data = np.fromiter(map(getter, nuclides), dtype=dtype)
     return ("time_step_number", "nuclide"), _data.reshape(1, _data.size)
 
@@ -245,7 +246,7 @@ def get_timestamp(ds: xr.Dataset) -> DatetimeAccessor:
     return cast(DatetimeAccessor, ds.timestamp[0].dt)
 
 
-def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
+def get_atomic_numbers(ds: xr.Dataset) -> npt.NDArray[np.int_]:
     """Create column of atomic numbers (Z) corresponding to `nuclide` coordinate.
 
     Args:
@@ -255,10 +256,7 @@ def get_atomic_numbers(ds: xr.Dataset) -> ArrayLike:
         Z values for the nuclides
     """
     elements = ds.nuclide.element.to_numpy()
-    return cast(
-        ArrayLike,
-        ELEMENTS_TABLE.loc[elements, ["atomic_number"]].to_numpy().flatten(),
-    )
+    return np.fromiter((z(e) for e in elements), dtype=int)
 
 
 def add_atomic_number_coordinate(
@@ -280,8 +278,8 @@ def add_atomic_number_coordinate(
     return ds
 
 
-def get_atomic_masses(ds: xr.Dataset) -> ArrayLike:
-    """Create column with relative atomic masses along nuclide coordinate.
+def get_atomic_masses(ds: xr.Dataset) -> npt.NDArray[np.float_]:
+    """Create array with relative atomic masses along nuclide coordinate.
 
     Args:
         ds: FISPACT output as Dataset
@@ -291,8 +289,10 @@ def get_atomic_masses(ds: xr.Dataset) -> ArrayLike:
     """
     atomic_numbers = get_atomic_numbers(ds)
     mass_numbers = ds.nuclide.mass_number.to_numpy().flatten()
-    mi = pd.MultiIndex.from_arrays([atomic_numbers, mass_numbers])
-    return cast(ArrayLike, NUCLIDES_TABLE.loc[mi, ["nuclide_mass"]].to_numpy().flatten())
+    return np.fromiter(
+        (get_nuclide_mass(z, a) for z, a in zip(atomic_numbers, mass_numbers)),
+        dtype=np.float_,
+    )
 
 
 def add_atomic_masses(ds: xr.Dataset, variable_name="atomic_mass") -> xr.Dataset:

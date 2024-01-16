@@ -71,13 +71,13 @@ def test_access_by_z(ds: xr.Dataset) -> None:
 def test_atomic_masses_column(ds: xr.Dataset) -> None:
     ds = deepcopy(ds)
     da.add_atomic_number_coordinate(ds, "z")
-    da.add_atomic_masses(ds, "a")
-    a = ds.a
-    assert len(a) == 48
+    da.add_atomic_masses(ds, "molar_mass")
+    mm = ds.molar_mass
+    assert len(mm) == 48
     argentum = ds.sel(nuclide=("Ag", 111, ""))
     assert argentum.element == "Ag"
-    a = argentum.a
-    assert a.item() == pytest.approx(
+    mm = argentum.molar_mass
+    assert mm.item() == pytest.approx(
         110.905,
         rel=1e-4,
     ), " the Ag atomic mass is to be about 110.905"

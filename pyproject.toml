@@ -60,6 +60,7 @@ multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
 rich = ">=13.7.0"
 polars = {version = "^0.20.3", extras = ["all"]}
+mckit-nuclides = {path = "../mckit-nuclides"}
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
