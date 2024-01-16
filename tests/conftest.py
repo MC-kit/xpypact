@@ -42,6 +42,16 @@ def cd_tmpdir(tmpdir):  # noqa: PT004
 
 
 @pytest.fixture()
+def inventory_without_gamma() -> inventory.Inventory:
+    """Load inventory without gamma information.
+
+    Returns:
+        Inventory without gamma information.
+    """
+    return inventory.from_json((DATA / "Ag-1.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture()
 def inventory_with_gamma() -> inventory.Inventory:
     """Load inventory with gamma information.
 

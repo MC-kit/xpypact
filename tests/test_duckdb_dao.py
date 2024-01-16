@@ -1,23 +1,16 @@
 """Tests for DuckDB DAO."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from contextlib import closing
 
 import pandas as pd
 import pytest
 
 from duckdb import InvalidInputException, connect
-from xpypact.dao.duckdb import CommonDataCollector
+from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
-from xpypact.dao.duckdb import create_indices, load_parquets, write_parquets
+from xpypact.dao.duckdb import create_indices
 from xpypact.dao.duckdb.implementation import save
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from xpypact.inventory import Inventory
 
 
 def test_ddl(tmp_path):
@@ -48,11 +41,9 @@ def test_save(inventory_with_gamma) -> None:
     """
     with closing(connect()) as con:
         dao = DataAccessObject(con)
-        dao.create_schema()
-        cdc = CommonDataCollector()
-        save(dao.con.cursor(), inventory_with_gamma, material_id=1, case_id=1, cdc=cdc)
-        save(dao.con.cursor(), inventory_with_gamma, material_id=2, case_id=1, cdc=cdc)
-        cdc.save(con)
+        dc = FullDataCollector()
+        dc.append(inventory_with_gamma, material_id=1, case_id=1)
+        save(con, dc)
         run_data = dao.load_rundata().df().loc[0]
         assert run_data["timestamp"] == pd.Timestamp("2022-02-21 01:52:45")
         assert run_data["run_name"] == "* Material Cu, fluxes 104_2_1_1"
@@ -73,6 +64,7 @@ def test_save(inventory_with_gamma) -> None:
         )
         assert not time_step_nuclides.loc[2, 290630].empty
         _check_gbins(dao)
+        create_indices(con)  # check integrity
 
 
 def _check_gbins(dao):
@@ -84,24 +76,3 @@ def _check_gbins(dao):
     assert not gamma.loc[2, 1].empty
     gamma2 = dao.load_gamma(2).df()
     assert not gamma2.empty
-
-
-def test_write_parquets(tmp_path: Path, inventory_with_gamma: Inventory) -> None:
-    cdc = CommonDataCollector()
-    write_parquets(tmp_path, inventory_with_gamma, material_id=1, case_id=1, cdc=cdc)
-    write_parquets(tmp_path, inventory_with_gamma, material_id=2, case_id=1, cdc=cdc)
-    assert (tmp_path / "material_id=1/case_id=1").is_dir(), "Should create case directory"
-    assert (tmp_path / "material_id=2/case_id=1").is_dir(), "Should create case directory"
-    con = connect()
-    load_parquets(con, tmp_path)
-    cdc.save(con)
-    create_indices(con)
-    dao = DataAccessObject(con)
-    _check_gbins(dao)
-    timestep_nuclide_df = (
-        con.table("timestep_nuclide")
-        .filter("material_id=1")
-        .df()
-        .set_index(["material_id", "case_id", "time_step_number", "zai"])
-    )
-    assert not timestep_nuclide_df.loc[(1, 1, 1, 80160)].empty

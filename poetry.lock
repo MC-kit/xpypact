@@ -1305,13 +1305,13 @@ flake8 = ">=5.0.0"
 
 [[package]]
 name = "flake8-bugbear"
-version = "24.1.15"
+version = "24.1.16"
 description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 optional = false
 python-versions = ">=3.8.1"
 files = [
-    {file = "flake8-bugbear-24.1.15.tar.gz", hash = "sha256:5f927884f6879999a9370341b2004feff97d4b551dcbd0a9376edc33b2693331"},
-    {file = "flake8_bugbear-24.1.15-py3-none-any.whl", hash = "sha256:5ae5bbe3cd1fa695919fb66291d5e329429d2c004082b91d074b99d958596c79"},
+    {file = "flake8-bugbear-24.1.16.tar.gz", hash = "sha256:e94514b1f866270663ce047d23dea731025c24ebacb4ce5999d8959076027504"},
+    {file = "flake8_bugbear-24.1.16-py3-none-any.whl", hash = "sha256:1648f4a433d11da8fb4e148cbaa845692ff51379f3f598e3225010e3b9a667b7"},
 ]
 
 [package.dependencies]
@@ -2022,13 +2022,13 @@ files = [
 
 [[package]]
 name = "ipykernel"
-version = "6.28.0"
+version = "6.29.0"
 description = "IPython Kernel for Jupyter"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ipykernel-6.28.0-py3-none-any.whl", hash = "sha256:c6e9a9c63a7f4095c0a22a79f765f079f9ec7be4f2430a898ddea889e8665661"},
-    {file = "ipykernel-6.28.0.tar.gz", hash = "sha256:69c11403d26de69df02225916f916b37ea4b9af417da0a8c827f84328d88e5f3"},
+    {file = "ipykernel-6.29.0-py3-none-any.whl", hash = "sha256:076663ca68492576f051e4af7720d33f34383e655f2be0d544c8b1c9de915b2f"},
+    {file = "ipykernel-6.29.0.tar.gz", hash = "sha256:b5dd3013cab7b330df712891c96cd1ab868c27a7159e606f762015e9bf8ceb3f"},
 ]
 
 [package.dependencies]
@@ -2051,7 +2051,7 @@ cov = ["coverage[toml]", "curio", "matplotlib", "pytest-cov", "trio"]
 docs = ["myst-parser", "pydata-sphinx-theme", "sphinx", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling", "trio"]
 pyqt5 = ["pyqt5"]
 pyside6 = ["pyside6"]
-test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0)", "pytest-asyncio", "pytest-cov", "pytest-timeout"]
+test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (==0.23.2)", "pytest-cov", "pytest-timeout"]
 
 [[package]]
 name = "ipython"
@@ -2602,17 +2602,15 @@ version = "0.3.0"
 description = "Python tools to work with elements and isotopes"
 optional = false
 python-versions = ">=3.9,<3.13"
-files = []
-develop = false
+files = [
+    {file = "mckit_nuclides-0.3.0-py3-none-any.whl", hash = "sha256:9ffe7d4671c7a868f264c68bc85122bf36d1b4f7c1141e1719b3f551799ac2f6"},
+    {file = "mckit_nuclides-0.3.0.tar.gz", hash = "sha256:377969fd89405b83a65ef9df0cdaa56146274e944ae951abc45d64991500d8e4"},
+]
 
 [package.dependencies]
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
-polars = {version = "^0.20.3", extras = ["all"]}
-
-[package.source]
-type = "directory"
-url = "../mckit-nuclides"
+polars = {version = ">=0.20.3,<0.21.0", extras = ["all"]}
 
 [[package]]
 name = "mdit-py-plugins"
@@ -5987,4 +5985,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "ae1611d16ea1f25c7377f6e49e65ab92d5491c9601be341c78894d7b91ca80d7"
+content-hash = "4e3e01a3ab3d6e5c60ec90aae1e42a6ddc30e826692c6d6cdda05168b6c844c0"

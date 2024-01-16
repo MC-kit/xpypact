@@ -24,7 +24,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from mckit_nuclides import get_nuclide_mass, z
+from mckit_nuclides import z
+from mckit_nuclides.nuclides import get_nuclide_mass
 from xarray.core.accessor_dt import DatetimeAccessor
 from xpypact.inventory import from_json as inventory_from_json
 

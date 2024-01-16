@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import msgspec as ms
 
-from mckit_nuclides import get_nuclide_mass, z
+from mckit_nuclides import z
+from mckit_nuclides.nuclides import get_nuclide_mass
 
 Avogadro = 6.02214076e23
 """Mol-1,  `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?na>`_."""

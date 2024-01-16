@@ -26,6 +26,7 @@ RunDataSchema = OrderedDict(
     material_id=pl.UInt32,
     case_id=pl.UInt32,
     timestamp=pl.Datetime,
+    run_name=pl.String,
     flux_name=pl.String,
     dose_rate_type=pl.Categorical,
     dose_rate_distance=pl.Float64,
@@ -78,7 +79,7 @@ TimeStepNuclideSchema = OrderedDict(
 NuclideSchema = OrderedDict(
     zai=pl.UInt32,
     element=pl.String,
-    isotope=pl.UInt16,
+    mass_number=pl.UInt16,
     state=pl.UInt8,
     half_life=pl.Float64,
 )
@@ -151,6 +152,7 @@ class FullDataCollector(ms.Struct):
                     material_id,
                     case_id,
                     ts,
+                    rundata.run_name,
                     rundata.flux_name,
                     rundata.dose_rate_type,
                     rundata.dose_rate_distance,
@@ -214,7 +216,7 @@ class FullDataCollector(ms.Struct):
 
         if self.gbins_boundaries is None:
             self.gbins_boundaries = gs.boundaries
-        elif not np.array_equal(self.gbins_boundaries, gs.boundaries):
+        elif not np.array_equal(self.gbins_boundaries, gs.boundaries):  # pragma: no cover
             msg = "Assumption fails: all the gamma boundaries are the same"
             raise ValueError(msg)
 
@@ -251,16 +253,19 @@ class FullDataCollector(ms.Struct):
                 for n in nuclides
             ),
             schema=NuclideSchema,
-        )
+        ).with_columns(pl.col("zai").set_sorted())
 
     @property
-    def gbins(self) -> pl.DataFrame:
+    def gbins(self) -> pl.DataFrame | None:
         """Retrieve gbins.
 
         Returns:
             Polars table with gbins: g [0..N], boundary[g]
         """
+        if not self.gbins_boundaries:
+            return None
+
         return pl.DataFrame(
             enumerate(self.gbins_boundaries),  # type: ignore[arg-type]
             schema=OrderedDict(g=pl.UInt8, boundary=pl.Float64),
-        )
+        ).with_columns(pl.col("g").set_sorted(), pl.col("boundary").set_sorted())
