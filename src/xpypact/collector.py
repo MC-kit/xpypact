@@ -90,7 +90,7 @@ GammaSchema = OrderedDict(
     case_id=pl.UInt32,
     time_step_number=pl.UInt32,
     g=pl.UInt8,  # index of upper bound in gbins table (>=1)
-    rate=pl.Float64,
+    rate=pl.Float64,  # to store all the digits from a FISPACT JSON file we need 64 bits
 )
 
 
@@ -113,6 +113,7 @@ class FullDataCollector(ms.Struct):
     )
     nuclides: set[NuclideInfo] = ms.field(default_factory=set)
     gbins_boundaries: npt.NDArray[np.float64] | None = None
+    mids: pl.DataFrame | None = None
 
     def append(self, inventory: Inventory, material_id: int, case_id: int) -> FullDataCollector:
         """Append inventory to this collector.
@@ -215,7 +216,11 @@ class FullDataCollector(ms.Struct):
             return  # there's no gamma spectrum in the inventory
 
         if self.gbins_boundaries is None:
-            self.gbins_boundaries = gs.boundaries
+            self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
+            self.mids = pl.DataFrame(
+                enumerate(0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:])),
+                schema={"g": pl.UInt8, "mid": pl.Float64},
+            )
         elif not np.array_equal(self.gbins_boundaries, gs.boundaries):  # pragma: no cover
             msg = "Assumption fails: all the gamma boundaries are the same"
             raise ValueError(msg)
@@ -230,6 +235,12 @@ class FullDataCollector(ms.Struct):
                 for tsg in inventory.iterate_time_step_gamma()
             ),
             schema=GammaSchema,
+        )
+        # Convert MeV/s -> photon/s
+        timesteps_gamma_df = (
+            timesteps_gamma_df.join(self.mids, on="g")
+            .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
+            .select(GammaSchema.keys())
         )
         self.timestep_gamma.vstack(timesteps_gamma_df, in_place=True)
 

@@ -1,9 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+import numpy as np
+
+import duckdb as db
 import polars as pl
 import pytest
 
 from xpypact.collector import FullDataCollector
+from xpypact.dao.duckdb.implementation import save
+
+if TYPE_CHECKING:
+    from xpypact.inventory import Inventory
 
 
 def test_collector(inventory_with_gamma) -> None:
@@ -53,6 +62,45 @@ def test_collector_without_gamma(inventory_without_gamma) -> None:
 
     gbins = collector.gbins
     assert gbins is None
+
+
+def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum) -> None:
+    """Check gamma spectrum from the last time step in the one-cell JSON."""
+    collector = FullDataCollector()
+    collector.append(one_cell, material_id=1, case_id=54)
+    collector.append(one_cell, material_id=2, case_id=54)
+
+    for material_id in (1, 2):
+        actual = (
+            collector.timestep_gamma.filter(
+                pl.col("material_id").eq(material_id) & pl.col("time_step_number").eq(7),
+            )
+            .select("g", "rate")
+            .rows()
+        )
+        # noinspection PyTypeChecker
+        assert np.array_equal(
+            actual,
+            one_cell_time_step7_gamma_spectrum,
+        ), "Fails on gamma spectrum comparison"
+
+    con = db.connect()
+    save(con, collector)
+    gamma_from_db = con.sql(
+        """
+        select
+        g, rate
+        from timestep_gamma
+        where material_id = 1 and case_id = 54 and time_step_number = 7
+        order by g
+        """,
+    ).fetchall()
+
+    # noinspection PyTypeChecker
+    assert np.array_equal(
+        gamma_from_db,
+        one_cell_time_step7_gamma_spectrum,
+    ), "Fails on gamma spectrum comparison"
 
 
 if __name__ == "__main__":
