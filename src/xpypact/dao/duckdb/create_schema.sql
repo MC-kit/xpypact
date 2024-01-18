@@ -2,7 +2,7 @@
 -- sqlfluff:max_line_length:120
 
 
--- DuckDB doesn't recomment to use primary keys and indices
+-- DuckDB doesn't recommend to use primary keys and indices
 -- https://duckdb.org/docs/guides/performance/indexing
 --
 --Best Practices:
@@ -14,7 +14,7 @@
 --
 -- However, for testing and debugging the constraints  are useful.
 
-create table rundata (      -- noqa: PRS
+create table if not exists rundata (
     material_id uinteger not null,
     case_id uinteger not null,
     timestamp timestamp not null,
@@ -26,7 +26,7 @@ create table rundata (      -- noqa: PRS
 
 -- the "total_" prefix is removed from fields
 -- to have all the field names consistent
-create table timestep (
+create table if not exists timestep (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -51,7 +51,7 @@ create table timestep (
 );
 
 
-create table nuclide (
+create table if not exists nuclide (
     zai uinteger not null check (10010 <= zai),
     element varchar(2) not null,
     mass_number usmallint not null check (0 < mass_number),
@@ -59,7 +59,7 @@ create table nuclide (
     half_life real not null check (0 <= half_life)
 );
 
-create table timestep_nuclide (
+create table if not exists timestep_nuclide (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,
@@ -82,12 +82,12 @@ create table timestep_nuclide (
     inhalation real not null
 );
 
-create table gbins (
+create table if not exists gbins (
     g utinyint,
     boundary real not null check (0.0 <= boundary)
 );
 
-create table timestep_gamma (
+create table if not exists timestep_gamma (
     material_id uinteger not null,
     case_id uinteger not null,
     time_step_number uinteger not null,

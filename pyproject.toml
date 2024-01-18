@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.6.1a0"
+version = "0.6.1a1"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -60,6 +60,8 @@ multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
 rich = ">=13.7.0"
 polars = {version = "^0.20.3", extras = ["all"]}
+pyarrow = "^14.0.2"
+mckit-nuclides = "^0.3.0"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"

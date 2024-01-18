@@ -4,23 +4,21 @@ See https://pytest-benchmark.readthedocs.io/en/latest/index.html
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import bz2
 
 from pathlib import Path
 
 from xpypact.inventory import from_json
-from xpypact.utils.resource import path_resolver
 
 if TYPE_CHECKING:
     from xpypact.inventory import Inventory
 
 EXPECTED_TIME_STEPS = 65
+HERE = Path(__file__).parent
 
-data_path_resolver = path_resolver("benchmarks")
-
-with bz2.open(cast(Path, data_path_resolver("data/Ag-1.json.bz2"))) as fid:
+with bz2.open(HERE / "data/Ag-1.json.bz2") as fid:
     AG_1_TEXT = fid.read().decode("utf-8")
 
 
