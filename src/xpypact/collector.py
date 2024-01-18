@@ -103,7 +103,9 @@ class FullDataCollector(ms.Struct):
     """
 
     lock = threading.RLock()
-    rundata: pl.DataFrame = ms.field(default_factory=lambda: pl.DataFrame(schema=RunDataSchema))
+    rundata: pl.DataFrame = ms.field(
+        default_factory=lambda: pl.DataFrame(schema=RunDataSchema),  # type: ignore[arg-type]
+    )
     timesteps: pl.DataFrame = ms.field(default_factory=lambda: pl.DataFrame(schema=TimeStepSchema))
     timestep_nuclides: pl.DataFrame = ms.field(
         default_factory=lambda: pl.DataFrame(schema=TimeStepNuclideSchema),
@@ -272,7 +274,7 @@ class FullDataCollector(ms.Struct):
             return None
 
         return pl.DataFrame(
-            enumerate(self.gbins_boundaries),  # type: ignore[arg-type]
+            enumerate(self.gbins_boundaries),
             schema=OrderedDict(g=pl.UInt8, boundary=pl.Float32),
         ).with_columns(pl.col("g").set_sorted(), pl.col("boundary").set_sorted())
 
@@ -289,7 +291,7 @@ class FullDataCollector(ms.Struct):
             (
                 (g + 1, m)
                 for g, m in enumerate(
-                    0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),
+                    0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),  # type: ignore[index]
                 )
             ),
             schema={"g": pl.UInt8, "mid": pl.Float32},
