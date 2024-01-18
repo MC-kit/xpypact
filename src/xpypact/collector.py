@@ -218,7 +218,12 @@ class FullDataCollector(ms.Struct):
         if self.gbins_boundaries is None:
             self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
             self.mids = pl.DataFrame(
-                enumerate(0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:])),
+                (
+                    (g + 1, m)
+                    for g, m in enumerate(
+                        0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),
+                    )
+                ),
                 schema={"g": pl.UInt8, "mid": pl.Float64},
             )
         elif not np.array_equal(self.gbins_boundaries, gs.boundaries):  # pragma: no cover
@@ -273,7 +278,7 @@ class FullDataCollector(ms.Struct):
         Returns:
             Polars table with gbins: g [0..N], boundary[g]
         """
-        if not self.gbins_boundaries:
+        if self.gbins_boundaries is None:
             return None
 
         return pl.DataFrame(
