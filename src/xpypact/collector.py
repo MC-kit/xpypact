@@ -3,10 +3,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import datetime
+import sys
 import threading
 
 from collections import OrderedDict
-from datetime import datetime
 from time import strptime
 
 import numpy as np
@@ -20,7 +21,11 @@ if TYPE_CHECKING:
     from xpypact.inventory import Inventory
     from xpypact.nuclide import NuclideInfo
 
-from datetime import UTC  # check import for pythons older than 3.11
+
+if sys.version_info >= (3, 11):
+    UTC = datetime.UTC
+else:
+    UTC = datetime.timezone.utc
 
 RunDataSchema = OrderedDict(
     material_id=pl.UInt32,
@@ -139,7 +144,7 @@ class FullDataCollector(ms.Struct):
     def _append_rundata(self, inventory, material_id, case_id):
         rundata = inventory.meta_info
         st = strptime(rundata.timestamp, "%H:%M:%S %d %B %Y")
-        ts = datetime(
+        ts = datetime.datetime(
             year=st.tm_year,
             month=st.tm_mon,
             day=st.tm_mday,
