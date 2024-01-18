@@ -3,15 +3,17 @@ from __future__ import annotations
 
 import msgspec as ms
 
-try:
-    from scipy.constants import Avogadro
-except ImportError:  # pragma: no cover
-    Avogadro = 6.02214075999999987023872e23
-
-from mckit_nuclides.elements import z
+from mckit_nuclides import z
 from mckit_nuclides.nuclides import get_nuclide_mass
 
-__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO"]
+Avogadro = 6.02214076e23
+"""Mol-1,  `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?na>`_."""
+
+eV = 1.602176634e-19  # noqa: N816
+"""J/eV, `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?evj>`_."""
+
+MeV = 1e6 * eV
+"""J/MeV."""
 
 FLOAT_ZERO = 0.0
 
@@ -86,3 +88,6 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
             element, a, state, zai, half_life
         """
         return NuclideInfo(self.zai, self.element, self.a, self.state, self.half_life)
+
+
+__all__ = ["Avogadro", "Nuclide", "NuclideInfo", "FLOAT_ZERO", "eV", "MeV"]

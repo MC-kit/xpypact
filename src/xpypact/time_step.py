@@ -19,7 +19,7 @@ class DoseRate(ms.Struct, gc=False):  # pylint: disable=too-few-public-methods
         mass: mass for point source, always 1g
     """
 
-    type: str = ""  # noqa: A003
+    type: str = ""
     distance: float = 0.0
     mass: float = 0.0
     dose: float = 0.0

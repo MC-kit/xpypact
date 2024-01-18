@@ -3,22 +3,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import threading
-
-from dataclasses import dataclass, field
 from pathlib import Path
 
-import numpy as np
-
 import msgspec as ms
-
-from xpypact.dao import DataAccessInterface
 
 if TYPE_CHECKING:
     import duckdb as db
     import pandas as pd
 
-    from xpypact.inventory import Inventory, NuclideInfo
+    from xpypact.collector import FullDataCollector
 
 HERE = Path(__file__).parent
 
@@ -31,21 +24,15 @@ class DuckDBDAOSaveError(ValueError):
 
 
 # noinspection SqlNoDataSourceInspection
-@dataclass
-class DuckDBDAO(DataAccessInterface):
+class DuckDBDAO(ms.Struct):
     """Implementation of DataAccessInterface for DuckDB."""
 
     con: db.DuckDBPyConnection
-    nuclides: set[NuclideInfo] = field(default_factory=set)
-    nuclides_lock: threading.RLock = field(default_factory=threading.RLock)
-    gbins_boundaries: np.ndarray | None = None
-    gbins_boundaries_lock: threading.RLock = field(default_factory=threading.RLock)
 
     def get_tables_info(self) -> pd.DataFrame:
         """Get information on tables in schema."""
         return self.con.execute("select * from information_schema.tables").df()
 
-    @property
     def tables(self) -> tuple[str, str, str, str, str]:
         """List tables being used by xpypact dao.
 
@@ -58,12 +45,12 @@ class DuckDBDAO(DataAccessInterface):
         """Check if the schema is available in a database."""
         db_tables = self.get_tables_info()
 
-        if len(db_tables) < len(self.tables):
+        if len(db_tables) < len(self.tables()):
             return False
 
         table_names = db_tables["table_name"].to_numpy()
 
-        return all(name in table_names for name in self.tables)
+        return all(name in table_names for name in self.tables())
 
     def create_schema(self) -> None:
         """Create tables to store xpypact dataset.
@@ -86,52 +73,6 @@ class DuckDBDAO(DataAccessInterface):
         ]
         for table in tables:
             self.con.execute(f"drop table if exists {table}")
-
-    def save(self, inventory: Inventory, material_id: int = 1, case_id: int = 1) -> None:
-        """Save xpypact dataset to database.
-
-        This can be used in multithreading mode.
-
-        Args:
-            inventory: xpypact dataset to save
-            material_id: additional key to distinguish multiple FISPACT run
-            case_id: second additional key
-        """
-        # use separate cursor for multiprocessing (single connection is locked for a query)
-        # https://duckdb.org/docs/api/python/dbapi
-        cursor = self.con.cursor()
-        _save_run_data(cursor, inventory, material_id, case_id)
-        _save_time_steps(cursor, inventory, material_id, case_id)
-        _save_time_step_nuclides(cursor, inventory, material_id, case_id)
-        _save_gamma(cursor, inventory, material_id, case_id)
-        # accumulate nuclides for saving when multithreading is done
-        with self.nuclides_lock:
-            self.nuclides.update(inventory.extract_nuclides())
-        # save gbins boundaries
-        gs = inventory[-1].gamma_spectrum
-        if gs:  # pragma: no coverage
-            with self.gbins_boundaries_lock:
-                if self.gbins_boundaries is None:
-                    self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
-
-    def on_save_complete(self) -> None:
-        """Save information accumulated on multithreading processing all the inventories."""
-        self.save_nuclides()
-        if self.gbins_boundaries is not None:  # pragma: no coverage
-            _save_gbins(self.con, self.gbins_boundaries)
-
-    def save_nuclides(self) -> None:
-        """Save nuclides on multithreading saving is complete.
-
-        Call this when all the inventories are saved.
-        """
-        sql = """
-            insert or ignore
-            into nuclide
-            values (?,?,?,?,?)
-            ;
-        """
-        self.con.executemany(sql, (ms.structs.astuple(x) for x in self.nuclides))
 
     def load_rundata(self) -> db.DuckDBPyRelation:
         """Load FISPACT run data as table.
@@ -188,148 +129,61 @@ class DuckDBDAO(DataAccessInterface):
         return self.con.sql(sql)
 
 
-# noinspection SqlNoDataSourceInspection
-def _save_run_data(
+def save(
     cursor: db.DuckDBPyConnection,
-    inventory: Inventory,
-    material_id=1,
-    case_id=1,
+    collector: FullDataCollector,
 ) -> None:
-    mi = inventory.meta_info
-    # Time stamp in run data:
-    # 23:01:19 12 July 2020
-    # Format:
-    # %H:%M:%S %d %B %Y
-    # https://duckdb.org/docs/sql/functions/dateformat
-    sql = """
-        insert into rundata values
-        (
-            ?, ?, strptime(?, '%H:%M:%S %d %B %Y'), ?, ?, ?, ?
-        )
+    """Save collected inventories to a DuckDB database.
+
+    This can be used in multithreading mode.
+
+    Args:
+        cursor: separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
+        collector: collected inventories as Polars frames
     """
-    record = (material_id, case_id, *(ms.structs.astuple(mi)))
-    cursor.execute(sql, record)
-
-
-# noinspection SqlNoDataSourceInspection
-
-
-# noinspection SqlNoDataSourceInspection
-def _save_time_steps(cursor: db.DuckDBPyConnection, inventory: Inventory, material_id=1, case_id=1):
-    sql = """
-        insert into timestep
-        values(
-            ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?,
-            ?
-        )
-    """
-    cursor.executemany(
-        sql,
-        (
-            (
-                material_id,
-                case_id,
-                x.number,
-                x.elapsed_time,
-                x.irradiation_time,
-                x.cooling_time,
-                x.duration,
-                x.flux,
-                x.total_atoms,
-                x.total_activity,
-                x.alpha_activity,
-                x.beta_activity,
-                x.gamma_activity,
-                x.total_mass,
-                x.total_heat,
-                x.alpha_heat,
-                x.beta_heat,
-                x.gamma_heat,
-                x.ingestion_dose,
-                x.inhalation_dose,
-                x.dose_rate.dose,
-            )
-            for x in inventory.inventory_data
-        ),
+    _rundata = collector.rundata.sort("material_id", "case_id")  # noqa: F841
+    cursor.execute("create or replace table rundata as select * from _rundata")
+    _timestep = collector.timesteps.sort("material_id", "case_id", "time_step_number")  # noqa: F841
+    cursor.execute("create or replace table timestep as select * from _timestep")
+    _nuclide = collector.get_nuclides_as_df()  # noqa: F841
+    cursor.execute("create or replace table nuclide as select * from _nuclide")
+    _timestep_nuclide = collector.timestep_nuclides.sort(  # noqa: F841
+        "material_id",
+        "case_id",
+        "time_step_number",
+        "zai",
     )
+    cursor.execute("create or replace table timestep_nuclide as select * from _timestep_nuclide")
+    _gbins = collector.get_gbins()  # noqa: F841
+    cursor.execute("create or replace table gbins as select * from _gbins")
+    _timestep_gamma = collector.get_timestep_gamma_as_spectrum().sort(  # noqa: F841
+        "material_id",
+        "case_id",
+        "time_step_number",
+        "g",
+    )
+    cursor.execute("create or replace table timestep_gamma as select * from _timestep_gamma")
 
 
-# noinspection SqlNoDataSourceInspection
-def _save_time_step_nuclides(
-    cursor: db.DuckDBPyConnection,
-    inventory: Inventory,
-    material_id=1,
-    case_id=1,
-):
-    sql = """
-        insert into timestep_nuclide values(
-            ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?,
-            ?, ?, ?, ?,
-            ?, ?, ?
-        )
+def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
+    """Create primary key like indices on tables after loading.
+
+    Note:
+        use only for debugging
+    """
+    return con.execute(
         """
-    cursor.executemany(
-        sql,
-        (
-            (
-                material_id,
-                case_id,
-                t.number,
-                n.zai,
-                n.atoms,
-                n.grams,
-                n.activity,
-                n.alpha_activity,
-                n.beta_activity,
-                n.gamma_activity,
-                n.heat,
-                n.alpha_heat,
-                n.beta_heat,
-                n.gamma_heat,
-                n.dose,
-                n.ingestion,
-                n.inhalation,
-            )
-            for t in inventory.inventory_data
-            for n in t.nuclides
-        ),
+        create unique index rundata_pk on rundata(
+            material_id, case_id
+        );
+        create unique index timestep_pk on timestep(
+            material_id, case_id, time_step_number
+        );
+        create unique index timestep_nuclide_pk on timestep_nuclide(
+            material_id, case_id, time_step_number, zai
+        );
+        create unique index timestep_gamma_pk on timestep_gamma(
+            material_id, case_id, time_step_number, g
+        );
+        """,
     )
-
-
-# noinspection SqlNoDataSourceInspection
-def _save_gamma(
-    cursor: db.DuckDBPyConnection,
-    inventory: Inventory,
-    material_id=1,
-    case_id=1,
-) -> None:
-    gs = inventory[0].gamma_spectrum
-    if gs is None:
-        return  # pragma: no coverage
-    boundaries = np.asarray(gs.boundaries, dtype=float)
-
-    sql = """
-        insert into timestep_gamma values(?, ?, ?, ?, ?);
-    """
-    mids = 0.5 * (boundaries[:-1] + boundaries[1:])
-    cursor.executemany(
-        sql,
-        (
-            (material_id, case_id, t.number, x[0] + 1, x[1])  # use gbins index for upper boundary
-            for t in inventory.inventory_data
-            if t.gamma_spectrum
-            for x in enumerate(np.asarray(t.gamma_spectrum.values, dtype=float) / mids)
-            # convert rate MeV/s -> photon/s
-        ),
-    )
-
-
-def _save_gbins(cursor: db.DuckDBPyConnection, boundaries: np.ndarray) -> None:
-    sql = """
-        insert into gbins values(?, ?);
-    """
-    cursor.executemany(sql, enumerate(boundaries))
