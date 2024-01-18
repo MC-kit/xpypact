@@ -145,7 +145,7 @@ def save(
     cursor.execute("create or replace table rundata as select * from _rundata")
     _timestep = collector.timesteps.sort("material_id", "case_id", "time_step_number")  # noqa: F841
     cursor.execute("create or replace table timestep as select * from _timestep")
-    _nuclide = collector.nuclides_as_df  # noqa: F841
+    _nuclide = collector.get_nuclides_as_df()  # noqa: F841
     cursor.execute("create or replace table nuclide as select * from _nuclide")
     _timestep_nuclide = collector.timestep_nuclides.sort(  # noqa: F841
         "material_id",
@@ -154,9 +154,9 @@ def save(
         "zai",
     )
     cursor.execute("create or replace table timestep_nuclide as select * from _timestep_nuclide")
-    _gbins = collector.gbins  # noqa: F841
+    _gbins = collector.get_gbins()  # noqa: F841
     cursor.execute("create or replace table gbins as select * from _gbins")
-    _timestep_gamma = collector.timestep_gamma.sort(  # noqa: F841
+    _timestep_gamma = collector.get_timestep_gamma_as_spectrum().sort(  # noqa: F841
         "material_id",
         "case_id",
         "time_step_number",

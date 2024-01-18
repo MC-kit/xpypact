@@ -28,32 +28,32 @@ RunDataSchema = OrderedDict(
     timestamp=pl.Datetime,
     run_name=pl.String,
     flux_name=pl.String,
-    dose_rate_type=pl.Categorical,
-    dose_rate_distance=pl.Float64,
+    dose_rate_type=pl.Enum(["Point source", "Plane source"]),
+    dose_rate_distance=pl.Float32,
 )
 
 TimeStepSchema = OrderedDict(
     material_id=pl.UInt32,
     case_id=pl.UInt32,
     time_step_number=pl.UInt32,
-    irradiation_time=pl.Float64,
-    cooling_time=pl.Float64,
-    duration=pl.Float64,
-    elapsed_time=pl.Float64,
-    flux=pl.Float64,
-    atoms=pl.Float64,
-    activity=pl.Float64,
-    alpha_activity=pl.Float64,
-    beta_activity=pl.Float64,
-    gamma_activity=pl.Float64,
-    mass=pl.Float64,
-    heat=pl.Float64,
-    alpha_heat=pl.Float64,
-    beta_heat=pl.Float64,
-    gamma_heat=pl.Float64,
-    ingestion=pl.Float64,
-    inhalation=pl.Float64,
-    dose=pl.Float64,
+    irradiation_time=pl.Float32,
+    cooling_time=pl.Float32,
+    duration=pl.Float32,
+    elapsed_time=pl.Float32,
+    flux=pl.Float32,
+    atoms=pl.Float32,
+    activity=pl.Float32,
+    alpha_activity=pl.Float32,
+    beta_activity=pl.Float32,
+    gamma_activity=pl.Float32,
+    mass=pl.Float32,
+    heat=pl.Float32,
+    alpha_heat=pl.Float32,
+    beta_heat=pl.Float32,
+    gamma_heat=pl.Float32,
+    ingestion=pl.Float32,
+    inhalation=pl.Float32,
+    dose=pl.Float32,
 )
 
 TimeStepNuclideSchema = OrderedDict(
@@ -61,19 +61,19 @@ TimeStepNuclideSchema = OrderedDict(
     case_id=pl.UInt32,
     time_step_number=pl.UInt32,
     zai=pl.UInt32,
-    atoms=pl.Float64,
-    grams=pl.Float64,
-    activity=pl.Float64,
-    alpha_activity=pl.Float64,
-    beta_activity=pl.Float64,
-    gamma_activity=pl.Float64,
-    heat=pl.Float64,
-    alpha_heat=pl.Float64,
-    beta_heat=pl.Float64,
-    gamma_heat=pl.Float64,
-    dose=pl.Float64,
-    ingestion=pl.Float64,
-    inhalation=pl.Float64,
+    atoms=pl.Float32,
+    grams=pl.Float32,
+    activity=pl.Float32,
+    alpha_activity=pl.Float32,
+    beta_activity=pl.Float32,
+    gamma_activity=pl.Float32,
+    heat=pl.Float32,
+    alpha_heat=pl.Float32,
+    beta_heat=pl.Float32,
+    gamma_heat=pl.Float32,
+    dose=pl.Float32,
+    ingestion=pl.Float32,
+    inhalation=pl.Float32,
 )
 
 NuclideSchema = OrderedDict(
@@ -81,7 +81,7 @@ NuclideSchema = OrderedDict(
     element=pl.String,
     mass_number=pl.UInt16,
     state=pl.UInt8,
-    half_life=pl.Float64,
+    half_life=pl.Float32,
 )
 
 
@@ -90,7 +90,7 @@ GammaSchema = OrderedDict(
     case_id=pl.UInt32,
     time_step_number=pl.UInt32,
     g=pl.UInt8,  # index of upper bound in gbins table (>=1)
-    rate=pl.Float64,  # to store all the digits from a FISPACT JSON file we need 64 bits
+    rate=pl.Float32,  # to store all the digits from a FISPACT JSON file we need 64 bits
 )
 
 
@@ -113,7 +113,6 @@ class FullDataCollector(ms.Struct):
     )
     nuclides: set[NuclideInfo] = ms.field(default_factory=set)
     gbins_boundaries: npt.NDArray[np.float64] | None = None
-    mids: pl.DataFrame | None = None
 
     def append(self, inventory: Inventory, material_id: int, case_id: int) -> FullDataCollector:
         """Append inventory to this collector.
@@ -160,8 +159,8 @@ class FullDataCollector(ms.Struct):
                 ),
             ],
             schema=RunDataSchema,
-        )
-        self.rundata.vstack(rundata_df, in_place=True)
+        ).with_columns(pl.col("dose_rate_distance").round(5))
+        self.rundata = pl.concat([self.rundata, rundata_df], how="vertical", rechunk=False)
 
     def _append_timesteps(self, inventory, material_id, case_id):
         timesteps_df = pl.DataFrame(
@@ -193,7 +192,7 @@ class FullDataCollector(ms.Struct):
             ),
             schema=TimeStepSchema,
         )
-        self.timesteps.vstack(timesteps_df, in_place=True)
+        self.timesteps = pl.concat([self.timesteps, timesteps_df], how="vertical", rechunk=False)
 
     def _append_timestep_nuclides(self, inventory, material_id, case_id):
         timesteps_nuclides_df = pl.DataFrame(
@@ -207,7 +206,11 @@ class FullDataCollector(ms.Struct):
             ),
             schema=TimeStepNuclideSchema,
         )
-        self.timestep_nuclides.vstack(timesteps_nuclides_df, in_place=True)
+        self.timestep_nuclides = pl.concat(
+            [self.timestep_nuclides, timesteps_nuclides_df],
+            how="vertical",
+            rechunk=False,
+        )
 
     def _append_timestep_gamma(self, inventory, material_id, case_id):
         gs = inventory.inventory_data[-1].gamma_spectrum
@@ -217,15 +220,6 @@ class FullDataCollector(ms.Struct):
 
         if self.gbins_boundaries is None:
             self.gbins_boundaries = np.asarray(gs.boundaries, dtype=float)
-            self.mids = pl.DataFrame(
-                (
-                    (g + 1, m)
-                    for g, m in enumerate(
-                        0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),
-                    )
-                ),
-                schema={"g": pl.UInt8, "mid": pl.Float64},
-            )
         elif not np.array_equal(self.gbins_boundaries, gs.boundaries):  # pragma: no cover
             msg = "Assumption fails: all the gamma boundaries are the same"
             raise ValueError(msg)
@@ -241,16 +235,13 @@ class FullDataCollector(ms.Struct):
             ),
             schema=GammaSchema,
         )
-        # Convert MeV/s -> photon/s
-        timesteps_gamma_df = (
-            timesteps_gamma_df.join(self.mids, on="g")
-            .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
-            .select(GammaSchema.keys())
+        self.timestep_gamma = pl.concat(
+            [self.timestep_gamma, timesteps_gamma_df],
+            how="vertical",
+            rechunk=False,
         )
-        self.timestep_gamma.vstack(timesteps_gamma_df, in_place=True)
 
-    @property
-    def nuclides_as_df(self) -> pl.DataFrame:
+    def get_nuclides_as_df(self) -> pl.DataFrame:
         """Retrieve collected nuclides.
 
         Returns:
@@ -271,8 +262,7 @@ class FullDataCollector(ms.Struct):
             schema=NuclideSchema,
         ).with_columns(pl.col("zai").set_sorted())
 
-    @property
-    def gbins(self) -> pl.DataFrame | None:
+    def get_gbins(self) -> pl.DataFrame | None:
         """Retrieve gbins.
 
         Returns:
@@ -283,5 +273,32 @@ class FullDataCollector(ms.Struct):
 
         return pl.DataFrame(
             enumerate(self.gbins_boundaries),  # type: ignore[arg-type]
-            schema=OrderedDict(g=pl.UInt8, boundary=pl.Float64),
+            schema=OrderedDict(g=pl.UInt8, boundary=pl.Float32),
         ).with_columns(pl.col("g").set_sorted(), pl.col("boundary").set_sorted())
+
+    def get_timestep_gamma_as_spectrum(self) -> pl.DataFrame:
+        """Convert gamma values MeV/s -> photon/s.
+
+        In FISPACT JSON gamma emission is presented in MeV/s,
+        but we need intensities in photon/s to represent gamma source.
+
+        Returns:
+            time_step_gamma with rates in photon/s
+        """
+        mids = pl.DataFrame(
+            (
+                (g + 1, m)
+                for g, m in enumerate(
+                    0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),
+                )
+            ),
+            schema={"g": pl.UInt8, "mid": pl.Float32},
+        ).lazy()
+        # Convert
+        ql = (
+            self.timestep_gamma.lazy()
+            .join(mids, on="g")
+            .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
+            .select(pl.all().exclude("mid"))
+        )
+        return ql.collect()

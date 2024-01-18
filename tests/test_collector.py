@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import numpy as np
+from numpy.testing import assert_allclose
 
 import duckdb as db
 import polars as pl
@@ -33,12 +33,12 @@ def test_collector(inventory_with_gamma) -> None:
     filt_112 = filt_11 & pl.col("time_step_number").eq(2)
     timesteps = collector.timesteps.filter(filt_112)
     assert timesteps.height == 1
-    assert timesteps.select("activity").item() == 61794984.60241412
+    assert timesteps.select("activity").item() == pytest.approx(61794984.60241412)
 
     timestep_nuclides = collector.timestep_nuclides.filter(filt_112, zai=832100)
     assert timestep_nuclides.select("dose").item() == pytest.approx(2.4815e-20, rel=1e-4)
 
-    gbins = collector.gbins
+    gbins = collector.get_gbins()
     assert gbins.height == 25
 
 
@@ -58,9 +58,9 @@ def test_collector_without_gamma(inventory_without_gamma) -> None:
     filt_112 = filt_11 & pl.col("time_step_number").eq(2)
     timesteps = collector.timesteps.filter(filt_112)
     assert timesteps.height == 1
-    assert timesteps.select("activity").item() == 6123275960.275331
+    assert timesteps.select("activity").item() == pytest.approx(6123275960.275331)
 
-    gbins = collector.gbins
+    gbins = collector.get_gbins()
     assert gbins is None
 
 
@@ -72,17 +72,21 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum) 
 
     for material_id in (1, 2):
         actual = (
-            collector.timestep_gamma.filter(
+            collector.get_timestep_gamma_as_spectrum()
+            .filter(
                 pl.col("material_id").eq(material_id) & pl.col("time_step_number").eq(7),
             )
             .select("g", "rate")
             .rows()
         )
         # noinspection PyTypeChecker
-        assert np.array_equal(
+        assert_allclose(
             actual,
             one_cell_time_step7_gamma_spectrum,
-        ), "Fails on gamma spectrum comparison"
+            rtol=1e-7,
+            verbose=True,
+            err_msg="Fails on gamma spectrum comparison",
+        )
 
     con = db.connect()
     save(con, collector)
@@ -97,10 +101,12 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum) 
     ).fetchall()
 
     # noinspection PyTypeChecker
-    assert np.array_equal(
+    assert_allclose(
         gamma_from_db,
         one_cell_time_step7_gamma_spectrum,
-    ), "Fails on gamma spectrum comparison"
+        rtol=1e-7,
+        err_msg="Fails on gamma spectrum comparison",
+    )
 
 
 if __name__ == "__main__":
