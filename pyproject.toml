@@ -48,6 +48,8 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
+# msgspec-0.18.5 doesn't work on 3.9 - uses | without importing annotations
+# duckdb-0.9.2, has no wheels for 3.12
 python = ">=3.10,<3.13"
 duckdb = ">=0.8.0"
 h5netcdf = ">=0.13.1"
