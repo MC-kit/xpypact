@@ -90,6 +90,14 @@ class DuckDBDAO(ms.Struct):
         """
         return self.con.table("nuclide")
 
+    def load_timestep_times(self) -> db.DuckDBPyRelation:
+        """Load time step table.
+
+        Returns:
+            time step table
+        """
+        return self.con.table("timestep_times")
+
     def load_time_steps(self) -> db.DuckDBPyRelation:
         """Load time step table.
 
@@ -135,34 +143,14 @@ def save(
 ) -> None:
     """Save collected inventories to a DuckDB database.
 
-    This can be used in multithreading mode.
-
     Args:
         cursor: separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
         collector: collected inventories as Polars frames
     """
-    _rundata = collector.rundata.sort("material_id", "case_id")  # noqa: F841
-    cursor.execute("create or replace table rundata as select * from _rundata")
-    _timestep = collector.timesteps.sort("material_id", "case_id", "time_step_number")  # noqa: F841
-    cursor.execute("create or replace table timestep as select * from _timestep")
-    _nuclide = collector.get_nuclides_as_df()  # noqa: F841
-    cursor.execute("create or replace table nuclide as select * from _nuclide")
-    _timestep_nuclide = collector.timestep_nuclides.sort(  # noqa: F841
-        "material_id",
-        "case_id",
-        "time_step_number",
-        "zai",
-    )
-    cursor.execute("create or replace table timestep_nuclide as select * from _timestep_nuclide")
-    _gbins = collector.get_gbins()  # noqa: F841
-    cursor.execute("create or replace table gbins as select * from _gbins")
-    _timestep_gamma = collector.get_timestep_gamma_as_spectrum().sort(  # noqa: F841
-        "material_id",
-        "case_id",
-        "time_step_number",
-        "g",
-    )
-    cursor.execute("create or replace table timestep_gamma as select * from _timestep_gamma")
+    collected = ms.structs.asdict(collector.get_result())
+    for name, df in collected.items():
+        if df is not None:  # pragma: no cover
+            cursor.execute(f"create or replace table {name} as select * from df")  # noqa: S608
 
 
 def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
@@ -175,6 +163,9 @@ def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
         """
         create unique index rundata_pk on rundata(
             material_id, case_id
+        );
+        create unique index timestep_times_pk on timestep_times(
+            time_step_number
         );
         create unique index timestep_pk on timestep(
             material_id, case_id, time_step_number

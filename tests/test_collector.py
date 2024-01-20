@@ -64,7 +64,7 @@ def test_collector_without_gamma(inventory_without_gamma) -> None:
     assert gbins is None
 
 
-def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum) -> None:
+def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, tmp_path) -> None:
     """Check gamma spectrum from the last time step in the one-cell JSON."""
     collector = FullDataCollector()
     collector.append(one_cell, material_id=1, case_id=54)
@@ -107,6 +107,12 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum) 
         rtol=1e-7,
         err_msg="Fails on gamma spectrum comparison",
     )
+    collected = collector.get_result()
+    assert collected.timestep_times.height == 7
+    collector.save_to_parquets(tmp_path)
+    collector.save_to_parquets(tmp_path, override=True)
+    with pytest.raises(FileExistsError):
+        collector.save_to_parquets(tmp_path, override=False)
 
 
 if __name__ == "__main__":

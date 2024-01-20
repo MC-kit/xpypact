@@ -50,6 +50,8 @@ def test_save(inventory_with_gamma) -> None:
         nuclides = dao.load_nuclides().df()
         nuclides = nuclides.set_index(["element", "mass_number", "state"])
         assert not nuclides.loc["Cu"].empty
+        timestep_times = dao.load_timestep_times().pl()
+        assert timestep_times.height == 2
         time_steps = dao.load_time_steps().df()
         assert not time_steps.empty
         time_steps = time_steps.set_index("time_step_number")
