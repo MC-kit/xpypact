@@ -312,7 +312,7 @@ class FullDataCollector(ms.Struct):
         Returns:
             time_step_gamma with rates in photon/s
         """
-        if self.timestep_gamma is None:  # pragma: no cover
+        if self.timestep_gamma.is_empty():  # pragma: no cover
             return None
 
         mids = pl.DataFrame(
@@ -330,6 +330,18 @@ class FullDataCollector(ms.Struct):
             .join(mids, on="g")
             .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
             .select(pl.all().exclude("mid"))
+            .sort(
+                "material_id",
+                "case_id",
+                "time_step_number",
+                "g",
+            )
+            .set_sorted(
+                "material_id",
+                "case_id",
+                "time_step_number",
+                "g",
+            )
         )
         return ql.collect()
 
@@ -374,19 +386,7 @@ class FullDataCollector(ms.Struct):
                 "zai",
             ),
             gbins=self.get_gbins(),
-            timestep_gamma=self.get_timestep_gamma_as_spectrum()
-            .sort(
-                "material_id",
-                "case_id",
-                "time_step_number",
-                "g",
-            )
-            .set_sorted(
-                "material_id",
-                "case_id",
-                "time_step_number",
-                "g",
-            ),
+            timestep_gamma=self.get_timestep_gamma_as_spectrum(),
         )
 
     def save_to_parquets(self, out: Path, *, override: bool = False) -> None:
