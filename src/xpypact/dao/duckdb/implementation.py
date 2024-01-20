@@ -143,8 +143,6 @@ def save(
 ) -> None:
     """Save collected inventories to a DuckDB database.
 
-    This can be used in multithreading mode.
-
     Args:
         cursor: separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
         collector: collected inventories as Polars frames
