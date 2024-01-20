@@ -303,7 +303,7 @@ class FullDataCollector(ms.Struct):
             schema=OrderedDict(g=pl.UInt8, boundary=pl.Float32),
         ).with_columns(pl.col("g").set_sorted(), pl.col("boundary").set_sorted())
 
-    def get_timestep_gamma_as_spectrum(self) -> pl.DataFrame:
+    def get_timestep_gamma_as_spectrum(self) -> pl.DataFrame | None:
         """Convert gamma values MeV/s -> photon/s.
 
         In FISPACT JSON gamma emission is presented in MeV/s,
@@ -312,6 +312,9 @@ class FullDataCollector(ms.Struct):
         Returns:
             time_step_gamma with rates in photon/s
         """
+        if self.timestep_gamma is None:  # pragma: no cover
+            return None
+
         mids = pl.DataFrame(
             (
                 (g + 1, m)
@@ -338,8 +341,8 @@ class FullDataCollector(ms.Struct):
         timestep: pl.DataFrame
         nuclide: pl.DataFrame
         timestep_nuclide: pl.DataFrame
-        gbins: pl.DataFrame
-        timestep_gamma: pl.DataFrame
+        gbins: pl.DataFrame | None
+        timestep_gamma: pl.DataFrame | None
 
     def get_result(self) -> FullDataCollector.Result:
         """Finish and present collected data."""
@@ -399,6 +402,8 @@ class FullDataCollector(ms.Struct):
         collected = ms.structs.asdict(self.get_result())
         out.mkdir(parents=True, exist_ok=True)
         for name, df in collected.items():
+            if df is None:  # pragma: no cover
+                continue
             dst = out / f"{name}.parquet"
             if dst.exists() and not override:
                 msg = f"File {dst} already exists and override is not specified."

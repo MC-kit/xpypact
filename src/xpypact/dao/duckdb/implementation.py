@@ -148,8 +148,9 @@ def save(
         collector: collected inventories as Polars frames
     """
     collected = ms.structs.asdict(collector.get_result())
-    for name, df in collected.items():  # noqa: B007
-        cursor.execute(f"create or replace table {name} as select * from df")  # noqa: S608
+    for name, df in collected.items():
+        if df is not None:  # pragma: no cover
+            cursor.execute(f"create or replace table {name} as select * from df")  # noqa: S608
 
 
 def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
