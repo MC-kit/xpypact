@@ -3,12 +3,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import bz2
+import numpy as np
 
 import pytest
 
-from xpypact.inventory import Inventory, from_json
-from xpypact.run_data import RunData
+from xpypact.inventory import Inventory, RunData, from_json
 from xpypact.time_step import DoseRate, TimeStep
 
 if TYPE_CHECKING:
@@ -22,7 +21,35 @@ def inventory(data):
     return from_json(data / "Ag-1.json")
 
 
-def test_constructors():
+@pytest.mark.parametrize(
+    "inp,expected",
+    [
+        (
+            {
+                "timestamp": "23:01:19 12 July 2020",
+                "run_name": "* Material Ag, fluxes 1",
+                "flux_name": "55.F9.10 11-L2-02W HFS_GLRY_08_U",
+            },
+            RunData(
+                timestamp="23:01:19 12 July 2020",
+                run_name="* Material Ag, fluxes 1",
+                flux_name="55.F9.10 11-L2-02W HFS_GLRY_08_U",
+            ),
+        ),
+    ],
+)
+def test_run_data(inp, expected):
+    actual = RunData.from_json(inp)
+    assert actual == expected
+    assert inp == actual.asdict(), "Dictionary representation is not equivalent to input"
+    assert (
+        inp["timestamp"],
+        inp["run_name"],
+        inp["flux_name"],
+    ) == actual.astuple(), "Tuple representation is not equivalent to input"
+
+
+def test_constructor():
     rd = RunData(timestamp="23:01:19 12 July 2020", run_name="b", flux_name="c")
     assert rd.timestamp == "23:01:19 12 July 2020"
     assert rd.run_name == "b"
@@ -83,10 +110,16 @@ def test_elapsed_time(inventory):
     assert int(elapsed_time[-1]) == 0.631152e8
 
 
-def test_inventory_with_gamma(data):
-    with bz2.open(data / "with-gamma.json.bz2") as fid:
-        inventory = from_json(fid.read().decode("utf-8"))
-        assert inventory[1].gamma_spectrum is not None
+# noinspection PyTypeChecker
+def test_iterate_time_step_gamma(
+    one_cell: Inventory,
+    one_cell_time_step7_gamma: list[tuple[int, float]],
+) -> None:
+    """Check gamma spectrum from the last time step in the one-cell JSON."""
+    actual = [(r[1], r[2]) for r in one_cell.iterate_time_step_gamma() if r[0] == 7]
+    assert np.array_equal(actual, one_cell_time_step7_gamma)
+    gamma_spectrum = one_cell[-1].gamma_spectrum
+    assert np.array_equal([r[1] for r in actual], gamma_spectrum.values)
 
 
 if __name__ == "__main__":
