@@ -139,15 +139,15 @@ class DuckDBDAO(ms.Struct):
 
 def save(
     cursor: db.DuckDBPyConnection,
-    collector: FullDataCollector,
+    collector_result: FullDataCollector.Result,
 ) -> None:
     """Save collected inventories to a DuckDB database.
 
     Args:
         cursor: separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
-        collector: collected inventories as Polars frames
+        collector_result: collected inventories as Polars frames
     """
-    collected = ms.structs.asdict(collector.get_result())
+    collected = ms.structs.asdict(collector_result)
     for name, df in collected.items():
         if df is not None:  # pragma: no cover
             cursor.execute(f"create or replace table {name} as select * from df")  # noqa: S608

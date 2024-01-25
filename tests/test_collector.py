@@ -89,7 +89,7 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
         )
 
     con = db.connect()
-    save(con, collector)
+    save(con, collector.get_result())
     gamma_from_db = con.sql(
         """
         select
@@ -109,10 +109,10 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     )
     collected = collector.get_result()
     assert collected.timestep_times.height == 7
-    collector.save_to_parquets(tmp_path)
-    collector.save_to_parquets(tmp_path, override=True)
+    collected.save_to_parquets(tmp_path)
+    collected.save_to_parquets(tmp_path, override=True)
     with pytest.raises(FileExistsError):
-        collector.save_to_parquets(tmp_path, override=False)
+        collected.save_to_parquets(tmp_path, override=False)
 
 
 if __name__ == "__main__":

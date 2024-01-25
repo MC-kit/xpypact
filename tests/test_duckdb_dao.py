@@ -43,7 +43,7 @@ def test_save(inventory_with_gamma) -> None:
         dao = DataAccessObject(con)
         dc = FullDataCollector()
         dc.append(inventory_with_gamma, material_id=1, case_id=1)
-        save(con, dc)
+        save(con, dc.get_result())
         run_data = dao.load_rundata().df().loc[0]
         assert run_data["timestamp"] == pd.Timestamp("2022-02-21 01:52:45")
         assert run_data["run_name"] == "* Material Cu, fluxes 104_2_1_1"
