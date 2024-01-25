@@ -96,7 +96,7 @@ class DuckDBDAO(ms.Struct):
         Returns:
             time step table
         """
-        return self.con.table("timestep_times")
+        return self.con.table("time_step_times")
 
     def load_time_steps(self) -> db.DuckDBPyRelation:
         """Load time step table.
@@ -164,7 +164,7 @@ def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
         create unique index rundata_pk on rundata(
             material_id, case_id
         );
-        create unique index timestep_times_pk on timestep_times(
+        create unique index time_step_times_pk on time_step_times(
             time_step_number
         );
         create unique index timestep_pk on timestep(

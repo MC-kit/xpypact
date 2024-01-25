@@ -108,7 +108,7 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
         err_msg="Fails on gamma spectrum comparison",
     )
     collected = collector.get_result()
-    assert collected.timestep_times.height == 7
+    assert collected.time_step_times.height == 7
     collected.save_to_parquets(tmp_path)
     collected.save_to_parquets(tmp_path, override=True)
     with pytest.raises(FileExistsError):

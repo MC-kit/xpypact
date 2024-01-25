@@ -349,7 +349,7 @@ class FullDataCollector(ms.Struct):
         """Finished collected data."""
 
         rundata: pl.DataFrame
-        timestep_times: pl.DataFrame
+        time_step_times: pl.DataFrame  # use time_step_ prefix here
         timestep: pl.DataFrame
         nuclide: pl.DataFrame
         timestep_nuclide: pl.DataFrame
@@ -384,7 +384,7 @@ class FullDataCollector(ms.Struct):
                 "material_id",
                 "case_id",
             ),
-            timestep_times=self._get_timestep_times(),
+            time_step_times=self._get_timestep_times(),
             timestep=self.timesteps.sort(
                 "material_id",
                 "case_id",
