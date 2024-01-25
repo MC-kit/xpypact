@@ -356,6 +356,27 @@ class FullDataCollector(ms.Struct):
         gbins: pl.DataFrame | None
         timestep_gamma: pl.DataFrame | None
 
+        def save_to_parquets(self, out: Path, *, override: bool = False) -> None:
+            """Save collectd data as parquet files.
+
+            Args:
+                out: directory where to save
+                override: override existing files, default - raise exception
+
+            Raises:
+                FileExistError: if destination file exists and override is not specified.
+            """
+            collected = ms.structs.asdict(self)
+            out.mkdir(parents=True, exist_ok=True)
+            for name, df in collected.items():
+                if df is None:  # pragma: no cover
+                    continue
+                dst = out / f"{name}.parquet"
+                if dst.exists() and not override:
+                    msg = f"File {dst} already exists and override is not specified."
+                    raise FileExistsError(msg)
+                df.write_parquet(dst)
+
     def get_result(self) -> FullDataCollector.Result:
         """Finish and present collected data."""
         return FullDataCollector.Result(
@@ -388,24 +409,3 @@ class FullDataCollector(ms.Struct):
             gbins=self.get_gbins(),
             timestep_gamma=self.get_timestep_gamma_as_spectrum(),
         )
-
-    def save_to_parquets(self, out: Path, *, override: bool = False) -> None:
-        """Save collectd data as parquet files.
-
-        Args:
-            out: directory where to save
-            override: override existing files, default - raise exception
-
-        Raises:
-            FileExistError: if destination file exists and override is not specified.
-        """
-        collected = ms.structs.asdict(self.get_result())
-        out.mkdir(parents=True, exist_ok=True)
-        for name, df in collected.items():
-            if df is None:  # pragma: no cover
-                continue
-            dst = out / f"{name}.parquet"
-            if dst.exists() and not override:
-                msg = f"File {dst} already exists and override is not specified."
-                raise FileExistsError(msg)
-            df.write_parquet(dst)
