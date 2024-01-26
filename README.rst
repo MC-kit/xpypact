@@ -1,5 +1,5 @@
 ==============================================================================
-*xpypact*: FISPACT output to datasets converter
+*xpypact*: FISPACT output to Polars or DuckDB converter
 ==============================================================================
 
 
@@ -16,8 +16,13 @@
 Description
 -----------
 
-The module loads FISPACT JSON output as xarray dataset.
+The module loads FISPACT JSON output files and converts to Polars dataframes
+with minor data normalization.
 This allows efficient data extraction and aggregation.
+Multiple JSON files can be combined using simple additional identification for different
+FISPACT runs. So far we use just two-dimensional identification by material
+and case. The case usually identifies certain neutron flux.
+
 
 Implemented functionality
 -------------------------
@@ -25,13 +30,12 @@ Implemented functionality
 - export to DuckDB
 - export to parquet files
 
-.. configures and runs FISPACT, converts FISPACT output to xarray datasets.
-
 .. note::
 
     Currently available FISPACT v.5 API uses rather old python version (3.6).
-    That prevents direct use of their API in our package (>=3.8).
+    That prevents direct use of their API in our package (>=3.10).
     Check if own python integration with FISPACT is reasonable and feasible.
+    Or provide own FISPACT python binding.
 
 
 Installation
@@ -61,9 +65,50 @@ From source
 Examples
 --------
 
-.. note::
+.. code-block::
 
-    Add examples
+    from xpypact import FullDataCollector, Inventory
+
+    def get_material_id(p: Path) -> int:
+        ...
+
+    def get_case_id(p: Path) -> int:
+        ...
+
+    jsons = [path1, path2, ...]
+    material_ids = {p: get_material_id(p) for p in jsons }
+    case_ids = {c:: get_case_id(p) for p in jsons
+
+    collector = FullDataCollector()
+
+    for json in jsons:
+        inventory = Inventory.from_json(json)
+        collector.append(inventory, material_id=material_ids[json], case_id=case_ids[json])
+
+    collected = collector.get_result()
+
+    # save to parquet files
+
+    collected.save_to_parquets(Path.cwd() / "parquets")
+
+    # or use DuckDB database
+
+    import from xpypact.dao save
+    import duckdb as db
+
+    con = db.connect()
+    save(con, collected)
+
+    gamma_from_db = con.sql(
+        """
+        select
+        g, rate
+        from timestep_gamma
+        where material_id = 1 and case_id = 54 and time_step_number = 7
+        order by g
+        """,
+    ).fetchall()
+
 
 Contributing
 ------------

@@ -1,4 +1,5 @@
 """The Class to represent FISPACT fluxes file content."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO, cast
@@ -19,7 +20,7 @@ FISPACT_709_BINS_NUMBER = 709
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from xpypact.utils.types import NDArrayFloat
+    from xpypact.types import NDArrayFloat
 
 # pylint: disable=function-redefined
 

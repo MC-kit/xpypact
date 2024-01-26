@@ -2,12 +2,23 @@
 
 Wraps FISPACT workflow. Transforms FISPACT output to xarray datasets.
 """
+
 from __future__ import annotations
 
 from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
 
-from .data_arrays import from_json, scale_by_flux, scale_by_mass
+from .collector import (
+    FullDataCollector,
+    GammaSchema,
+    NuclideSchema,
+    RunDataSchema,
+    TimeStepNuclideSchema,
+    TimeStepSchema,
+)
+from .inventory import Inventory, RunDataCorrected
+from .nuclide import Nuclide, NuclideInfo
+from .time_step import DoseRate, GammaSpectrum, TimeStep
 
 try:
     __version__ = version(__name__)
@@ -23,15 +34,25 @@ __summary__ = __meta_data__["Summary"]
 __copyright__ = f"Copyright 2021 {__author__}"
 
 __all__ = [
-    "__version__",
-    "__distribution__",
-    "__meta_data__",
+    "DoseRate",
+    "FullDataCollector",
+    "GammaSchema",
+    "GammaSpectrum",
+    "Inventory",
+    "Nuclide",
+    "NuclideInfo",
+    "NuclideSchema",
+    "RunDataCorrected",
+    "RunDataSchema",
+    "TimeStep",
+    "TimeStepNuclideSchema",
+    "TimeStepSchema",
     "__author__",
     "__author_email__",
-    "__license__",
-    "__summary__",
     "__copyright__",
-    "from_json",
-    "scale_by_flux",
-    "scale_by_mass",
+    "__distribution__",
+    "__license__",
+    "__meta_data__",
+    "__summary__",
+    "__version__",
 ]
