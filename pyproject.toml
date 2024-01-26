@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.10.0"
+version = "0.11.0"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
