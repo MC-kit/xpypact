@@ -2,6 +2,7 @@
 
 See https://pytest-benchmark.readthedocs.io/en/latest/index.html
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
