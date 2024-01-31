@@ -56,8 +56,8 @@ numpy = ">=1.26.0"
 multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
 rich = ">=13.7.0"
-polars = {version = ">0.20.6", extras = ["all"], markers = "sys_platform != 'darwin'"}
-polars-lts-cpu ={version = ">=0.20.6", extras = ["all"], markers = "sys_platform == 'darwin'"}  # old CPU instructions
+polars = {version = ">0.20.3", extras = ["all"], markers = "sys_platform != 'darwin'"}
+polars-lts-cpu ={version = ">=0.20.3", extras = ["all"], markers = "sys_platform == 'darwin'"}  # old CPU instructions
 mckit-nuclides = ">=0.3.0"
 
 [tool.poetry.group.dev.dependencies]
