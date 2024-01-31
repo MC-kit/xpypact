@@ -10,7 +10,6 @@ import msgspec as ms
 
 if TYPE_CHECKING:
     import duckdb as db
-    import pandas as pd
 
     from xpypact.collector import FullDataCollector
 
@@ -30,9 +29,9 @@ class DuckDBDAO(ms.Struct):
 
     con: db.DuckDBPyConnection
 
-    def get_tables_info(self) -> pd.DataFrame:
+    def get_tables_info(self) -> db.DuckDBPyRelation:
         """Get information on tables in schema."""
-        return self.con.execute("select * from information_schema.tables").df()
+        return self.con.sql("select * from information_schema.tables")
 
     def tables(self) -> tuple[str, str, str, str, str]:
         """List tables being used by xpypact dao.
@@ -44,12 +43,10 @@ class DuckDBDAO(ms.Struct):
 
     def has_schema(self) -> bool:
         """Check if the schema is available in a database."""
-        db_tables = self.get_tables_info()
+        table_names = self.get_tables_info().select("table_name").fetchnumpy()["table_name"]
 
-        if len(db_tables) < len(self.tables()):
+        if len(table_names) < len(self.tables()):
             return False
-
-        table_names = db_tables["table_name"].to_numpy()
 
         return all(name in table_names for name in self.tables())
 

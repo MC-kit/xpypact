@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import datetime
+import datetime as dt
 import sys
 import threading
 
@@ -26,9 +26,9 @@ if TYPE_CHECKING:
 
 
 if sys.version_info >= (3, 11):  # pragma: no cover
-    UTC = datetime.UTC
+    UTC = dt.UTC
 else:
-    UTC = datetime.timezone.utc  # pragma: no cover
+    UTC = dt.timezone.utc  # pragma: no cover
 
 RunDataSchema = OrderedDict(
     material_id=pl.UInt32,
@@ -147,14 +147,14 @@ class FullDataCollector(ms.Struct):
     def _append_rundata(self, inventory, material_id, case_id):
         rundata = inventory.meta_info
         st = strptime(rundata.timestamp, "%H:%M:%S %d %B %Y")
-        ts = datetime.datetime(
+        ts = dt.datetime(  # noqa: DTZ001 - no tzinfo is available from the FISPACT output
             year=st.tm_year,
             month=st.tm_mon,
             day=st.tm_mday,
             hour=st.tm_hour,
             minute=st.tm_min,
             second=st.tm_sec,
-            tzinfo=UTC,
+            tzinfo=None,
         )
         rundata_df = pl.DataFrame(
             [

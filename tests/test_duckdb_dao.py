@@ -10,7 +10,7 @@ import polars as pl
 import pytest
 
 from duckdb import InvalidInputException, connect
-from xpypact.collector import UTC, FullDataCollector
+from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 from xpypact.dao.duckdb import create_indices
 from xpypact.dao.duckdb.implementation import save
@@ -48,14 +48,15 @@ def test_save(inventory_with_gamma) -> None:
         dc.append(inventory_with_gamma, material_id=1, case_id=1)
         save(con, dc.get_result())
         run_data = dao.load_rundata().pl()
-        assert run_data.select("timestamp").item() == dt.datetime(
+        assert run_data.select(
+            "timestamp",
+        ).item() == dt.datetime(  # noqa: DTZ001 - no tzinfo is available
             2022,
             2,
             21,
             1,
             52,
             45,
-            tzinfo=UTC,
         )
         assert run_data["run_name"].item() == "* Material Cu, fluxes 104_2_1_1"
         nuclides = dao.load_nuclides().pl()
