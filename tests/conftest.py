@@ -10,7 +10,6 @@ from pathlib import Path
 import numpy as np
 
 import pytest
-import xpypact.data_arrays as da
 
 from xpypact import inventory
 
@@ -70,20 +69,6 @@ def inventory_with_gamma() -> inventory.Inventory:
         return inventory.from_json(fid.read().decode("utf-8"))
 
 
-@pytest.fixture()
-def dataset_with_gamma(data):
-    """Load dataset with gamma information.
-
-    Args:
-        data: fixture - path to test data
-
-    Returns:
-        Dataset with gamma information.
-    """
-    with bz2.open(data / "with-gamma.json.bz2") as fid:
-        return da.from_json(fid.read().decode("utf-8"))
-
-
 @pytest.fixture(scope="session")
 def one_cell(data) -> Inventory:
     """Load inventory from one-cell JSON.
@@ -101,11 +86,8 @@ def one_cell(data) -> Inventory:
 def one_cell_time_step7_gamma() -> list[tuple[int, float]]:
     """Expected content for gamma spectrum from one-cell JSON at ts=7.
 
-    Args:
-        data: fixture - path to test data
-
     Returns:
-        Dataset with gamma information.
+        Emulated gamma group distribution.
     """
     return [
         (g + 1, r)
@@ -144,11 +126,8 @@ def one_cell_time_step7_gamma() -> list[tuple[int, float]]:
 def one_cell_time_step7_gamma_spectrum() -> list[tuple[int, float]]:
     """Expected content for gamma spectrum from one-cell JSON at ts=7.
 
-    Args:
-        data: fixture - path to test data
-
     Returns:
-        Dataset with gamma information.
+        Emulated gamma spectrum.
     """
     boundaries = np.array(
         [

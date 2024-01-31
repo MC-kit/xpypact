@@ -1,4 +1,5 @@
 """Nuclide specification in FISPACT JSON."""
+
 from __future__ import annotations
 
 import msgspec as ms

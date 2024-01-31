@@ -1,4 +1,5 @@
 """Utility types for the package."""
+
 from __future__ import annotations
 
 from typing import Union

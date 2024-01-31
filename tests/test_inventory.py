@@ -1,4 +1,5 @@
 """Test loading Inventory from FISPACT JSON file."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -119,7 +120,7 @@ def test_iterate_time_step_gamma(
     actual = [(r[1], r[2]) for r in one_cell.iterate_time_step_gamma() if r[0] == 7]
     assert np.array_equal(actual, one_cell_time_step7_gamma)
     gamma_spectrum = one_cell[-1].gamma_spectrum
-    assert np.array_equal([r[1] for r in actual], gamma_spectrum.values)
+    assert np.array_equal([r[1] for r in actual], gamma_spectrum.intensities)
 
 
 if __name__ == "__main__":

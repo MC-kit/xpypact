@@ -1,4 +1,5 @@
 """Classes to read a FISPACT time step attributes from JSON."""
+
 from __future__ import annotations
 
 import msgspec as ms

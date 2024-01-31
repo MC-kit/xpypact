@@ -1,4 +1,5 @@
 """Classes to load information from FISPACT output JSON file."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
     from xpypact.nuclide import NuclideInfo
-    from xpypact.utils.types import NDArrayFloat
+    from xpypact.types import NDArrayFloat
 
 FLOAT_ZERO = 0.0
 

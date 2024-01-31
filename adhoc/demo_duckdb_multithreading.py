@@ -2,6 +2,7 @@
 
 From: https://duckdb.org/docs/guides/python/multiple_threads.html
 """
+
 from __future__ import annotations
 
 import random
