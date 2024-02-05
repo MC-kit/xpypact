@@ -47,6 +47,7 @@ repos:
     rev: "v1.5.4"
     hooks:
       - id: remove-tabs
+
   # Format doc strings
   - repo: https://github.com/DanielNoord/pydocstringformatter
     rev: "v0.7.3"
@@ -88,7 +89,7 @@ repos:
         entry: ruff --force-exclude --fix --config pyproject.toml
         language: system
         types: [ python ]
-        exclude: ^notebooks
+        exclude: ^notebooks|^extern
 
       # Lint SQL code
       - id: sqlfluff-lint

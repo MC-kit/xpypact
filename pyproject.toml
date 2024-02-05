@@ -304,6 +304,8 @@ plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
+    "IPython.core.magic",
+    "IPython.core.magic_arguments",
     "click",
     "click.testing",
     "dask.*",
@@ -312,13 +314,12 @@ module = [
     "multipledispatch",
     "nox",
     "numpy.testing",
-    "orjson",
     "pandas",
     "pytest",
     "scipy.constants",
+    "scipy.sparse",
     "tomli",
     "tomllib",
-    "xarray.*"
 ]
 ignore_missing_imports = true
 
@@ -370,7 +371,7 @@ disable = [
 target-version = "py38"
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
 #or run 'ruff linter' to see a brief list
-select = [
+lint.select= [
     "A", # flake8-builtins
     "ANN", # flake8-annotations
     "ARG", # flake8-unused-arguments
@@ -420,7 +421,7 @@ select = [
 ]
 
 # Ignore rules that currently fail on the codebase
-ignore = [
+lint.ignore = [
     "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
     "ANN101", # ANN101 Missing type annotation for self in method
@@ -527,13 +528,13 @@ line-length = 100
 show-fixes = true
 
 # show source code snippets when reporting violations
-show-source = true
+output-format = "concise"
 
 src = ["src", "tests"]
 
 # Allow unused variables when underscore-prefixed.
 # dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-dummy-variable-rgx = "^_$"
+lint.dummy-variable-rgx = "^_$"
 exclude = [
     "docs/source/conf.py",
     "__pycache__",
@@ -541,12 +542,12 @@ exclude = [
     "wrk",
     "*.egg-info",
     ".cache",
-    "notebooks/dvp/*.py",
+    "notebooks",
 ]
 # Assume Python 3.10.
 # target-version = "py310"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "src/xpypact/fluxes.py" = ["F811"]
 "benchmarks/*" = ["S101"]
@@ -558,27 +559,27 @@ exclude = [
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 "docs/source/conf.py" = ["A001", "D100", "ERA001", "INP001"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 15
 
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 mypy-init-return = true  # skip return type for __init__() methods
 
-[tool.ruff.flake8-type-checking]
+[tool.ruff.lint.flake8-type-checking]
 strict = true
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
 known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy"]
 required-imports = ["from __future__ import annotations"]
 
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 parametrize-names-type = "csv"
 
-[tool.ruff.pydocstyle]
-convention = "google"  # Use Google-style docstrings.
+[tool.ruff.lint.pydocstyle]
+convention = "google" # Use Google-style docstrings.
 
 [tool.sqlfluff.core]
 dialect = "duckdb"
