@@ -159,12 +159,16 @@ ruff-lsp = ">=0.0.35"
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
 
-
 [tool.poetry.group.analysis]
 optional = true
 
 [tool.poetry.group.analysis.dependencies]
-jupyterlab = ">=3.6.3,<5.0.0"  # don't use >= - installs development version 4.0...
+jupysql = ">=0.10.9"
+jupyterlab = ">=4.0.12"
+jupytext = ">=1.16.1"
+matplotlib = ">=3.7.1"
+xlsxwriter = "^3.1.9"
+xlsx2csv = "^0.8.2"
 
 [tool.isort]
 atomic = true
@@ -583,6 +587,7 @@ convention = "google" # Use Google-style docstrings.
 
 [tool.sqlfluff.core]
 dialect = "duckdb"
+sql_file_exts = ".sql,.dml,.ddl"
 max_line_length = 120
 
 [tool.sqlfluff.indentation]
@@ -622,3 +627,8 @@ extended_capitalisation_policy = "lower"
 capitalisation_policy = "lower"
 [tool.sqlfluff.rules.capitalisation.types]
 extended_capitalisation_policy = "lower"
+
+[tool.jupytext]
+# https://jupytext.readthedocs.io/en/latest/config.html
+# Pair ipynb notebooks to py:percent text notebooks
+formats = "ipynb,md,py:percent"
