@@ -77,13 +77,59 @@ Examples
 
     jsons = [path1, path2, ...]
     material_ids = {p: get_material_id(p) for p in jsons }
-    case_ids = {c:: get_case_id(p) for p in jsons
+    case_ids = {c: get_case_id(p) for p in jsons }
 
     collector = FullDataCollector()
 
-    for json in jsons:
-        inventory = Inventory.from_json(json)
-        collector.append(inventory, material_id=material_ids[json], case_id=case_ids[json])
+    if sequential_load:
+        for json in jsons:
+            inventory = Inventory.from_json(json)
+            collector.append(inventory, material_id=material_ids[json], case_id=case_ids[json])
+
+    else:  # multithreading is allowed for collector as well
+
+        task_list = ...  # list of tuples[directory, case_id, tasks_sequence]
+        threads = 16  # whatever
+
+        def _find_path(arg) -> tuple[int, int, Path]:
+            _case, path, inventory = arg
+            json_path: Path = (Path(path) / inventory).with_suffix(".json")
+            if not json_path.exists():
+                msg = f"Cannot find file {json_path}"
+                raise FindPathError(msg)
+            try:
+                material_id = int(inventory[_LEN_INVENTORY:])
+                case_str = json_path.parent.parts[-1]
+                case_id = int(case_str[_LEN_CASE:])
+            except (ValueError, IndexError) as x:
+                msg = f"Cannot define material_id and case_id from {json_path}"
+                raise FindPathError(msg) from x
+            if case_id != _case:
+                msg = f"Contradicting values of case_id in case path and database: {case_id} != {_case}"
+                raise FindPathError(msg)
+            return material_id, case_id, json_path
+
+        with futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            mcp_futures = [
+                executor.submit(_find_path, arg)
+                for arg in (
+                    (task_case[0], task_case[1], task)
+                    for task_case in task_list
+                    for task in task_case[2].split(",")
+                    if task.startswith("inventory-")
+                )
+            ]
+
+        mips = [x.result() for x in futures.as_completed(mcp_futures)]
+        mips.sort(key=lambda x: x[0:2])  # sort by material_id, case_id
+
+        def _load_json(arg) -> None:
+            collector, material_id, case_id, json_path = arg
+            collector.append(from_json(json_path.read_text(encoding="utf8")), material_id, case_id)
+
+        with futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            executor.map(_load_json, ((collector, *mip) for mip in mips))
+
 
     collected = collector.get_result()
 

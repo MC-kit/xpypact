@@ -190,9 +190,7 @@ def isort(s: Session) -> None:
         "adhoc/*.py",
     ]
     cwd = Path.cwd()
-    files_to_process: list[str] = [
-        str(x) for x in sum((list(cwd.glob(p)) for p in search_patterns), [])
-    ]
+    files_to_process: list[str] = [str(x) for p in search_patterns for x in cwd.glob(p)]
     if files_to_process:
         s.run(
             "poetry",
