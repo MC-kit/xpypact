@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.11.1"
+version = "0.12.0"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -15,6 +15,7 @@ keywords = [
     "FISPACT",
     "activation",
     "duckdb",
+    "polars",
 ]
 readme = "README.rst"
 packages = [
@@ -32,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -49,9 +51,8 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 [tool.poetry.dependencies]
 # msgspec-0.18.5 doesn't work on 3.9 - uses `|` without importing annotations from __future__
-# duckdb-0.9.2, has no wheels for 3.12 and build from source fails
 python = ">=3.9,<3.13"
-duckdb = ">=0.8.0"
+duckdb = ">=0.10.0"
 numpy = ">=1.26.0"
 multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
