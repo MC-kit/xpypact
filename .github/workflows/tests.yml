@@ -133,6 +133,9 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
         # msgspec 0.18.5 fails on 3.9
+        exclude:
+          - os: macos-latest
+          - python-version: '3.12'  # connectorx(>=0.3.2) (required by polars>=0.3.2) is not available
 
     steps:
 
