@@ -331,12 +331,7 @@ class FullDataCollector(ms.Struct):
             .join(mids, on="g")
             .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
             .select(pl.all().exclude("mid"))
-            .sort(
-                "material_id",
-                "case_id",
-                "time_step_number",
-                "g",
-            )
+            .sort("material_id", "case_id", "time_step_number", "g", maintain_order=True)
             .set_sorted(
                 "material_id",
                 "case_id",

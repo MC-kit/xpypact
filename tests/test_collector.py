@@ -8,6 +8,7 @@ import duckdb as db
 import polars as pl
 import pytest
 
+from polars.testing import assert_frame_equal
 from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb.implementation import save
 
@@ -73,10 +74,13 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     spectra = collector.get_timestep_gamma_as_spectrum()
     for material_id in (1, 2):
         actual = (
-            spectra.filter(
+            spectra
+            # TODO dvp: have to split call .filter here to the two calls,
+            #  the single call returns empty frame, why?
+            .filter(
                 material_id=material_id,
             )
-            .filter(  # TODO dvp: cannot combine this .filter with the above - returns nothing
+            .filter(
                 time_step_number=7,
             )
             .select("g", "rate")
@@ -116,6 +120,36 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     collected.save_to_parquets(tmp_path, override=True)
     with pytest.raises(FileExistsError):
         collected.save_to_parquets(tmp_path, override=False)
+
+
+def test_polars_filter():
+    """Trying to reproduce the unexpected Polars behavior in the above test."""
+    initial = pl.DataFrame(
+        {
+            "a": [1, 1, 1, 1, 2, 2, 2, 2],
+            "b": [1, 1, 2, 2, 1, 1, 2, 2],
+            "c": list("abcdefgh"),
+        },
+        schema={
+            "a": pl.UInt32,
+            "b": pl.UInt32,
+            "c": pl.String,
+        },
+    ).sort("b")
+    actual = initial.filter(a=1, b=2)
+    expected = pl.DataFrame(
+        {
+            "a": [1, 1],
+            "b": [2, 2],
+            "c": ["c", "d"],
+        },
+        schema={
+            "a": pl.UInt32,
+            "b": pl.UInt32,
+            "c": pl.String,
+        },
+    )
+    assert_frame_equal(actual, expected)
 
 
 if __name__ == "__main__":
