@@ -135,7 +135,7 @@ jobs:
         # msgspec 0.18.6 fails on 3.9
         exclude:
           - os: macos-latest
-            python-version: '3.12'  # connectorx(>=0.3.2) (required by polars>=0.3.2) is not available
+            python-version: '3.10'
 
     steps:
 
