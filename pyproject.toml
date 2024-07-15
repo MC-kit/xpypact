@@ -55,13 +55,14 @@ numpy = "^1.26" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check 
 multipledispatch = ">=0.6.0"
 msgspec = ">=0.18.5"
 rich = ">=13.7.0"
-polars = { version = ">0.20.3", extras = [
-  "all",
-], markers = "sys_platform != 'darwin'" }
-polars-lts-cpu = { version = ">=0.20.3", extras = [
-  "all",
-], markers = "sys_platform == 'darwin'" } # old CPU instructions
-mckit-nuclides = ">=0.3.0"
+polars = ">=1.1.0"
+# polars = { version = ">0.20.3", extras = [
+#   "all",
+# ], markers = "sys_platform != 'darwin'" }
+# polars-lts-cpu = { version = ">=0.20.3", extras = [
+#   "all",
+# ], markers = "sys_platform == 'darwin'" } # old CPU instructions
+mckit-nuclides = ">=0.3.2"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"

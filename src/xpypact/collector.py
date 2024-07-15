@@ -169,6 +169,7 @@ class FullDataCollector(ms.Struct):
                 ),
             ],
             schema=RunDataSchema,
+            orient="row",
         ).with_columns(pl.col("dose_rate_distance").round(5))
         self.rundata = pl.concat([self.rundata, rundata_df], how="vertical", rechunk=False)
 
@@ -332,12 +333,7 @@ class FullDataCollector(ms.Struct):
             .with_columns((pl.col("rate") / pl.col("mid")).alias("rate"))
             .select(pl.all().exclude("mid"))
             .sort("material_id", "case_id", "time_step_number", "g", maintain_order=True)
-            .set_sorted(
-                "material_id",
-                "case_id",
-                "time_step_number",
-                "g",
-            )
+            .set_sorted("material_id")
         )
         return ql.collect()
 
@@ -376,32 +372,20 @@ class FullDataCollector(ms.Struct):
     def get_result(self) -> FullDataCollector.Result:
         """Finish and present collected data."""
         return FullDataCollector.Result(
-            rundata=self.rundata.sort("material_id", "case_id").set_sorted(
-                "material_id",
-                "case_id",
-            ),
+            rundata=self.rundata.sort("material_id", "case_id").set_sorted("material_id"),
             time_step_times=self._get_timestep_times(),
             timestep=self.timesteps.sort(
                 "material_id",
                 "case_id",
                 "time_step_number",
-            ).set_sorted(
-                "material_id",
-                "case_id",
-                "time_step_number",
-            ),
+            ).set_sorted("material_id"),
             nuclide=self.get_nuclides_as_df(),
             timestep_nuclide=self.timestep_nuclides.sort(
                 "material_id",
                 "case_id",
                 "time_step_number",
                 "zai",
-            ).set_sorted(
-                "material_id",
-                "case_id",
-                "time_step_number",
-                "zai",
-            ),
+            ).set_sorted("material_id"),
             gbins=self.get_gbins(),
             timestep_gamma=self.get_timestep_gamma_as_spectrum(),
         )
