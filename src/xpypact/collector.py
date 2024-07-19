@@ -11,9 +11,8 @@ import threading
 from collections import OrderedDict
 from time import strptime
 
-import numpy as np
-
 import msgspec as ms
+import numpy as np
 import polars as pl
 
 if TYPE_CHECKING:

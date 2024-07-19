@@ -10,6 +10,7 @@ import polars as pl
 import pytest
 
 from duckdb import InvalidInputException, connect
+
 from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 from xpypact.dao.duckdb import create_indices

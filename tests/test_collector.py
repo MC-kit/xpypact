@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from numpy.testing import assert_allclose
-
 import duckdb as db
 import polars as pl
 import pytest
 
+from numpy.testing import assert_allclose
 from polars.testing import assert_frame_equal
+
 from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb.implementation import save
 

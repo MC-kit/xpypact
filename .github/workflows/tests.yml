@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DEFAULT_PYTHON: "3.11"
+  DEFAULT_PYTHON: "3.12"
 
 jobs:
 
@@ -130,12 +130,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
-        # msgspec 0.18.6 fails on 3.9
-        exclude:
-          - os: macos-latest
-            python-version: '3.10'
 
     steps:
 
