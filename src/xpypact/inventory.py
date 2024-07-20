@@ -9,9 +9,8 @@ import io  # - needed for dispatch
 from functools import singledispatch
 from pathlib import Path  # - needed for dispatch
 
-import numpy as np
-
 import msgspec as ms
+import numpy as np
 
 # noinspection PyUnresolvedReferences
 from xpypact.time_step import TimeStep  # noqa: TCH001  - required for Struct field

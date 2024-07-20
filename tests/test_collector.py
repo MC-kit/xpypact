@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from numpy.testing import assert_allclose
-
 import duckdb as db
 import polars as pl
 import pytest
+
+from numpy.testing import assert_allclose
+from polars.testing import assert_frame_equal
 
 from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb.implementation import save
@@ -70,11 +71,17 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     collector.append(one_cell, material_id=1, case_id=54)
     collector.append(one_cell, material_id=2, case_id=54)
 
+    spectra = collector.get_timestep_gamma_as_spectrum()
     for material_id in (1, 2):
         actual = (
-            collector.get_timestep_gamma_as_spectrum()
+            spectra
+            # TODO dvp: have to split call .filter here to the two calls,
+            #  the single call returns empty frame, why?
             .filter(
-                pl.col("material_id").eq(material_id) & pl.col("time_step_number").eq(7),
+                material_id=material_id,
+            )
+            .filter(
+                time_step_number=7,
             )
             .select("g", "rate")
             .rows()
@@ -113,6 +120,36 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     collected.save_to_parquets(tmp_path, override=True)
     with pytest.raises(FileExistsError):
         collected.save_to_parquets(tmp_path, override=False)
+
+
+def test_polars_filter():
+    """Trying to reproduce the unexpected Polars behavior in the above test."""
+    initial = pl.DataFrame(
+        {
+            "a": [1, 1, 1, 1, 2, 2, 2, 2],
+            "b": [1, 1, 2, 2, 1, 1, 2, 2],
+            "c": list("abcdefgh"),
+        },
+        schema={
+            "a": pl.UInt32,
+            "b": pl.UInt32,
+            "c": pl.String,
+        },
+    ).sort("b")
+    actual = initial.filter(a=1, b=2)
+    expected = pl.DataFrame(
+        {
+            "a": [1, 1],
+            "b": [2, 2],
+            "c": ["c", "d"],
+        },
+        schema={
+            "a": pl.UInt32,
+            "b": pl.UInt32,
+            "c": pl.String,
+        },
+    )
+    assert_frame_equal(actual, expected)
 
 
 if __name__ == "__main__":
