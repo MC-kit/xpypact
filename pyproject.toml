@@ -54,7 +54,7 @@ duckdb = ">=0.10.0"
 mckit-nuclides = ">=0.3.2"
 msgspec = ">=0.18.5"
 multipledispatch = ">=0.6.0"
-numpy = "^1.26" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check on updates
+numpy = ">=1.26,<3.0" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check on updates
 polars = {version = ">0.20.3", extras = ["all"]}
 pyarrow = ">=16.1.0"
 rich = ">=13.7.0"
