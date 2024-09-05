@@ -143,7 +143,7 @@ class FullDataCollector(ms.Struct):
 
         return self
 
-    def _append_rundata(self, inventory, material_id, case_id):
+    def _append_rundata(self, inventory: Inventory, material_id: int, case_id: int) -> None:
         rundata = inventory.meta_info
         st = strptime(rundata.timestamp, "%H:%M:%S %d %B %Y")
         ts = dt.datetime(  # noqa: DTZ001 - no tzinfo is available from the FISPACT output
@@ -167,12 +167,12 @@ class FullDataCollector(ms.Struct):
                     rundata.dose_rate_distance,
                 ),
             ],
-            schema=RunDataSchema,
+            schema=RunDataSchema,  # type: ignore[arg-type]
             orient="row",
         ).with_columns(pl.col("dose_rate_distance").round(5))
         self.rundata = pl.concat([self.rundata, rundata_df], how="vertical", rechunk=False)
 
-    def _append_timesteps(self, inventory, material_id, case_id):
+    def _append_timesteps(self, inventory: Inventory, material_id: int, case_id: int) -> None:
         timesteps_df = pl.DataFrame(
             (
                 (
@@ -204,7 +204,9 @@ class FullDataCollector(ms.Struct):
         )
         self.timesteps = pl.concat([self.timesteps, timesteps_df], how="vertical", rechunk=False)
 
-    def _append_timestep_nuclides(self, inventory, material_id, case_id):
+    def _append_timestep_nuclides(
+        self, inventory: Inventory, material_id: int, case_id: int
+    ) -> None:
         timesteps_nuclides_df = pl.DataFrame(
             (
                 (
@@ -222,7 +224,7 @@ class FullDataCollector(ms.Struct):
             rechunk=False,
         )
 
-    def _append_timestep_gamma(self, inventory, material_id, case_id):
+    def _append_timestep_gamma(self, inventory: Inventory, material_id: int, case_id: int) -> None:
         gs = inventory.inventory_data[-1].gamma_spectrum
 
         if not gs:
@@ -251,7 +253,7 @@ class FullDataCollector(ms.Struct):
             rechunk=False,
         )
 
-    def _get_timestep_times(self):
+    def _get_timestep_times(self) -> pl.DataFrame:
         first_case = self.timesteps.lazy().select("material_id", "case_id").limit(1)
         return (
             self.timesteps.lazy()
@@ -337,7 +339,11 @@ class FullDataCollector(ms.Struct):
         return ql.collect()
 
     class Result(ms.Struct):
-        """Finished collected data."""
+        """Finished collected data.
+
+        The only function of this class is to save
+        the collected data to parquet files.
+        """
 
         rundata: pl.DataFrame
         time_step_times: pl.DataFrame  # use time_step_ prefix here
