@@ -48,7 +48,6 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-# msgspec-0.18.5 doesn't work on 3.9 - uses `|` without importing annotations from __future__
 python = ">=3.10,<3.13"
 duckdb = ">=0.10.0"
 mckit-nuclides = ">=0.3.2"
@@ -85,6 +84,7 @@ pytest-cov = ">=4.0"
 # pytest-mock = ">=3.9"
 # pytest-randomly = ">=3.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
+xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 pytest-benchmark = ">=4.0.0"
 
 [tool.poetry.group.coverage.dependencies]
@@ -159,16 +159,16 @@ markers = [
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
-  "error",
-  'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
-  "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
-  'ignore:.*io.FileIO \[closed\]',
-  'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
-  'ignore:.*Implicit None on return values:DeprecationWarning',
-  # pandas 2.1.4 at python 3.12
-  'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
-  # openpyxl 3.1.2 qt python 3.12
-  'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning',
+    "error",
+    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
+    'ignore:.*io.FileIO \[closed\]',
+    'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
+    'ignore:.*Implicit None on return values:DeprecationWarning',
+    # pandas 2.1.4 at python 3.12
+    'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    # openpyxl 3.1.2 qt python 3.12
+    'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning'
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -232,25 +232,26 @@ plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
-  "IPython.core.magic",
-  "IPython.core.magic_arguments",
-  "click",
-  "click.testing",
-  "dask.*",
-  "duckdb",
-  "loguru",
-  "mckit_nuclides.*",
-  "msgspec",
-  "multipledispatch",
-  "nox",
-  "numpy.testing",
-  "pandas",
-  "pytest",
-  "polars",
-  "scipy.constants",
-  "scipy.sparse",
-  "tomli",
-  "tomllib",
+    "IPython.core.magic",
+    "IPython.core.magic_arguments",
+    "click",
+    "click.testing",
+    "dask.*",
+    "duckdb",
+    "loguru",
+    "mckit_nuclides.*",
+    "msgspec",
+    "multipledispatch",
+    "nox",
+    "numpy.testing",
+    "pandas",
+    "polars",
+    "pytest",
+    "scipy.constants",
+    "scipy.sparse",
+    "tomli",
+    "tomllib",
+    "xdoctest",
 ]
 ignore_missing_imports = true
 
@@ -296,7 +297,6 @@ extension-pkg-allow-list = ["duckdb"]
 disable = [
     "wrong-import-order"  # this is `ruff format` responsibility
 ]
-
 
 [tool.ruff]
 target-version = "py310"
