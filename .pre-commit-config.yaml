@@ -111,7 +111,7 @@ repos:
       #   exclude: ^notebooks|^extern
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.3
+    rev: v0.6.7
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern
