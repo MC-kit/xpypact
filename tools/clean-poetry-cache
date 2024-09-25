@@ -6,13 +6,13 @@
 #
 
 clean_poetry_cache() {
-    local cache_list="$@"
+    local cache_list=("$@")
     if [[ 0 == "$#" ]]; then
-        cache_list=($(poetry cache list))
+        IFS=" " read -ra cache_list <<< "$(poetry cache list)"
     fi
     for f in "${cache_list[@]}"; do
         echo "Cleaning $f"
-        poetry cache clear -n --all $f
+        poetry cache clear -n --all "$f"
     done
 }
 

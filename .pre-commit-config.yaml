@@ -79,7 +79,6 @@ repos:
           - --py310-plus
         language: system
         types: [ python ]
-        stages: [ manual ]
 
       # Lint SQL code
       - id: sqlfluff-lint
@@ -117,7 +116,7 @@ repos:
       - id: ruff
         exclude: ^notebooks|^extern
       - id: ruff-format
-        exclude: ^notebooks|^extern
+        exclude: ^notebooks|^extern|ipynb$
 
   - repo: https://github.com/python-poetry/poetry
     rev: "1.8.0"
