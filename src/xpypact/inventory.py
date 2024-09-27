@@ -100,7 +100,27 @@ class Inventory(ms.Struct):
                 nuclides.add(nuclide.info)
         return nuclides
 
-    def iterate_time_step_nuclides(self) -> Iterator[tuple]:
+    def iterate_time_step_nuclides(
+        self,
+    ) -> Iterator[
+        tuple[
+            int,
+            int,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+        ]
+    ]:
         """Scan the time steps and nuclides in these steps.
 
         Returns:
@@ -128,7 +148,7 @@ class Inventory(ms.Struct):
             for n in t.nuclides
         )
 
-    def iterate_time_step_gamma(self) -> Iterator[tuple]:
+    def iterate_time_step_gamma(self) -> Iterator[tuple[int, int, float]]:
         """Scan the time steps and gamma spectrum.
 
         Returns:
