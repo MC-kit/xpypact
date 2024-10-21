@@ -21,18 +21,18 @@ readme = "README.rst"
 packages = [{ include = "xpypact", from = "src" }]
 # Select from PyPI classifiers: https://pypi.org/classifiers/
 classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Environment :: Console",
-  "Intended Audience :: Developers",
-  "Intended Audience :: Science/Research",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Topic :: Scientific/Engineering :: Physics",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Physics",
 ]
 
 [build-system]
@@ -48,12 +48,12 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.14"
 duckdb = ">=1.0.0"
 mckit-nuclides = ">=0.3.2"
 msgspec = ">=0.18.5"
 multipledispatch = ">=0.6.0"
-numpy = ">=2.0" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check on updates
+numpy = ">=2.0"
 polars = {version = ">0.20.3", extras = ["all"]}
 pyarrow = ">=16.1.0"
 rich = ">=13.7.0"
