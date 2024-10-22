@@ -58,6 +58,7 @@ polars = {version = ">0.20.3", extras = ["all"]}
 pyarrow = ">=16.1.0"
 rich = ">=13.7.0"
 
+
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
