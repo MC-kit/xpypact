@@ -155,7 +155,10 @@ def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
     """Create primary key like indices on tables after loading.
 
     Note:
-        use only for debugging
+        indexes are not used and, even more, are harmful in DuckDB.
+        This is provided to use the indexes only for testing and debugging the database.
+        The test is, that in a valid database with the loaded content
+        the indexes should be created successfully.
     """
     return con.execute(
         """

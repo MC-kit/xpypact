@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.12.2"
+version = "0.12.3"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -32,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -48,16 +49,15 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-# msgspec-0.18.5 doesn't work on 3.9 - uses `|` without importing annotations from __future__
-python = ">=3.10,<3.13"
-duckdb = ">=0.10.0"
+python = ">=3.10,<3.14"
+duckdb = ">=1.0.0"
 mckit-nuclides = ">=0.3.2"
-msgspec = ">=0.18.5"
 multipledispatch = ">=0.6.0"
-numpy = ">=2.0" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check on updates
-polars = {version = ">0.20.3", extras = ["all"]}
-pyarrow = ">=16.1.0"
+numpy = ">=2.0"
+polars = {version = ">=1.12.0", extras = ["all"]}
+pyarrow = ">=18.0.0"
 rich = ">=13.7.0"
+msgspec = {git = "https://github.com/jcrist/msgspec.git", rev = "main"}  # TODO: switch back to PyPI on update to Python 3.13
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -85,6 +85,7 @@ pytest-cov = ">=4.0"
 # pytest-mock = ">=3.9"
 # pytest-randomly = ">=3.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
+xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 pytest-benchmark = ">=4.0.0"
 
 [tool.poetry.group.coverage.dependencies]
@@ -109,7 +110,6 @@ sphinx-autodoc-typehints = ">=1.19.5"
 [tool.poetry.group.docs_auto.dependencies]
 sphinx-autobuild = ">=2021.3.14"
 
-
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
 
@@ -126,26 +126,50 @@ xlsx2csv = "^0.8.2"
 
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-norecursedirs = ".* build dist *.egg-info data htmlcov notebooks tools wrk"
+minversion = "6.2"
+cache_dir = '.cache/pytest'
+norecursedirs = '''
+*.egg-info
+.*
+build
+data
+dist
+docs/_build
+docs/examples
+htmlcov
+notebooks
+tools
+wrk
+'''
 python_functions = "test_*  profile_*"
-addopts = "-ra -q --tb=short --doctest-modules --strict-markers --ignore setup.py --failed-first"
-doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
-testpaths = ["tests"]
-markers = ["slow: too slow tests"]
+addopts = '''
+-ra
+-q
+--tb=short
+--doctest-modules
+--strict-markers
+--ignore setup.py
+--failed-first
+--xdoctest
+'''
+doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
+testpaths = ["tests", "src"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
-  "error",
-  'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
-  "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
-  'ignore:.*io.FileIO \[closed\]',
-  'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
-  'ignore:.*Implicit None on return values:DeprecationWarning',
-  # pandas 2.1.4 at python 3.12
-  'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
-  # openpyxl 3.1.2 qt python 3.12
-  'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning',
+    "error",
+    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
+    'ignore:.*io.FileIO \[closed\]',
+    'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
+    'ignore:.*Implicit None on return values:DeprecationWarning',
+    # pandas 2.1.4 at python 3.12
+    'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    # openpyxl 3.1.2 qt python 3.12
+    'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning'
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -191,43 +215,34 @@ sort = "Cover"
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
 python_version = "3.12"
-# strict = true     # TODO dvp: uncomment this to get strict control
+strict = true
 follow_imports = "silent"
-# namespace_packages = true
-warn_return_any = true
-warn_unused_configs = true
-show_error_codes = true
-enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-disable_error_code = ["annotation-unchecked"]
-show_error_context = true
-error_summary = true
-warn_redundant_casts = true
-warn_unreachable = true
-warn_unused_ignores = true
+disallow_untyped_defs = true
 files = "src/**/*.py"
 plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
-  "IPython.core.magic",
-  "IPython.core.magic_arguments",
-  "click",
-  "click.testing",
-  "dask.*",
-  "duckdb",
-  "loguru",
-  "mckit_nuclides.*",
-  "msgspec",
-  "multipledispatch",
-  "nox",
-  "numpy.testing",
-  "pandas",
-  "pytest",
-  "polars",
-  "scipy.constants",
-  "scipy.sparse",
-  "tomli",
-  "tomllib",
+    "IPython.core.magic",
+    "IPython.core.magic_arguments",
+    "click",
+    "click.testing",
+    "dask.*",
+    "duckdb",
+    "loguru",
+    "mckit_nuclides.*",
+    "msgspec",
+    "multipledispatch",
+    "nox",
+    "numpy.testing",
+    "pandas",
+    "polars",
+    "pytest",
+    "scipy.constants",
+    "scipy.sparse",
+    "tomli",
+    "tomllib",
+    "xdoctest",
 ]
 ignore_missing_imports = true
 
@@ -272,55 +287,6 @@ deprecated-modules = ["six"]
 extension-pkg-allow-list = ["duckdb"]
 disable = [
     "wrong-import-order"  # this is `ruff format` responsibility
-]
-
-[tool.bandit]
-targets = ["src"]
-confidence-level = "MEIDUM"
-severity-level = "MEIDUM"
-exclude_dirs = ["tests", "adhoc", "notebooks", "tools"]
-quiet = true
-skips = ["B101", "B301", "B403"]
-
-[tool.bandit.any_other_function_with_shell_equals_true]
-no_shell = [
-    "os.execl",
-    "os.execle",
-    "os.execlp",
-    "os.execlpe",
-    "os.execv",
-    "os.execve",
-    "os.execvp",
-    "os.execvpe",
-    "os.spawnl",
-    "os.spawnle",
-    "os.spawnlp",
-    "os.spawnlpe",
-    "os.spawnv",
-    "os.spawnve",
-    "os.spawnvp",
-    "os.spawnvpe",
-    "os.startfile"
-]
-shell = [
-    "os.system",
-    "os.popen",
-    "os.popen2",
-    "os.popen3",
-    "os.popen4",
-    "popen2.popen2",
-    "popen2.popen3",
-    "popen2.popen4",
-    "popen2.Popen3",
-    "popen2.Popen4",
-    "commands.getoutput",
-    "commands.getstatusoutput"
-]
-subprocess = [
-    "subprocess.Popen",
-    "subprocess.call",
-    "subprocess.check_call",
-    "subprocess.check_output"
 ]
 
 [tool.ruff]
