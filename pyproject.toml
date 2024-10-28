@@ -54,7 +54,7 @@ duckdb = ">=1.0.0"
 mckit-nuclides = ">=0.3.2"
 multipledispatch = ">=0.6.0"
 numpy = ">=2.0"
-polars = {version = ">0.20.3", extras = ["all"]}
+polars = {version = ">=1.12.0", extras = ["all"]}
 pyarrow = ">=18.0.0"
 rich = ">=13.7.0"
 msgspec = {git = "https://github.com/jcrist/msgspec.git", rev = "main"}  # TODO: switch back to PyPI on update to Python 3.13
