@@ -30,7 +30,7 @@ def data() -> Path:
     return DATA
 
 
-@pytest.fixture()
+@pytest.fixture
 def cd_tmpdir(tmpdir):  # noqa: PT004
     """Temporarily switch to temp directory.
 
