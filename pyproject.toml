@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xpypact"
-version = "0.12.3a0"
+version = "0.12.4a0"
 description = "\"Python workflow framework for FISPACT.\""
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -26,12 +26,12 @@ classifiers = [
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
-  "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -48,15 +48,15 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.14"
 duckdb = ">=1.0.0"
 mckit-nuclides = ">=0.3.2"
-msgspec = ">=0.18.5"
 multipledispatch = ">=0.6.0"
-numpy = ">=2.0" # TODO (deps): numpy-2.0 is not supported in duckdb 10.0, check on updates
-polars = {version = ">0.20.3", extras = ["all"]}
-pyarrow = ">=16.1.0"
+numpy = ">=2.0"
+polars = { version = ">=1.12.0", extras = ["all"] }
+pyarrow = ">=18.0.0"
 rich = ">=13.7.0"
+msgspec = {git = "https://github.com/jcrist/msgspec.git", rev = "main"}  # TODO: switch back to PyPI on update to Python 3.13
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
