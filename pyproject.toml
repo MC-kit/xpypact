@@ -380,8 +380,6 @@ select = [
 ignore = [
     "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
-    "ANN101", # ANN101 Missing type annotation for self in method
-    "ANN102", # ANN102 Missing type annotation for cls in classmethod
     # "ANN201", # Missing return type annotation for public function `mesh2com`
     "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
     # "ANN204", # ANN204 Missing return type annotation for special method
