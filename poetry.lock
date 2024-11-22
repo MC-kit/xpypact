@@ -2555,7 +2555,7 @@ files = [
 
 [[package]]
 name = "msgspec"
-version = "0.18.6+30.g595c33c"
+version = "0.18.6+28.ge06e9c9"
 description = "A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML."
 optional = false
 python-versions = ">=3.9"

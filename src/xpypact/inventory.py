@@ -13,7 +13,7 @@ import msgspec as ms
 import numpy as np
 
 # noinspection PyUnresolvedReferences
-from xpypact.time_step import TimeStep  # noqa: TCH001  - required for Struct field
+from xpypact.time_step import TimeStep  # noqa: TC001  - required for Struct field
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
