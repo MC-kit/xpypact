@@ -27,7 +27,6 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -316,8 +315,8 @@ exclude = [
 #or run 'ruff linter' to see a brief list
 select = [
     "A", # flake8-builtins
-    "ANN", # flake8-annotations
     "AIR", # Airflow https://airflow.apache.org/docs/apache-airflow/stable/index.html
+    "ANN", # flake8-annotations
     "ARG", # flake8-unused-arguments
     "ASYNC", # flake8-async
     "B", # flake8-bugbear
