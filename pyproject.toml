@@ -55,7 +55,8 @@ numpy = ">=2.0"
 polars = { version = ">=1.12.0", extras = ["all"] }
 pyarrow = ">=18.0.0"
 rich = ">=13.7.0"
-msgspec = {git = "https://github.com/jcrist/msgspec.git", rev = "main"}  # TODO: switch back to PyPI on update to Python 3.13
+msgspec = ">=0.19.0"
+poetry = "^1.8.5"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -150,7 +151,7 @@ addopts = '''
 --failed-first
 --xdoctest
 '''
-doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
+doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
 testpaths = ["tests", "src"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -302,11 +303,23 @@ src = ["src", "tests"]
 
 exclude = [
     "*.egg-info",
+    ".direnv",
     ".cache",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+    ".venv",
     "__pycache__",
+    "_build",
     "adhoc",
+    "build",
+    "dist",
     "docs/source/conf.py",
     "notebooks",
+    "venv",
     "wrk",
 ]
 
@@ -324,8 +337,10 @@ select = [
     "C4", # flake8-comprehensions
     "C90", # mccabe
     "COM", # flake8-commas
+    # "CPY", # flake8-copyright
     "D", # pydocstyle
     "DJ", # flake8-django
+    "DOC", # pydoclint
     "DTZ", # flake8-datetimez
     "E", # pycodestyle
     "EM", # flake8-errmsg
@@ -333,6 +348,7 @@ select = [
     "EXE", # flake8-executable
     "F", # Pyflakes
     "FA", # flake8-future-annotations
+    # "FAST", # FastAPI
     "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
     "FIX", # flake8-fixme
     "FLY", # flynt
@@ -479,7 +495,7 @@ ignore = [
 
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402"]
+"**/__init__.py" = ["E402"]
 "src/xpypact/fluxes.py" = ["F811"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
