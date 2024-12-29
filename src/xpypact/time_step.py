@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import msgspec as ms
 
-from xpypact.nuclide import Nuclide  # noqa: TCH001  - need for Struct field
+from xpypact.nuclide import Nuclide  # noqa: TC001  - need for Struct field
 
 FLOAT_ZERO = 0.0
 
