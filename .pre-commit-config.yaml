@@ -24,6 +24,7 @@ repos:
     rev: "v5.0.0"
     hooks:
       - id: check-added-large-files
+        exclude: poetry.lock
       - id: check-ast
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -111,7 +112,7 @@ repos:
       #   exclude: ^notebooks|^extern
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.0
+    rev: v0.9.1
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern

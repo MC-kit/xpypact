@@ -13,14 +13,14 @@ import numpy as np
 from multipledispatch import dispatch
 from numpy import allclose, array_equal
 
-from xpypact.utils.io import print_cols
+from xpypact.utils.xpypact_io import print_cols
 
 FISPACT_709_BINS_NUMBER = 709
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from xpypact.types import NDArrayFloat
+    from xpypact.xpypact_types import NDArrayFloat
 
 # pylint: disable=function-redefined
 
