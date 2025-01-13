@@ -127,8 +127,8 @@ jupysql = ">=0.10.9"
 jupyterlab = ">=4.0.12"
 jupytext = ">=1.16.1"
 matplotlib = ">=3.7.1"
-xlsxwriter = "^3.1.9"
-xlsx2csv = "^0.8.2"
+xlsxwriter = ">=3.1.9"
+xlsx2csv = ">=0.8.2"
 
 
 [tool.pytest.ini_options]
