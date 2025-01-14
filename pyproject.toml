@@ -36,7 +36,7 @@ documentation = "https://xpypact.readthedocs.io"
 Changelog = "https://github.com/MC-kit/xpypact/releases"
 
 [tool.poetry]
-version = "0.12.4"
+version = "0.12.5a0"
 packages = [{ include = "xpypact", from = "src" }]
 include = [
    { path = "noxfile.py", format = "sdist" },
