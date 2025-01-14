@@ -1,6 +1,6 @@
 [project]
 name = "xpypact"
-dynamic = [ "version" ]
+dynamic = [ "version", "classifiers" ]
 description = "\"Python workflow framework for FISPACT.\""
 license = { text = "MIT" }
 readme = "README.rst"
@@ -17,20 +17,6 @@ keywords = [
   "activation",
   "duckdb",
   "polars",
-]
-# Select from PyPI classifiers: https://pypi.org/classifiers/
-classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Environment :: Console",
-  "Intended Audience :: Developers",
-  "Intended Audience :: Science/Research",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
     "duckdb (>=1.0.0)",
@@ -52,9 +38,28 @@ Changelog = "https://github.com/MC-kit/xpypact/releases"
 [tool.poetry]
 version = "0.12.4"
 packages = [{ include = "xpypact", from = "src" }]
+include = [
+   { path = "noxfile.py", format = "sdist" },
+   { path = "tests", format = "sdist" },
+   { path = "docs", format = "sdist"}
+]
+exclude = [
+  { path = "docs/build"}
+]
+
+# Select from PyPI trove classifiers: https://pypi.org/classifiers/
+# about dynamic classifiers in poetry: https://python-poetry.org/docs/pyproject/#classifiers-1
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
+]
 
 [build-system]
-requires = ["poetry-core >= 1.8.3"]
+requires = ["poetry-core >= 2.0.0, <3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 # [tool.poetry.scripts]
