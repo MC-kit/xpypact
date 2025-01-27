@@ -74,13 +74,8 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
     spectra = collector.get_timestep_gamma_as_spectrum()
     for material_id in (1, 2):
         actual = (
-            spectra
-            # TODO dvp: have to split call .filter here to the two calls,
-            #  the single call returns empty frame, why?
-            .filter(
+            spectra.filter(
                 material_id=material_id,
-            )
-            .filter(
                 time_step_number=7,
             )
             .select("g", "rate")
