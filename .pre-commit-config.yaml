@@ -31,6 +31,7 @@ repos:
       - id: check-json
         exclude: notebooks
       - id: check-merge-conflict
+        exclude: \.rst$
       - id: check-shebang-scripts-are-executable
         exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
       - id: check-symlinks
@@ -47,7 +48,7 @@ repos:
           - --pytest-test-first
       - id: mixed-line-ending
       - id: pretty-format-json
-        args: [ --autofix, --no-ensure-ascii, --no-sort-keys ]
+        args: [--autofix, --no-ensure-ascii, --no-sort-keys]
         exclude: data|\.ipynb$
       - id: requirements-txt-fixer
       - id: trailing-whitespace
@@ -129,11 +130,11 @@ repos:
   - repo: https://github.com/python-poetry/poetry
     rev: "2.0.1"
     hooks:
-      - id: poetry-check
-      - id: poetry-lock
-        stages: [ manual ]
-      - id: poetry-install
-        stages: [ manual ]
+    - id: poetry-check
+    - id: poetry-lock
+      stages: [ manual ]
+    - id: poetry-install
+      stages: [ manual ]
 
   # Check for common shell mistakes
   - repo: https://github.com/shellcheck-py/shellcheck-py
