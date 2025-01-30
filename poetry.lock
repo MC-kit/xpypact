@@ -1043,15 +1043,15 @@ pyspark = ["delta-spark", "numpy (==1.26.4)", "pyspark"]
 
 [[package]]
 name = "diff-cover"
-version = "9.2.1"
+version = "9.2.2"
 description = "Run coverage and linting reports on diffs"
 optional = false
 python-versions = "<4.0.0,>=3.9.17"
 groups = ["pre_commit"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "diff_cover-9.2.1-py3-none-any.whl", hash = "sha256:97393d4acaa7545eae86f66e287ad96ffbeef70c188cca5a7f433983363e3849"},
-    {file = "diff_cover-9.2.1.tar.gz", hash = "sha256:5fa5b2d71ccf5d16cd222a71c2ca069d9bf5fa3d657f6fac9b4d9c23379323bf"},
+    {file = "diff_cover-9.2.2-py3-none-any.whl", hash = "sha256:4be396da0ef3c1f5134f77b0aced51a500738e2a84d69b6c6d52fa9132b35ae1"},
+    {file = "diff_cover-9.2.2.tar.gz", hash = "sha256:9a1bffd8a9fd18989f8173987826818854dffb659ec6fbafe669f304d1e4fd57"},
 ]
 
 [package.dependencies]
