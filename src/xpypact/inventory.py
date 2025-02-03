@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
     from xpypact.nuclide import NuclideInfo
-    from xpypact.types import NDArrayFloat
+    from xpypact.xpypact_types import NDArrayFloat
 
 FLOAT_ZERO = 0.0
 

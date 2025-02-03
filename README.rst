@@ -1,7 +1,8 @@
 ==============================================================================
-*xpypact*: FISPACT output to Polars or DuckDB converter
+*xpypact*: FISPACT output to Polars or DuckDB datasets converter
 ==============================================================================
 
+Aggregate results of `FISPACT <https://fispact.ukaea.uk/>`_ runs to efficient datasets.
 
 
 |Maintained| |License| |Versions| |PyPI| |Docs|
@@ -16,12 +17,14 @@
 Description
 -----------
 
-The module loads FISPACT JSON output files and converts to Polars dataframes
-with minor data normalization.
-This allows efficient data extraction and aggregation.
-Multiple JSON files can be combined using simple additional identification for different
-FISPACT runs. So far we use just two-dimensional identification by material
-and case. The case usually identifies certain neutron flux.
+The module loads FISPACT JSON output files and converts to `Polars <https://pola.rs/>`_ dataframes
+with minor data normalization. The dataframes can be stored either to `parquet <https://parquet.apache.org>`_
+files or `DuckDb <https://duckdb.org/>`_ database.
+This allows efficient data aggregation and analysis.
+**Multiple** JSON files for different
+FISPACT runs can be combined using simple additional identification.
+So far, we use just two-dimensional identification by material
+and *case*. The *case* usually identifies certain neutron flux energy distribution.
 
 
 Implemented functionality
@@ -29,13 +32,7 @@ Implemented functionality
 
 - export to DuckDB
 - export to parquet files
-
-.. note::
-
-    Currently available FISPACT v.5 API uses rather old python version (3.6).
-    That prevents direct use of their API in our package (>=3.10).
-    Check if own python integration with FISPACT is reasonable and feasible.
-    Or provide own FISPACT python binding.
+- neutron flux presentation conversion
 
 
 Installation
@@ -165,16 +162,13 @@ Contributing
 .. image:: https://codecov.io/gh/MC-kit/xpypact/branch/master/graph/badge.svg?token=P6DPGSWM94
    :target: https://codecov.io/gh/MC-kit/xpypact
    :alt: Coverage
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
-   :target: https://pycqa.github.io/isort/
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
-.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json
-   :target: https://github.com/charliermarsh/ruff
-   :alt: linter
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json
+   :target: https://github.com/astral-sh/ruff
+   :alt: linter & style
+
 
 Just follow ordinary practice:
 
@@ -185,12 +179,14 @@ Just follow ordinary practice:
 References
 ----------
 
-.. note::
-
-    add references to FISPACT, pypact and used tools:  poetry etc
+    - `FISPACT <https://fispact.ukaea.uk/>`_
+    - `FISPACT-II tools (including pypact) repositories <https://github.com/fispact>`_
+    - `FISPACT at NEA/OECD <https://oecd-nea.org/tools/abstract/detail/NEA-1890>`_
+    - `FISPACT introduction <https://indico.ictp.it/event/7994/session/5/contribution/24/material/slides/0.pdf>`_
 
 
 .. Substitutions
+
 
 .. |Maintained| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg
    :target: https://github.com/MC-kit/xpypact/graphs/commit-activity

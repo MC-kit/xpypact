@@ -24,18 +24,22 @@ repos:
     rev: "v5.0.0"
     hooks:
       - id: check-added-large-files
+        exclude: poetry.lock
       - id: check-ast
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-json
         exclude: notebooks
       - id: check-merge-conflict
+        exclude: \.rst$
       - id: check-shebang-scripts-are-executable
         exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
       - id: check-symlinks
       - id: check-toml
       - id: check-yaml
       - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-private-key
       - id: end-of-file-fixer
         exclude: data|.ipynb$|^\.
       - id: name-tests-test
@@ -57,7 +61,7 @@ repos:
       - id: remove-tabs
 
   - repo: https://github.com/pre-commit/pre-commit
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: validate_manifest
 
@@ -67,6 +71,11 @@ repos:
     hooks:
       - id: pydocstringformatter
         exclude: _parser\.py$|_tab\.py|extern
+
+  - repo: https://github.com/fredrikaverpil/creosote
+    rev: v4.0.0
+    hooks:
+      - id: creosote
 
   - repo: local
     hooks:
@@ -111,7 +120,7 @@ repos:
       #   exclude: ^notebooks|^extern
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    rev: v0.9.4
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern
@@ -119,7 +128,7 @@ repos:
         exclude: ^notebooks|^extern|ipynb$
 
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.8.0"
+    rev: "2.0.1"
     hooks:
     - id: poetry-check
     - id: poetry-lock

@@ -14,6 +14,8 @@ from pathlib import Path
 from xpypact.inventory import from_json
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from xpypact.inventory import Inventory
 
 EXPECTED_TIME_STEPS = 65
@@ -23,7 +25,7 @@ with bz2.open(HERE / "data/Ag-1.json.bz2") as fid:
     AG_1_TEXT = fid.read().decode("utf-8")
 
 
-def test_load_from_string(benchmark) -> None:
+def test_load_from_string(benchmark: Callable) -> None:
     """Loading from string."""
     inventory: Inventory = benchmark(from_json, AG_1_TEXT)
     assert len(inventory.inventory_data) == EXPECTED_TIME_STEPS
