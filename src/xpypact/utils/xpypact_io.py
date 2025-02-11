@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TextIO
+from typing import TYPE_CHECKING, Any
 
 import sys
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from _typeshed import SupportsWrite
+
 
 def print_cols(
     seq: Iterable[Any],
-    fid: TextIO = sys.stdout,
+    fid: SupportsWrite[str] = sys.stdout,
     max_columns: int = 6,
     fmt: str = "{}",
 ) -> int:
