@@ -23,6 +23,16 @@ class DuckDBDAOSaveError(ValueError):
     """Error on accessing/saving FISPACT data."""
 
 
+_TABLES = [
+    "gbins",
+    "nuclide",
+    "rundata",
+    "timestep",
+    "timestep_gamma",
+    "timestep_nuclide",
+]
+
+
 # noinspection SqlNoDataSourceInspection
 class DuckDBDAO(ms.Struct):
     """Implementation of DataAccessInterface for DuckDB."""
@@ -33,22 +43,14 @@ class DuckDBDAO(ms.Struct):
         """Get information on tables in schema."""
         return self.con.sql("select * from information_schema.tables")
 
-    def tables(self) -> tuple[str, str, str, str, str]:
-        """List tables being used by xpypact dao.
-
-        Returns:
-            Tuple with table names.
-        """
-        return "rundata", "timestep", "nuclide", "timestep_nuclide", "timestep_gamma"
-
     def has_schema(self) -> bool:
         """Check if the schema is available in a database."""
         table_names = self.get_tables_info().select("table_name").fetchnumpy()["table_name"]
 
-        if len(table_names) < len(self.tables()):
+        if len(table_names) < len(_TABLES):
             return False
 
-        return all(name in table_names for name in self.tables())
+        return all(name in table_names for name in _TABLES)
 
     def create_schema(self) -> None:
         """Create tables to store xpypact dataset.
@@ -61,15 +63,7 @@ class DuckDBDAO(ms.Struct):
 
     def drop_schema(self) -> None:
         """Drop our DB objects."""
-        tables = [
-            "timestep_nuclide",
-            "timestep_gamma",
-            "gbins",
-            "timestep",
-            "nuclide",
-            "rundata",
-        ]
-        for table in tables:
+        for table in _TABLES:
             self.con.execute(f"drop table if exists {table}")
 
     def load_rundata(self) -> db.DuckDBPyRelation:

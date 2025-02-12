@@ -63,7 +63,6 @@ classifiers = [
 python = ">=3.10,<3.14"
 
 [tool.poetry.group.dev.dependencies]
-Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
 tomli = { version = ">=2.0.1", python = "<3.11" }
 
@@ -113,18 +112,6 @@ sphinx-autobuild = ">=2021.3.14"
 
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
-
-[tool.poetry.group.analysis]
-optional = true
-
-[tool.poetry.group.analysis.dependencies]
-jupysql = ">=0.10.9"
-jupyterlab = ">=4.0.12"
-jupytext = ">=1.16.1"
-matplotlib = ">=3.7.1"
-xlsxwriter = ">=3.1.9"
-xlsx2csv = ">=0.8.2"
-
 
 [tool.pytest.ini_options]
 minversion = "6.2"
