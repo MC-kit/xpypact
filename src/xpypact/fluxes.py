@@ -20,6 +20,8 @@ FISPACT_709_BINS_NUMBER = 709
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from _typeshed import SupportsWrite
+
     from xpypact.xpypact_types import NDArrayFloat
 
 # pylint: disable=function-redefined
@@ -282,7 +284,7 @@ def are_fluxes_close(
         b: the second flux to compare
         rtol: relative tolerance
         atol: absolute tolerance
-        equal_nan: see :func:`numpy.allclose()`
+        equal_nan: see :meth:`numpy.allclose()`
 
     Returns:
         bool: True, if the fluxes are equivalent by data
@@ -462,7 +464,7 @@ def define_709_bins_and_fluxes(data: NDArrayFloat) -> tuple[NDArrayFloat, NDArra
     return FISPACT_709_BINS, data[::-1]
 
 
-def _print_bin_values(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None:
+def _print_bin_values(fluxes: Fluxes, fid: SupportsWrite[str], max_columns: int = 5) -> None:
     """Print fluxes bins for FISPACT.
 
     Args:
@@ -482,7 +484,7 @@ class NotA709Error(FluxesDataSizeError):
     """Expected 709-group fluxes."""
 
 
-def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 7) -> None:
+def print_709_fluxes(fluxes: Fluxes, fid: SupportsWrite[str], max_columns: int = 7) -> None:
     """Print standard 709-group fluxes.
 
     Args:
@@ -498,7 +500,7 @@ def print_709_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 7) -> None:
     _print_bin_values(fluxes, fid, max_columns)
 
 
-def print_arbitrary_fluxes(fluxes: Fluxes, fid: TextIO, max_columns: int = 5) -> None:
+def print_arbitrary_fluxes(fluxes: Fluxes, fid: SupportsWrite[str], max_columns: int = 5) -> None:
     """Print fluxes in FISPACT arbitrary flux format.
 
     Args:

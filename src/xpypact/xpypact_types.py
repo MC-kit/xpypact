@@ -11,5 +11,5 @@ import numpy as np
 from numpy.typing import NDArray
 
 MayBePath = str | os.PathLike[Any] | None
-NDArrayFloat = NDArray[np.float64]
+NDArrayFloat = NDArray[np.floating]
 NDArrayInt = NDArray[np.int_]
