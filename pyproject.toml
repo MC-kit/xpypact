@@ -22,6 +22,7 @@ keywords = [
     "polars",
 ]
 dependencies = [
+    "duckdb (>=1.0.0)",
     "mckit-nuclides (>=0.3.2)",
     "multipledispatch (>=0.6.0)",
     "numpy (>=2.1.3)",
@@ -117,7 +118,6 @@ ruff = ">=0.0.259"
 optional = true
 
 [tool.poetry.group.analysis.dependencies]
-duckdb = ">=1.0.0"
 jupysql = ">=0.10.9"
 jupyterlab = ">=4.0.12"
 jupytext = ">=1.16.1"
@@ -506,5 +506,6 @@ paths = ["src"]
 deps-file = "pyproject.toml"
 sections = ["project.dependencies"]
 exclude-deps = [
+    "duckdb",
     "pyarrow",
 ]
