@@ -31,10 +31,12 @@ def print_cols(
     """
     i = 0
     for s in seq:
-        print(fmt.format(s), file=fid, end="")
-        if (i > 0) and (i % max_columns == 0):
-            print(file=fid)
-        else:
+        if i > 0:
             print(" ", file=fid, end="")
+        print(fmt.format(s), file=fid, end="")
         i += 1
-    return i % max_columns
+        if i >= max_columns:
+            print(file=fid)
+            i = 0
+
+    return i

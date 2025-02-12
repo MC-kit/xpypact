@@ -31,9 +31,20 @@ def arb_flux_1(data) -> Fluxes:
     path = data / "arb_flux_1"
     arb_fluxes: Fluxes = read_arb_fluxes(path)
     assert arb_fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
-    assert arb_fluxes.norm == 1.0
-    assert arb_fluxes.energy_bins.size == 3
-    assert arb_fluxes.fluxes.size == 2
+    assert arb_fluxes.norm == 1.0, "Wrong norm"
+    assert arb_fluxes.energy_bins.size == 3, "Wrong energies"
+    assert arb_fluxes.fluxes.size == 2, "Wrong values"
+    return arb_fluxes
+
+
+@pytest.fixture(scope="module")
+def arb_flux_2(data) -> Fluxes:
+    path = data / "arb_flux_2"
+    arb_fluxes: Fluxes = read_arb_fluxes(path)
+    assert arb_fluxes.comment == "total flux=1.014956e+10", "Wrong comment"
+    assert arb_fluxes.norm == 1.0, "Wrong norm"
+    assert arb_fluxes.energy_bins.size == 8, "Wrong energies"
+    assert arb_fluxes.fluxes.size == 7, "Wrong values"
     return arb_fluxes
 
 
@@ -66,17 +77,6 @@ def test_flux_constructor():
 )
 def test_reading_arbitrary_fluxes_1(arb_flux_1, nbin, expected_e0, expected_e1, expected_flux):
     assert_bin(arb_flux_1, nbin, expected_e0, expected_e1, expected_flux)
-
-
-@pytest.fixture(scope="module")
-def arb_flux_2(data):
-    path = data / "arb_flux_2"
-    arb_fluxes = read_arb_fluxes(path)
-    assert arb_fluxes.comment == "total flux=1.014956e+10", "Wrong comment"
-    assert arb_fluxes.norm == 1.0
-    assert arb_fluxes.energy_bins.size == 8
-    assert arb_fluxes.fluxes.size == 7
-    return arb_fluxes
 
 
 def test_eq_and_copy(arb_flux_1, arb_flux_2):
@@ -151,6 +151,17 @@ def test_print_arbitrary_fluxes(data, arb_flux_1):
     read_flux = read_arb_fluxes(actual)
     assert read_flux == arb_flux_1
     assert are_fluxes_equal(read_flux, arb_flux_1)
+
+
+@pytest.mark.parametrize("max_columns", range(1, 10))
+def test_print_arbitrary_fluxes_with_different_widths(arb_flux_2: Fluxes, max_columns: int) -> None:
+    stream = StringIO()
+    print_arbitrary_fluxes(arb_flux_2, stream, max_columns=max_columns)
+    actual = stream.getvalue()
+    has_empty_lines = "\n\n" in actual
+    assert not has_empty_lines, "Empty lines are found in output"
+    read_flux = read_arb_fluxes(actual)
+    assert read_flux == arb_flux_2
 
 
 def test_define_arb_flux_fail():
