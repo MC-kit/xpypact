@@ -391,11 +391,8 @@ ignore = [
 "**/__init__.py" = ["E402"]
 "src/xpypact/fluxes.py" = ["F811"]
 "benchmarks/*" = ["S101"]
-"noxfile.py" = ["ANN"]
 "tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104", "PLR2004", "S101"]
 "src/xpypact/inventory.py" = ["F811"]
-"src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
-"src/xpypact/utils/resource.py" = ["ANN202"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 "docs/source/conf.py" = ["A001", "D100", "ERA001", "INP001"]
 
