@@ -48,7 +48,7 @@ class InventoryError(ValueError):
         Returns:
             The __doc__ of the exception class.
         """
-        return cast(str, self.__class__.__doc__)  # pragma: no cover
+        return cast("str", self.__class__.__doc__)  # pragma: no cover
 
 
 class InventoryNonMonotonicTimesError(InventoryError):
@@ -283,7 +283,7 @@ class RunData(ms.Struct, frozen=True, gc=False):
 
     def astuple(self) -> tuple[str, str, str]:
         """Get tuple representation."""
-        return cast(tuple[str, str, str], ms.structs.astuple(self))
+        return cast("tuple[str, str, str]", ms.structs.astuple(self))
 
     @classmethod
     def from_json(cls, json_dict: dict[str, str]) -> RunData:

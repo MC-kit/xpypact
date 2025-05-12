@@ -193,7 +193,7 @@ class Fluxes:
         Returns:
             float: flux total
         """
-        return cast(float, np.sum(self.fluxes))
+        return cast("float", np.sum(self.fluxes))
 
     def __hash__(self) -> int:
         """Use available information for hash.
@@ -413,7 +413,7 @@ class FluxesDataSizeError(ValueError):
         Returns:
             an exception class __doc__
         """
-        return cast(str, self.__class__.__doc__)
+        return cast("str", self.__class__.__doc__)
 
 
 class ArbitraryFluxesDataSizeError(FluxesDataSizeError):
