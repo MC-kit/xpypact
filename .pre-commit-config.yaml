@@ -81,16 +81,6 @@ repos:
 
   - repo: local
     hooks:
-      # Upgrade Python code
-      - id: pyupgrade
-        name: pyupgrade
-        exclude: \.idea|\.cache|^notebooks|^extern
-        entry: pyupgrade
-        args:
-          - --py310-plus
-        language: system
-        types: [ python ]
-
       # Lint SQL code
       - id: sqlfluff-lint
         name: sqlfluff-lint
@@ -106,7 +96,7 @@ repos:
         types: [ sql ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.9
+    rev: v0.11.10
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern
