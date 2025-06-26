@@ -86,7 +86,7 @@ def main():
             "x": pl.Int64,
             "y": pl.Int64,
         },
-    ).sink_parquet(path, row_group_size=row_group_size)
+    ).sink_parquet(path, row_group_size=row_group_size, engine="streaming")
     # lz.sink_parquet(path, row_group_size=200_000, lazy=False)
     # lz_actual = pl.scan_parquet(path,)
     # actual = lz_actual.collect()
