@@ -9,7 +9,7 @@ from __future__ import annotations
 import polars as pl
 
 
-LENGTH = 900_000_000
+LENGTH = 1_000_000_000
 
 
 def gen():
