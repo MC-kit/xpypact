@@ -62,14 +62,23 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
 
+[tool.poetry.group.dev]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 nox = ">=2022.1.7"
 tomli = { version = ">=2.0.1", python = "<3.11" }
+
+[tool.poetry.group.pre_commit]
+optional = true
 
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
 pydocstringformatter = ">=0.7.3"
 sqlfluff = ">=2.3.2"
+
+[tool.poetry.group.test]
+optional = true
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.1"
@@ -81,11 +90,21 @@ xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 pytest-benchmark = ">=4.0.0"
 pytest-durations = ">=1.5.2"
 
+
+[tool.poetry.group.coverage]
+optional = true
+
 [tool.poetry.group.coverage.dependencies]
 coverage = { version = ">=6.1.2", extras = ["toml"] }
 
+[tool.poetry.group.xdoctest]
+optional = true
+
 [tool.poetry.group.xdoctest.dependencies]
 xdoctest = { extras = ["colors"], version = ">=0.15.10" }
+
+[tool.poetry.group.typeguard]
+optional = true
 
 [tool.poetry.group.typeguard.dependencies]
 typeguard = ">=4.1.5"
@@ -95,15 +114,28 @@ mypy = ">=1.2.0"
 pep8-naming = ">=0.12.1"
 types-setuptools = ">=57.4.2"
 
+[tool.poetry.group.docs]
+optional = true
+
 [tool.poetry.group.docs.dependencies]
 sphinx = ">=6.1.3"
 sphinx-autodoc-typehints = ">=1.19.5"
+
+[tool.poetry.group.docs_auto]
+optional = true
 
 [tool.poetry.group.docs_auto.dependencies]
 sphinx-autobuild = ">=2021.3.14"
 
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
+
+[tool.poetry.group.analyze]
+optional = true
+
+[tool.poetry.group.analyze.dependencies]
+jupyterlab = ">=4.2.5"
+jupytext = ">=1.16.4"
 
 [tool.pytest.ini_options]
 minversion = "6.2"
