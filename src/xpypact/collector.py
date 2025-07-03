@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 if sys.version_info >= (3, 11):  # pragma: no cover
     UTC = dt.UTC
 else:
-    UTC = dt.timezone.utc  # pragma: no cover
+    UTC = dt.UTC  # pragma: no cover
 
 RunDataSchema = OrderedDict(
     material_id=pl.UInt32,
