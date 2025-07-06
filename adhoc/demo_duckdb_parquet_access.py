@@ -7,8 +7,12 @@ from pathlib import Path
 import duckdb as db
 import pandas as pd
 
-ddf1 = pd.DataFrame({"material": [100, 101, 102], "g": [1, 2, 3], "a": [1, 2, 3], "b": [4, 5, 6]})
-ddf2 = pd.DataFrame({"material": [100, 200, 200], "g": [4, 5, 6], "a": [1, 2, 3], "b": [4, 5, 6]})
+ddf1 = pd.DataFrame(
+    {"material": [100, 101, 102], "g": [1, 2, 3], "a": [1, 2, 3], "b": [4, 5, 6]}
+)
+ddf2 = pd.DataFrame(
+    {"material": [100, 200, 200], "g": [4, 5, 6], "a": [1, 2, 3], "b": [4, 5, 6]}
+)
 
 con = db.connect(":memory:")
 con.execute(

@@ -58,7 +58,12 @@ def find_my_name() -> str:
 
 
 package: Final[str] = find_my_name()
-locations: Final[tuple[str, ...]] = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
+locations: Final[tuple[str, ...]] = (
+    f"src/{package}",
+    "tests",
+    "./noxfile.py",
+    "docs/source/conf.py",
+)
 
 supported_pythons: Final[tuple[str, ...]] = "3.10", "3.11", "3.12", "3.13"
 default_python: Final[str] = "3.13"
@@ -169,7 +174,15 @@ def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     # Cannot use --no-root, because imports in __init__ require the package metadata
     s.run("poetry", "install", "--only", "main,xdoctest", external=True)
-    args = s.posargs or ["--silent", "--style", "google", "-c", "all", "-m", f"src/{package}"]
+    args = s.posargs or [
+        "--silent",
+        "--style",
+        "google",
+        "-c",
+        "all",
+        "-m",
+        f"src/{package}",
+    ]
     s.run("python", "-m", "xdoctest", *args)
 
 
