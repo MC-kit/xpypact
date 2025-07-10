@@ -3,8 +3,8 @@ line-length = 100
 src = ["src", "tests"]
 exclude = [
     "*.egg-info",
-    ".direnv",
     ".cache",
+    ".direnv",
     ".eggs",
     ".git",
     ".git-rewrite",
@@ -16,6 +16,7 @@ exclude = [
     "_build",
     "adhoc",
     "build",
+    "data", 
     "dist",
     "docs/source/conf.py",
     "notebooks",
@@ -25,12 +26,26 @@ exclude = [
 
 [lint]
 select=["ALL"]
-ignore=["COM812", "D203", "D211", "D213", "UP036"]
+ignore=[
+  "COM812",
+  "D203",
+  "D211",
+  "D213",
+]
 
 [lint.per-file-ignores]
 "src/xpypact/fluxes.py" = ["F811"]
 "benchmarks/*" = ["S101"]
-"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104", "PLR2004", "S101"]
+"tests/*" = [
+  "ANN",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "PLR2004",
+  "S101",
+]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 
 [lint.mccabe]

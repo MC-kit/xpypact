@@ -1,6 +1,0 @@
-jupysql
-jupyterlab
-jupytext
-matplotlib
-xlsx2csv
-xlsxwriter
