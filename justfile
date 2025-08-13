@@ -72,7 +72,7 @@ default:
 @up:
   pre-commit autoupdate
   uv self update
-  uv lock --upgrade
+  uv sync --upgrade
   pre-commit run -a 
   pytest
 
