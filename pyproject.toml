@@ -80,6 +80,9 @@ analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 sql = [
     "sqlfluff>=3.4.1",
 ]
+lint = [
+    "pylint>=3.3.8",
+]
 
 [tool.pytest.ini_options]
 minversion = "8.4"
