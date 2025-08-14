@@ -61,6 +61,7 @@ default:
 [group: 'dev']
 @check: pre-commit test
 
+# Bump project version
 [group: 'dev']
 @bump *args:
   #!/bin/bash
@@ -76,11 +77,10 @@ default:
   pre-commit run -a 
   pytest
 
-# ruff check and format
+# show dependencies
 [group: 'dev']
-@ruff:
-  ruff check --fix src tests
-  ruff format src tests
+@tree *args:
+  uv tree --outdated {{args}}
 
 # test up to the first fail
 [group: 'test']
@@ -125,6 +125,12 @@ typeguard *args:
   @uv run --no-dev --group test --group typeguard pytest -vv --emoji --typeguard-packages=src {{args}}
 
 
+# ruff check and format
+[group: 'lint']
+@ruff:
+  ruff check --fix src tests
+  ruff format src tests
+
 # Run pre-commit on all files
 [group: 'lint']
 pre-commit:
@@ -132,19 +138,24 @@ pre-commit:
 
 # Run mypy
 [group: 'lint']
-mypy:
-  @uv run --no-dev --group mypy mypy src docs/source/conf.py
+@mypy:
+  uv run --no-dev --group mypy mypy src docs/source/conf.py
+
+[group: 'lint']
+@pylint:
+  uv run --no-dev --group lint pylint --recursive=y src 
 
 # Check rst-texts
 [group: 'docs']
-rstcheck:
-  @rstcheck *.rst docs/source/*.rst
+@rstcheck:
+  rstcheck *.rst docs/source/*.rst
 
 # build documentation
 [group: 'docs']
-docs-build: rstcheck
-  @uv run --no-dev --group docs sphinx-build docs/source docs/_build
+@docs-build: rstcheck
+  uv run --no-dev --group docs sphinx-build docs/source docs/_build
 
 # browse and edit documentation with auto build
-docs:
-  @uv run --no-dev --group docs --group docs-auto sphinx-autobuild --open-browser docs/source docs/_build
+[group: 'docs']
+@docs:
+  uv run --no-dev --group docs --group docs-auto sphinx-autobuild --open-browser docs/source docs/_build
