@@ -27,7 +27,7 @@ default:
 [group: 'dev']
 @clean:
   #!/bin/bash
-  to_clean=(
+  dirs_to_clean=(
       ".benchmarks"
       ".cache"
       ".eggs"
@@ -37,14 +37,15 @@ default:
       ".ruff_cache"
       ".venv"
       "__pycache__"
-      "_skbuild"
+      "_build"
       "build"
       "dist"
       "docs/_build"
       "htmlcov"
-      "setup.py"
   )
-  rm -fr ${to_clean[@]}
+  for d in "${dirs_to_clean[@]}"; do
+      find . -type d -name "$d" -exec rm -rf {} +
+  done
 
 
 # install package
@@ -63,8 +64,7 @@ default:
 
 # Bump project version
 [group: 'dev']
-@bump *args:
-  #!/bin/bash
+@bump *args="patch":
   uv version --bump {{args}}
   git commit -m "bump: version $(uv version)" pyproject.toml uv.lock 
 
@@ -94,25 +94,25 @@ default:
 
 # test fast
 [group: 'test']
-test-fast *args:
-  @pytest -vv --emoji -m "not slow" {{args}}
+@test-fast *args:
+  pytest -vv --emoji -m "not slow" {{args}}
 
 # run all the tests
 [group: 'test']
-test *args:
-  @pytest -vv --emoji {{args}}
+@test *args:
+  pytest -vv --emoji {{args}}
 
 # run documentation tests 
 [group: 'test']
-xdoctest *args:
-  @uv run --no-dev --group test --group xdoctest python -m xdoctest --silent --style google -c all src tools {{args}}
+@xdoctest *args:
+  uv run --no-dev --group test --group test python -m xdoctest --silent --style google -c all src tools {{args}}
 
 # create coverage data
 [group: 'test']
-coverage:
-  @uv run --no-dev --group coverage coverage run --parallel -m pytest
-  @uv run --no-dev --group coverage coverage combine
-  @uv run --no-dev --group coverage coverage report
+@coverage:
+  uv run --no-dev --group test coverage run --parallel -m pytest
+  uv run --no-dev --group coverage coverage combine
+  uv run --no-dev --group coverage coverage report --show-missing --skip-covered
 
 # coverage to html
 [group: 'test']
@@ -148,7 +148,7 @@ pre-commit:
 # Check rst-texts
 [group: 'docs']
 @rstcheck:
-  rstcheck *.rst docs/source/*.rst
+  uv run --no-dev --group docs rstcheck --recursive *.rst docs
 
 # build documentation
 [group: 'docs']
