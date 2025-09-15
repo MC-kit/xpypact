@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import datetime as dt
-import sys
 import threading
 
 from collections import OrderedDict
@@ -23,11 +22,6 @@ if TYPE_CHECKING:
     from xpypact.inventory import Inventory
     from xpypact.nuclide import NuclideInfo
 
-
-if sys.version_info >= (3, 11):  # pragma: no cover
-    UTC = dt.UTC
-else:
-    UTC = dt.timezone.utc  # pragma: no cover
 
 RunDataSchema = OrderedDict(
     material_id=pl.UInt32,

@@ -1,34 +1,33 @@
 [build-system]
-requires = ["poetry-core >= 2.0.0, <3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.7.19,<0.9.0"]
+build-backend = "uv_build"
 
 [project]
 name = "xpypact"
-dynamic = ["version", "classifiers", "requires-python"]
+version = "0.12.9"
+requires-python = ">=3.11,<3.14" # connectorx==0.4.3 prevents <4
 description = "\"Python workflow framework for FISPACT.\""
-license = { text = "MIT" }
+authors = [{ name = "dvp2015", email = "dmitri_portnov@yahoo.com" }]
 readme = "README.rst"
-authors = [
-    { name = "dvp2015", email = "dmitri_portnov@yahoo.com" }
-]
-keywords = [
-    "element",
-    "nuclide",
-    "isotope",
-    "abundance",
-    "FISPACT",
-    "activation",
-    "duckdb",
-    "polars",
+license = { text = "MIT" }
+keywords = ["nuclide", "FISPACT", "activation", "duckdb", "polars"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Programming Language :: Python :: 3",
 ]
 dependencies = [
     "duckdb (>=1.0.0)",
     "mckit-nuclides (>=0.3.2)",
     "multipledispatch (>=0.6.0)",
-    "numpy (>=2.1.3)",
+    "numpy (>=2.3.1)",
     "polars[all] (>=1.12.0)",
-    "pyarrow (>=18.0.0)", # this is not used directly, but is required by duckdb
-    "msgspec (>=0.19.0)"
+    "pyarrow (>=18.0.0)",         # this is not used directly, but is required by duckdb
+    "msgspec (>=0.19.0)",
 ]
 
 [project.urls]
@@ -37,99 +36,52 @@ repository = "https://github.com/MC-kit/xpypact"
 documentation = "https://xpypact.readthedocs.io"
 Changelog = "https://github.com/MC-kit/xpypact/releases"
 
-[tool.poetry]
-version = "0.12.5"
-packages = [{ include = "xpypact", from = "src" }]
-include = [
-    { path = "noxfile.py", format = "sdist" },
-    { path = "tests", format = "sdist" },
-    { path = "docs", format = "sdist" }
+[dependency-groups]
+dev = [{ include-group = "style" }, { include-group = "test" }]
+style = [
+    { include-group = "pre_commit" },
+    { include-group = "ruff" },
+    { include-group = "mypy" },
+    { include-group = "lint" },
 ]
-exclude = [
-    { path = "docs/build" }
+pre_commit = [
+    "pre-commit>=4.3.0",
+    "pydocstringformatter>=0.7.3",
+    { include-group = "sql" },
 ]
-# Select from PyPI trove classifiers: https://pypi.org/classifiers/
-# about dynamic classifiers in poetry: https://python-poetry.org/docs/pyproject/#classifiers-1
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "Operating System :: OS Independent",
-    "Topic :: Scientific/Engineering :: Physics",
+ruff = ["ruff>=0.0.259"]
+mypy = [
+    "mypy>=1.2.0",
+    "pep8-naming>=0.12.1",
+    "types-setuptools>=80.9.0.20250529",
 ]
-
-[tool.poetry.dependencies]
-python = ">=3.10,<3.14"
-
-[tool.poetry.group.dev.dependencies]
-Pygments = ">=2.10.0"
-nox = ">=2022.1.7"
-tomli = { version = ">=2.0.1", python = "<3.11" }
-
-#[tool.poetry.group.profile]
-#optional = true
-
-#[tool.poetry.group.profile.dependencies]
-# TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
-#yappi = ">=1.3.2"
-
-[tool.poetry.group.pre_commit.dependencies]
-pre-commit = ">=2.15.0"
-rstcheck = ">=6.1.2"
-pydocstringformatter = ">=0.7.3"
-sqlfluff = ">=2.3.2"
-pyupgrade = ">=3.15.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = ">=7.1"
-# pytest-cache = ">=1.0"
-pytest-cov = ">=4.0"
-# pytest-mock = ">=3.9"
-# pytest-randomly = ">=3.12"
-coverage = { version = ">=6.1.2", extras = ["toml"] }
-xdoctest = { extras = ["colors"], version = ">=0.15.10" }
-pytest-benchmark = ">=4.0.0"
-
-[tool.poetry.group.coverage.dependencies]
-coverage = { version = ">=6.1.2", extras = ["toml"] }
-
-[tool.poetry.group.xdoctest.dependencies]
-xdoctest = { extras = ["colors"], version = ">=0.15.10" }
-
-[tool.poetry.group.typeguard.dependencies]
-typeguard = ">=4.1.5"
-
-[tool.poetry.group.mypy.dependencies]
-mypy = ">=1.2.0"
-pep8-naming = ">=0.12.1"
-types-setuptools = ">=57.4.2"
-numpy = ">=1.26.2"
-
-[tool.poetry.group.docs.dependencies]
-sphinx = ">=6.1.3"
-sphinx-autodoc-typehints = ">=1.19.5"
-
-[tool.poetry.group.docs_auto.dependencies]
-sphinx-autobuild = ">=2021.3.14"
-
-[tool.poetry.group.ruff.dependencies]
-ruff = ">=0.0.259"
-
-[tool.poetry.group.analysis]
-optional = true
-
-[tool.poetry.group.analysis.dependencies]
-jupysql = ">=0.10.9"
-jupyterlab = ">=4.0.12"
-jupytext = ">=1.16.1"
-matplotlib = ">=3.7.1"
-xlsxwriter = ">=3.1.9"
-xlsx2csv = ">=0.8.2"
-
+lint = ["pylint", "pylint-per-file-ignores"]
+sql = [
+    "sqlfluff>=3.4.1",
+]
+test = [
+    "pytest>=8.4.1",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-durations>=1.5.2",
+    "pytest-emoji>=0.2.0",
+    "xdoctest>=1.2.0",
+    { include-group = "coverage" }, # coverage may be used on its own, see GHA test
+]
+coverage = ["coverage[toml]>=7.9.2"]
+# environments not in dev
+typeguard = ["typeguard>=4.1.5"]
+docs = [
+    "rstcheck[toml,sphinx]>=6.2.5",
+    "sphinx>=8.2.3",
+    "sphinx-autodoc-typehints>=3.2.0",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-togglebutton>=0.3.2",
+]
+analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 
 [tool.pytest.ini_options]
-minversion = "6.2"
+minversion = "8.4"
 cache_dir = '.cache/pytest'
 norecursedirs = '''
 *.egg-info
@@ -154,25 +106,25 @@ addopts = '''
 --ignore setup.py
 --failed-first
 --xdoctest
+--pytest-durations-min=1
+--pytest-resultlog="pytest-result.log"
 '''
 doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
 testpaths = ["tests", "src"]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-]
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
     "error",
-    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    # 'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
     "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
     'ignore:.*io.FileIO \[closed\]',
-    'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
+    # 'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
     'ignore:.*Implicit None on return values:DeprecationWarning',
-    # pandas 2.1.4 at python 3.12
-    'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
-    # openpyxl 3.1.2 qt python 3.12
-    'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning'
+    # # pandas 2.1.4 at python 3.12
+    # 'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    # # openpyxl 3.1.2 qt python 3.12
+    # 'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning',
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -187,7 +139,7 @@ source = ["src", ".nox/*/site-packages"]
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["*_tab.py", "**/__init__.py"]
+omit = ["*_tab.py", "**/__init__.py", "tools/*.py"]
 
 [tool.coverage.report]
 show_missing = true
@@ -217,12 +169,12 @@ sort = "Cover"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
+cache_dir = ".cache/mypy"
 strict = true
 follow_imports = "silent"
 disallow_untyped_defs = true
 files = "src/**/*.py"
-plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -237,6 +189,7 @@ module = [
     "msgspec",
     "multipledispatch",
     "nox",
+    "numpy",
     "numpy.testing",
     "pandas",
     "polars",
@@ -250,263 +203,22 @@ module = [
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = [
-    "tomllib",
-    "tomli",
-]
+module = ["tomllib"]
 allow_redefinition = true
 disable_error_code = "no-redef"
-
-[tool.check-manifest]
-ignore = [
-    "tests/*",
-    "tools/*",
-    "*.yaml",
-    "noxfile.py",
-]
-
-[tool.ipdb]
-# For debugging in jupyterlab and ipython
-# see https://github.com/gotcha/ipdb
-context = 5
-
-[tool.tryceratops]
-include = ["src"]
-experimental = true
-
-[tool.pydocstringformatter]
-write = true
-style = "pep257"
-exclude = ["tools/**", "src/**/*_parser.py", "src/**/*_tab.py"]
-strip-whitespaces = true
-max-line-length = 100
-summary-quotes-same-line = true
-
-
-[tool.pylint]
-good-names-rgxs = ["."]  # a single character variable is okay
-logging-format-style = "new"   # use {} in logging messages
-deprecated-modules = ["six"]
-extension-pkg-allow-list = ["duckdb"]
-disable = [
-    "wrong-import-order"  # this is `ruff format` responsibility
-]
-
-[tool.ruff]
-target-version = "py310"
-
-line-length = 100
-
-# show an enumeration of all autofixed lint violations
-show-fixes = true
-
-# show source code snippets when reporting violations
-output-format = "concise"
-
-src = ["src", "tests"]
-
-exclude = [
-    "*.egg-info",
-    ".direnv",
-    ".cache",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".mypy_cache",
-    ".nox",
-    ".ruff_cache",
-    ".venv",
-    "__pycache__",
-    "_build",
-    "adhoc",
-    "build",
-    "dist",
-    "docs/source/conf.py",
-    "notebooks",
-    "venv",
-    "wrk",
-]
-
-[tool.ruff.lint]
-#see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
-#or run 'ruff linter' to see a brief list
-select = [
-    "A", # flake8-builtins
-    "AIR", # Airflow https://airflow.apache.org/docs/apache-airflow/stable/index.html
-    "ANN", # flake8-annotations
-    "ARG", # flake8-unused-arguments
-    "ASYNC", # flake8-async
-    "B", # flake8-bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "C90", # mccabe
-    "COM", # flake8-commas
-    # "CPY", # flake8-copyright
-    "D", # pydocstyle
-    "DJ", # flake8-django
-    # "DOC", # pydoclint
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle
-    "EM", # flake8-errmsg
-    "ERA", # eradicate
-    "EXE", # flake8-executable
-    "F", # Pyflakes
-    "FA", # flake8-future-annotations
-    # "FAST", # FastAPI
-    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
-    "FIX", # flake8-fixme
-    "FLY", # flynt
-    "FURB", # refurb
-    "G", # flake8-logging-format
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "INP", # flake8-no-pep420
-    "INT", # flake8-gettext
-    "ISC", # flake8-implicit-str-concat
-    "LOG", # flake8-log
-    "N", # pep8-naming
-    "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
-    "PERF", # Perflint
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "PTH", # flake8-use-pathlib
-    "PYI", # flake8-pyi
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RSE", # flake8-raise
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "SLF", # flake8-self
-    "SLOT", # flake8-slot
-    "T10", # flake8-debugger
-    "T20", # flake8-print
-    "TD", # flake8-todos
-    "TCH", # flake8-type-checking
-    "TID", # flake8-tidy-imports
-    "TRY", # tryceratops
-    "UP", # pyupgrade
-    "W", # pycodestyle 2
-    "YTT", # flake8-2020
-]
-
-# Ignore rules that currently fail on the codebase
-ignore = [
-    "COM812", # may cause conflicts when used with the ruff formatter
-    "ISC001", # may cause conflicts when used with the ruff formatter
-    "PLE1205", # logging-too-many-args - we use loguru with '{' style of placeholders
-    "PLR2004", # magic number - don't want to declare 0.0 as constant
-]
-
-
-[tool.ruff.lint.per-file-ignores]
-"**/__init__.py" = ["E402"]
-"src/xpypact/fluxes.py" = ["F811"]
-"benchmarks/*" = ["S101"]
-"noxfile.py" = ["ANN"]
-"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104", "PLR2004", "S101"]
-"src/xpypact/inventory.py" = ["F811"]
-"src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
-"src/xpypact/utils/resource.py" = ["ANN202"]
-"tools/*" = ["T201", "INP001", "S603", "S607"]
-"docs/source/conf.py" = ["A001", "D100", "ERA001", "INP001"]
-
-[tool.ruff.lint.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 15
-
-[tool.ruff.lint.flake8-annotations]
-mypy-init-return = true  # skip return type for __init__() methods
-
-[tool.ruff.lint.flake8-pytest-style]
-parametrize-names-type = "csv"
-
-[tool.ruff.lint.flake8-type-checking]
-strict = true
-
-# warning: The isort option `isort.split-on-trailing-comma` is incompatible
-# with the formatter `format.skip-magic-trailing-comma=true` option.
-# To avoid unexpected behavior, we recommend either setting `isort.split-on-trailing-comma=false`
-# or `format.skip-magic-trailing-comma=false`.
-
-[tool.ruff.lint.isort]
-known-first-party = ["src"]
-known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy", "loguru", "tqdm", "dotenv"]
-default-section = "third-party"
-lines-between-types = 1
-required-imports = ["from __future__ import annotations"]
-case-sensitive = true
-section-order = [
-    "future",
-    "typing",
-    "standard-library",
-    "third-party",
-    "first-party",
-    "local-folder",
-    "testing"
-]
-
-[tool.ruff.lint.isort.sections]
-"typing" = ["typing", "typing_extension"]
-"testing" = ["tests"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google" # Use Google-style docstrings.
-
-[tool.ruff.format]
-docstring-code-format = true
-
-[tool.sqlfluff.core]
-dialect = "duckdb"
-sql_file_exts = ".sql,.dml,.ddl"
-max_line_length = 120
-
-[tool.sqlfluff.indentation]
-# While implicit indents are not enabled by default. Many of the
-# SQLFluff maintainers do use them in their projects.
-allow_implicit_indents = true
-
-# The default configuration for aliasing rules is "consistent"
-# which will auto-detect the setting from the rest of the file. This
-# is less desirable in a new project, and you may find this (slightly
-# more strict) setting more useful.
-[tool.sqlfluff.rules.aliasing.table]
-aliasing = "explicit"
-
-[tool.sqlfluff.rules.aliasing.column]
-aliasing = "explicit"
-
-[tool.sqlfluff.rules.aliasing.length]
-min_alias_length = 3
-
-# Typically, we find users rely on syntax highlighting rather than
-# capitalisation to distinguish between keywords and identifiers.
-# Clearly, if your organisation has already settled on uppercase
-# formatting for any of these syntax elements then set them to "upper".
-# See https://stackoverflow.com/questions/608196/why-should-i-capitalize-my-sql-keywords-is-there-a-good-reason
-[tool.sqlfluff.rules.capitalisation.keywords]
-capitalisation_policy = "lower"
-[tool.sqlfluff.rules.capitalisation.identifiers]
-capitalisation_policy = "lower"
-[tool.sqlfluff.rules.capitalisation.functions]
-extended_capitalisation_policy = "lower"
-[tool.sqlfluff.rules.capitalisation.literals]
-capitalisation_policy = "lower"
-[tool.sqlfluff.rules.capitalisation.types]
-extended_capitalisation_policy = "lower"
 
 [tool.jupytext]
 # https://jupytext.readthedocs.io/en/latest/config.html
 # Pair ipynb notebooks to py:percent text notebooks
-formats = "ipynb,md,py:percent"
+formats = "ipynb,py:percent"
 
 [tool.creosote]
-paths = ["src", "adhoc"]
+paths = ["src"]
 deps-file = "pyproject.toml"
 sections = ["project.dependencies"]
-exclude-deps = [
-    "pyarrow",
-]
+exclude-deps = ["duckdb", "pyarrow"]
+
+
+[tool.rstcheck]
+report_level = "ERROR"
+ignore_messages = "(Unknown directive type \"(todo.*|automodule)\".$)"

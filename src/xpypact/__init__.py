@@ -1,6 +1,6 @@
 """The `xpypact` package.
 
-Wraps FISPACT workflow. Transforms FISPACT output to xarray datasets.
+Wraps FISPACT workflow. Transforms FISPACT output to Polars and duckdb datasets.
 """
 
 from __future__ import annotations

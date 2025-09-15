@@ -1,0 +1,29 @@
+# sqlfluff:config
+# see: https://docs.sqlfluff.com/en/stable/configuration/setting_configuration.html#configuration-files
+
+[sqlfluff]
+dialect = duckdb
+max_line_length = 120
+warn_unused_ignores = True
+encoding = utf-8
+# processes = -1 
+
+[sqlfluff:indentation]
+# See https://docs.sqlfluff.com/en/stable/perma/indent_locations.html
+allow_implicit_indents = True
+
+
+[sqlfluff:rules:aliasing.length]
+min_alias_length = 3
+
+# See https://stackoverflow.com/questions/608196/why-should-i-capitalize-my-sql-keywords-is-there-a-good-reason
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.identifiers]
+capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower

@@ -64,12 +64,16 @@ threads = []
 # Pass in the same connection as an argument
 for i in range(write_thread_count):
     threads.append(
-        Thread(target=write_from_thread, args=(duckdb_con,), name="write_thread_" + str(i))
+        Thread(
+            target=write_from_thread, args=(duckdb_con,), name="write_thread_" + str(i)
+        )
     )
 
 for j in range(read_thread_count):
     threads.append(
-        Thread(target=read_from_thread, args=(duckdb_con,), name="read_thread_" + str(j))
+        Thread(
+            target=read_from_thread, args=(duckdb_con,), name="read_thread_" + str(j)
+        )
     )
 
 # Shuffle the threads to simulate a mix of readers and writers

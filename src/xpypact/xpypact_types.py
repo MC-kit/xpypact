@@ -1,15 +1,18 @@
 """Utility types for the package."""
 
-from __future__ import annotations
+from __future__ import annotations  # pragma: no cover
 
-from typing import Any
+from typing import TYPE_CHECKING  # pragma: no cover
 
-import os
+if TYPE_CHECKING:
+    from typing import Any
 
-import numpy as np
+    import os
 
-from numpy.typing import NDArray
+    import numpy as np
 
-MayBePath = str | os.PathLike[Any] | None
-NDArrayFloat = NDArray[np.float64]
-NDArrayInt = NDArray[np.int_]
+    from numpy.typing import NDArray
+
+    MayBePath = str | os.PathLike[Any] | None
+    NDArrayFloat = NDArray[np.floating]
+    NDArrayInt = NDArray[np.int_]
