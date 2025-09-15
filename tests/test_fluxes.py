@@ -168,13 +168,13 @@ def test_define_arb_flux_fail():
     data = np.linspace(1, 10, 4)
     with pytest.raises(
         ValueError,
-        match="The number of float values from arb_flux file should be odd.",
+        match=r"The number of float values from arb_flux file should be odd\.",
     ):
         define_arb_bins_and_fluxes(data)
 
 
 def test_print_709_fluxes_fail(arb_flux_1):
-    with pytest.raises(ValueError, match="Expected 709-group fluxes.") as exc_info:
+    with pytest.raises(ValueError, match=r"Expected 709-group fluxes\.") as exc_info:
         print_709_fluxes(arb_flux_1, StringIO(), max_columns=3)
     assert str(exc_info.value) == "Expected 709-group fluxes."
 
