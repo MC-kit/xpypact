@@ -44,7 +44,7 @@ export JUST_LOG := log
       "htmlcov"
   )
   for d in "${dirs_to_clean[@]}"; do
-      find . -type d -name "$d" -exec rm -rf {} +
+      find . -type d -wholename "$d" -exec rm -rf {} +
   done
 
 
@@ -68,14 +68,20 @@ export JUST_LOG := log
   uv version --bump {{args}}
   git commit -m "bump: version $(uv version)" pyproject.toml uv.lock 
 
-# update tools and dependencies
+# update tools
 [group: 'dev']
-@up:
+@up-tools:
   pre-commit autoupdate
   uv self update
+  pre-commit run -a 
+
+# update dependencies
+[group: 'dev']
+@up:
   uv sync --upgrade
   pre-commit run -a 
   pytest
+
 
 # show dependencies
 [group: 'dev']
