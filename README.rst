@@ -26,6 +26,8 @@ FISPACT runs can be combined using simple additional identification.
 So far, we use just two-dimensional identification by material
 and *case*. The *case* usually identifies certain neutron flux energy distribution.
 
+More details in documentation_.
+
 
 Implemented functionality
 -------------------------
@@ -40,29 +42,33 @@ Installation
 
 From PyPI
 
-.. code-block::
+.. code-block:: shell
 
     pip install xpypact
+    # or
+    uv pip install xpypact
 
 
 As dependency
 
-.. code-block::
+.. code-block:: shell
 
-    poetry add xpypact
+    uv add xpypact
 
 
 From source
 
-.. code-block::
+.. code-block:: shell
 
     pip install htpps://github.com/MC-kit/xpypact.git
+    # or
+    uv pip install htpps://github.com/MC-kit/xpypact.git
 
 
 Examples
 --------
 
-.. code-block::
+.. code-block:: python
 
     from xpypact import FullDataCollector, Inventory
 
@@ -175,6 +181,30 @@ Just follow ordinary practice:
     - `Commit message <https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines>`_
     - `Conventional commits <https://www.conventionalcommits.org/en/v1.0.0/#summary>`_
 
+Some specific: in development environment we use uv_, just_, ruff_.
+
+To setup development environment, run:
+
+.. code-block:: shell
+
+  just install | reinstall
+
+To build documentation, run:
+
+.. code-block:: shell
+
+   just docs        # - for local online docs rendering, while editing 
+   just docs-build  # - to build documentation 
+
+To release, run:
+
+.. code-block:: shell
+
+  just bump [major|minor|patch]  # - in `devel` branch
+  
+Then merge devel to master (via Pull Request) and if all the checks are passed create Release. Manually.
+
+
 
 References
 ----------
@@ -183,6 +213,14 @@ References
     - `FISPACT-II tools (including pypact) repositories <https://github.com/fispact>`_
     - `FISPACT at NEA/OECD <https://oecd-nea.org/tools/abstract/detail/NEA-1890>`_
     - `FISPACT introduction <https://indico.ictp.it/event/7994/session/5/contribution/24/material/slides/0.pdf>`_
+
+
+.. Links
+
+.. _documentation: https://xpypact.readthedocs.io/en/latest
+.. _uv: https://github.com/astral-sh/uv
+.. _just: https://github.com/casey/just
+.. _ruff: https://github.com/astral-sh/ruff
 
 
 .. Substitutions
