@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "xpypact"
-version = "0.12.9"
+version = "0.12.10"
 requires-python = ">=3.11,<3.14" # connectorx==0.4.3 prevents <4
 description = "\"Python workflow framework for FISPACT.\""
 authors = [{ name = "dvp2015", email = "dmitri_portnov@yahoo.com" }]
