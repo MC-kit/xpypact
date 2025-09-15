@@ -10,8 +10,8 @@ log := "warn"
 
 export JUST_LOG := log
 
-default:
-  @just --list
+@_default:
+  just --list
 
 # create venv, if not exists
 [group: 'dev']
@@ -133,8 +133,8 @@ typeguard *args:
 
 # Run pre-commit on all files
 [group: 'lint']
-pre-commit:
-  @uv run --no-dev --group pre-commit pre-commit run -a 
+@pre-commit:
+  uv run --no-dev --group pre-commit pre-commit run --show-diff-on-failure --color=always --all-files
 
 # Run mypy
 [group: 'lint']
@@ -158,4 +158,4 @@ pre-commit:
 # browse and edit documentation with auto build
 [group: 'docs']
 @docs:
-  uv run --no-dev --group docs --group docs-auto sphinx-autobuild --open-browser docs/source docs/_build
+  uv run --no-dev --group docs --group docs sphinx-autobuild --open-browser docs/source docs/_build
