@@ -82,7 +82,6 @@ export JUST_LOG := log
   pre-commit run -a 
   pytest
 
-
 # show dependencies
 [group: 'dev']
 @tree *args:
