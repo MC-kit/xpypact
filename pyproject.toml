@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.7.19,<0.9.0"]
+requires = ["uv_build>=0.9.2,<0.10.0"]
 build-backend = "uv_build"
 
 [project]
@@ -55,7 +55,10 @@ mypy = [
     "pep8-naming>=0.12.1",
     "types-setuptools>=80.9.0.20250529",
 ]
-lint = ["pylint", "pylint-per-file-ignores"]
+lint = [
+    "pylint",
+    "pylint-per-file-ignores",
+]
 sql = [
     "sqlfluff>=3.4.1",
 ]
@@ -116,15 +119,9 @@ markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 xfail_strict = true
 filterwarnings = [
     "error",
-    # 'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
     "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
     'ignore:.*io.FileIO \[closed\]',
-    # 'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
     'ignore:.*Implicit None on return values:DeprecationWarning',
-    # # pandas 2.1.4 at python 3.12
-    # 'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
-    # # openpyxl 3.1.2 qt python 3.12
-    # 'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning',
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"

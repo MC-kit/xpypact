@@ -59,6 +59,7 @@ extension-pkg-allow-list = ["duckdb", "mckit"]
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
 # init-hook =
+# init-hook='import sys, os; sys.path.insert(0, os.path.join(sys.prefix, sys.platlibdir, f"python{sys.version_info.major}.{sys.version_info.minor}", "site-packages"))'
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use, and will cap the count on Windows to
@@ -72,7 +73,7 @@ jobs = 0
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-# load-plugins =
+load-plugins = [ "pylint_per_file_ignores" ]
 
 # Pickle collected data for later comparisons.
 #persistent = true
@@ -359,10 +360,12 @@ known-third-party = ["enchant", "pytest"]
 # function parameter format.
 #logging-modules = ["logging"]
 
-#[tool.pylint."messages control"]
+[tool.pylint."messages control"]
 # Only show warnings with the listed confidence levels. Leave empty to show all.
 # Valid levels: HIGH, CONTROL_FLOW, INFERENCE, INFERENCE_FAILURE, UNDEFINED.
 #confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
+per-file-ignores = "tests/*:C0114,C0116,W0621"
+
 
 # Disable the message, report, category or checker with the given id(s). You can
 # either give multiple identifiers separated by comma (,) or put this option

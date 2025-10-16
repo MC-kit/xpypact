@@ -28,22 +28,35 @@ The package helps:
 Installation
 ============
 
-From PyPI (recommended):
+**From PyPI (Recommended):**
 
 .. code-block::
 
    pip install xpypact
+   # or
+   uv pip install xpypact
 
-With package manager (as dependency):
+**With package manager (as dependency):**
 
-.. code-block::
+.. code-block:: bash
 
+   # uv
+   uv add xpypact
+
+   # pixi
+   pixi add -pypi xpypact
+
+   # poetry
    poetry add xpypact
 
-From source:
+   # ...
 
-.. code-block::
+**From source:**
 
+.. code-block:: bash
+
+   uv pip install https://github.com/MC-kit/xpypact.git
+   # or
    pip install https://github.com/MC-kit/xpypact.git
 
 Details
