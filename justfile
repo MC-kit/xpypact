@@ -64,7 +64,7 @@ export JUST_LOG := log
 
 # Check style includeing mypy and pylint and test
 [group: 'dev']
-@check-full: check mypy pylint
+@check-full: check mypy pylint pyright
  
 # Bump project version
 [group: 'dev']
@@ -153,6 +153,10 @@ typeguard *args:
 [group: 'lint']
 @pylint:
   uv run --no-dev --group lint pylint --recursive=y src tests
+
+[group: 'lint']
+@pyright:
+  uv run --no-dev --group pyright pyright src tests
 
 # Check rst-texts
 [group: 'docs']
