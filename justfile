@@ -148,11 +148,11 @@ typeguard *args:
 # Run mypy
 [group: 'lint']
 @mypy:
-  uv run --no-dev --group mypy mypy src docs/source/conf.py
+  uv run --no-dev --group mypy mypy src tests docs/source/conf.py
 
 [group: 'lint']
 @pylint:
-  uv run --no-dev --group lint pylint --recursive=y src 
+  uv run --no-dev --group lint pylint --recursive=y src tests
 
 # Check rst-texts
 [group: 'docs']
