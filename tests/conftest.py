@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import bz2
-import os
 
 from pathlib import Path
 
@@ -24,35 +23,27 @@ DATA = HERE / "data"
 def data() -> Path:
     """Get Path to tests/data directory.
 
-    Returns:
-        Path to tests/data directory
+    Returns
+    -------
+    Path to tests/data directory
     """
     return DATA
 
 
 @pytest.fixture
-def cd_tmpdir(tmpdir):
-    """Temporarily switch to temp directory.
-
-    Args:
-        tmpdir: pytest fixture for temp directory
-
-    Yields:
-        None
-    """
-    old_dir = tmpdir.chdir()
-    try:
-        yield
-    finally:
-        os.chdir(old_dir)
+def cd_tmpdir(tmppath: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Temporarily switch to temp directory."""
+    monkeypatch.chdir(tmppath)
+    return tmppath
 
 
 @pytest.fixture(scope="session")
 def inventory_without_gamma() -> inventory.Inventory:
     """Load inventory without gamma information.
 
-    Returns:
-        Inventory without gamma information.
+    Returns
+    -------
+    Inventory without gamma information.
     """
     return inventory.from_json((DATA / "Ag-1.json").read_text(encoding="utf-8"))
 
@@ -61,32 +52,37 @@ def inventory_without_gamma() -> inventory.Inventory:
 def inventory_with_gamma() -> inventory.Inventory:
     """Load inventory with gamma information.
 
-    Returns:
-        Inventory with gamma information.
+    Returns
+    -------
+    Inventory with gamma information.
     """
     with bz2.open(DATA / "with-gamma.json.bz2") as fid:
         return inventory.from_json(fid.read().decode("utf-8"))
 
 
 @pytest.fixture(scope="session")
-def one_cell(data) -> Inventory:
+def one_cell(data: Path) -> Inventory:
     """Load inventory from one-cell JSON.
 
-    Args:
-        data: fixture - path to test data
+    Parameters
+    ----------
+    data
+        fixture - path to test data
 
-    Returns:
-       ... with gamma information.
+    Returns
+    -------
+    ... with gamma information.
     """
     return inventory.from_json((data / "inventory_1.json").read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="session")
 def one_cell_time_step7_gamma() -> list[tuple[int, float]]:
-    """Expected content for gamma spectrum from one-cell JSON at ts=7.
+    """Define eExpected content for gamma spectrum from one-cell JSON at ts=7.
 
-    Returns:
-        Emulated gamma group distribution.
+    Returns
+    -------
+    Emulated gamma group distribution.
     """
     return [
         (g + 1, r)
@@ -123,10 +119,11 @@ def one_cell_time_step7_gamma() -> list[tuple[int, float]]:
 
 @pytest.fixture(scope="session")
 def one_cell_time_step7_gamma_spectrum() -> list[tuple[int, float]]:
-    """Expected content for gamma spectrum from one-cell JSON at ts=7.
+    """Define expected content for gamma spectrum from one-cell JSON at ts=7.
 
-    Returns:
-        Emulated gamma spectrum.
+    Returns
+    -------
+    Emulated gamma spectrum.
     """
     boundaries = np.array(
         [

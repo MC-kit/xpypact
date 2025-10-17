@@ -20,14 +20,20 @@ def print_cols(
 ) -> int:
     """Print sequence in columns.
 
-    Args:
-        seq: sequence to print
-        fid: output
-        max_columns: max columns in a line
-        fmt: format string
+    Parameters
+    ----------
+    seq
+        sequence to print
+    fid
+        output
+    max_columns
+        max columns in a line
+    fmt
+        format string
 
-    Returns:
-        int: the number of the last column printed on the last row
+    Returns
+    -------
+    int: the number of the last column printed on the last row
     """
     i = 0
     for s in seq:

@@ -69,7 +69,8 @@ class DuckDBDAO(ms.Struct):
     def load_rundata(self) -> db.DuckDBPyRelation:
         """Load FISPACT run data as table.
 
-        Returns:
+        Returns
+        -------
             FISPACT run data ad RelObj
         """
         return self.con.table("rundata")
@@ -77,7 +78,8 @@ class DuckDBDAO(ms.Struct):
     def load_nuclides(self) -> db.DuckDBPyRelation:
         """Load nuclide table.
 
-        Returns:
+        Returns
+        -------
             time nuclide
         """
         return self.con.table("nuclide")
@@ -85,7 +87,8 @@ class DuckDBDAO(ms.Struct):
     def load_timestep_times(self) -> db.DuckDBPyRelation:
         """Load time step table.
 
-        Returns:
+        Returns
+        -------
             time step table
         """
         return self.con.table("time_step_times")
@@ -93,7 +96,8 @@ class DuckDBDAO(ms.Struct):
     def load_time_steps(self) -> db.DuckDBPyRelation:
         """Load time step table.
 
-        Returns:
+        Returns
+        -------
             time step table
         """
         return self.con.table("timestep")
@@ -101,7 +105,8 @@ class DuckDBDAO(ms.Struct):
     def load_time_step_nuclides(self) -> db.DuckDBPyRelation:
         """Load time step x nuclides table.
 
-        Returns:
+        Returns
+        -------
             time step x nuclides table
         """
         return self.con.table("timestep_nuclide")
@@ -109,7 +114,8 @@ class DuckDBDAO(ms.Struct):
     def load_gbins(self) -> db.DuckDBPyRelation:
         """Load gbins table.
 
-        Returns:
+        Returns
+        -------
             gbins table
         """
         return self.con.table("gbins")
@@ -120,7 +126,8 @@ class DuckDBDAO(ms.Struct):
         Args:
             time_step_number: filter for time_step_number
 
-        Returns:
+        Returns
+        -------
             time step x gamma table
         """
         sql = "select * from timestep_gamma"

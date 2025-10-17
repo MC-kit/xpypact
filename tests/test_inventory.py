@@ -11,14 +11,16 @@ from xpypact.inventory import Inventory, RunData, from_json
 from xpypact.time_step import DoseRate, TimeStep
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from xpypact.inventory import RunDataCorrected
 
 SECONDS_PER_YEAR = int(365.24 * 24 * 3600)
 
 
 @pytest.fixture(scope="module")
-def inventory(data):
-    return from_json(data / "Ag-1.json")
+def inventory(data: Path) -> Inventory:
+    return from_json(data / "Ag-1.json")  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -38,7 +40,7 @@ def inventory(data):
         ),
     ],
 )
-def test_run_data(inp, expected):
+def test_run_data(inp: dict[str, str], expected: RunData) -> None:
     actual = RunData.from_json(inp)
     assert actual == expected
     assert inp == actual.asdict(), "Dictionary representation is not equivalent to input"
@@ -49,7 +51,7 @@ def test_run_data(inp, expected):
     ) == actual.astuple(), "Tuple representation is not equivalent to input"
 
 
-def test_constructor():
+def test_constructor() -> None:
     rd = RunData(timestamp="23:01:19 12 July 2020", run_name="b", flux_name="c")
     assert rd.timestamp == "23:01:19 12 July 2020"
     assert rd.run_name == "b"
@@ -68,7 +70,7 @@ def test_constructor():
     assert dose == 1.0e-7
 
 
-def test_loading(inventory):
+def test_loading(inventory: Inventory) -> None:
     assert len(inventory) == 2
     assert len(inventory.inventory_data) == 2
     assert inventory.run_data.timestamp == "23:01:19 12 July 2020"
@@ -83,20 +85,20 @@ def test_loading(inventory):
     assert ts1.nuclides_mass == pytest.approx(1e-3, rel=1e-3)
 
 
-def test_loading_from_stream(data, inventory):
+def test_loading_from_stream(data: Path, inventory: Inventory) -> None:
     with (data / "Ag-1.json").open(encoding="utf8") as fid:
-        inv = from_json(fid)
+        inv = from_json(fid)  # type: ignore[arg-type]
         assert len(inv) == len(inventory)
 
 
-def test_first_time_step(inventory):
+def test_first_time_step(inventory: Inventory) -> None:
     first_time_step = inventory.inventory_data[0]
     assert first_time_step.dose_rate.mass == 1.0e-3, (
         "FISPACT value for the the dose_rate.mass in the first time step is to be 1.0e-3"
     )
 
 
-def test_inventory_get_meta_info(inventory):
+def test_inventory_get_meta_info(inventory: Inventory) -> None:
     actual: RunDataCorrected = inventory.meta_info
     assert actual.run_name == "* Material Ag, fluxes 1"
     assert actual.flux_name == "55.F9.10 11-L2-02W HFS_GLRY_08_U"
@@ -104,7 +106,7 @@ def test_inventory_get_meta_info(inventory):
     assert actual.dose_rate_distance == 1.0  # meters
 
 
-def test_elapsed_time(inventory):
+def test_elapsed_time(inventory: Inventory) -> None:
     elapsed_time = inventory.extract_times()
     assert elapsed_time[0] == 0
     assert int(elapsed_time[-1]) == 0.631152e8
@@ -119,6 +121,7 @@ def test_iterate_time_step_gamma(
     actual = [(r[1], r[2]) for r in one_cell.iterate_time_step_gamma() if r[0] == 7]
     assert np.array_equal(actual, one_cell_time_step7_gamma)
     gamma_spectrum = one_cell[-1].gamma_spectrum
+    assert gamma_spectrum is not None
     assert np.array_equal([r[1] for r in actual], gamma_spectrum.intensities)
 
 

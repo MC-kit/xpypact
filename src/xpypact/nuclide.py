@@ -7,6 +7,8 @@ import msgspec as ms
 from mckit_nuclides import z
 from mckit_nuclides.nuclides import get_nuclide_mass
 
+# pylint: disable=invalid-name
+
 Avogadro = 6.02214076e23
 """Mol-1,  `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?na>`_."""
 
@@ -19,13 +21,13 @@ MeV = 1e6 * eV
 FLOAT_ZERO = 0.0
 
 
-class _NuclideID(ms.Struct, order=True, frozen=True, gc=False):
+class _NuclideID(ms.Struct, order=True, frozen=True, gc=False):  # pylint: disable=too-few-public-methods
     """The class organizes NuclideInfo equality and ordering on zai."""
 
     zai: int
 
 
-class NuclideInfo(_NuclideID, frozen=True, gc=False):
+class NuclideInfo(_NuclideID, frozen=True, gc=False):  # pylint: disable=too-few-public-methods
     """Basic information on a nuclide.
 
     This is extracted as a separate database entity to improve normalization.
@@ -76,8 +78,9 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
     def a(self) -> int:
         """Synonym to mass number, isotope, A.
 
-        Returns:
-            A, mass number
+        Returns
+        -------
+        A, mass number
         """
         return self.isotope
 
@@ -85,8 +88,9 @@ class Nuclide(ms.Struct):  # pylint: disable=too-many-instance-attributes
     def info(self) -> NuclideInfo:
         """Extract a nuclide specific information.
 
-        Returns:
-            element, a, state, zai, half_life
+        Returns
+        -------
+        element, a, state, zai, half_life
         """
         return NuclideInfo(self.zai, self.element, self.a, self.state, self.half_life)
 

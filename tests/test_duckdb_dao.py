@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import datetime as dt
 
 from contextlib import closing
@@ -16,8 +18,13 @@ from xpypact.dao.duckdb import DuckDBDAO as DataAccessObject
 from xpypact.dao.duckdb import create_indices
 from xpypact.dao.duckdb.implementation import save
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def test_ddl(tmp_path):
+    from xpypact.inventory import Inventory
+
+
+def test_ddl(tmp_path: Path) -> None:
     """Test schema creation."""
     duckdb_path = tmp_path / "test-ddl.duckdb"
     with closing(connect(str(duckdb_path))) as con:
@@ -37,11 +44,12 @@ def test_ddl(tmp_path):
             dao.drop_schema()
 
 
-def test_save(inventory_with_gamma) -> None:
+def test_save(inventory_with_gamma: Inventory) -> None:
     """Test saving of dataset to a database.
 
-    Args:
-        inventory_with_gamma: inventory to save (fixture)
+    Parameters
+    ----------
+    inventory_with_gamma: inventory to save (fixture)
     """
     with closing(connect()) as con:
         dao = DataAccessObject(con)

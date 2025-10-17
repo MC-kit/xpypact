@@ -101,16 +101,18 @@ class TimeStep(ms.Struct):  # pylint: disable=too-many-instance-attributes
     def nuclides_mass(self) -> float:
         """Synonym for total mass.
 
-        Returns:
-            Total mass of the nuclides in kg.
+        Returns
+        -------
+        Total mass of the nuclides in kg.
         """
         return self.total_mass
 
     @property
     def is_cooling(self) -> bool:
-        """Is the time step for cooling?
+        """Check if the time step for cooling.
 
-        Returns:
-            Is the irradiation flux zero?
+        Returns
+        -------
+        Is the irradiation flux zero?
         """
         return self.flux == FLOAT_ZERO
