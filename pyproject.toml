@@ -140,6 +140,7 @@ source = ["src", ".nox/*/site-packages"]
 branch = true
 source = ["src"]
 omit = ["*_tab.py", "**/__init__.py", "tools/*.py"]
+parallel = true
 
 [tool.coverage.report]
 show_missing = true
