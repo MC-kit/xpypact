@@ -5,12 +5,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO, cast
 
 from dataclasses import dataclass
-from io import StringIO, TextIOBase
+from functools import singledispatch
+from io import StringIO
 from pathlib import Path
 
 import numpy as np
 
-from multipledispatch import dispatch
 from numpy import allclose, array_equal
 
 from xpypact.utils.xpypact_io import print_cols
@@ -347,7 +347,7 @@ def read_fluxes(
     return Fluxes(energy_bins, fluxes, comment, norm)
 
 
-@dispatch(TextIOBase)
+@singledispatch
 def read_arb_fluxes(
     stream: TextIO,
 ) -> Fluxes:
@@ -365,8 +365,8 @@ def read_arb_fluxes(
     return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(Path)  # type: ignore[no-redef]
-def read_arb_fluxes(path: Path) -> Fluxes:
+@read_arb_fluxes.register
+def _(path: Path) -> Fluxes:
     """Read arbitrary fluxes from Path.
 
     Parameters
@@ -382,8 +382,8 @@ def read_arb_fluxes(path: Path) -> Fluxes:
         return read_arb_fluxes(stream)
 
 
-@dispatch(str)  # type: ignore[no-redef]
-def read_arb_fluxes(text: str) -> Fluxes:
+@read_arb_fluxes.register
+def _(text: str) -> Fluxes:
     """Read arbitrary fluxes from text.
 
     Parameters
@@ -399,7 +399,7 @@ def read_arb_fluxes(text: str) -> Fluxes:
         return read_fluxes(stream, define_arb_bins_and_fluxes)
 
 
-@dispatch(TextIOBase)
+@singledispatch
 def read_709_fluxes(
     stream: TextIO,
 ) -> Fluxes:
@@ -417,8 +417,8 @@ def read_709_fluxes(
     return read_fluxes(stream, define_709_bins_and_fluxes)
 
 
-@dispatch(Path)  # type: ignore[no-redef]
-def read_709_fluxes(path: Path) -> Fluxes:
+@read_709_fluxes.register
+def _(path: Path) -> Fluxes:
     """Read 709-group fluxes from path.
 
     Parameters
@@ -434,8 +434,8 @@ def read_709_fluxes(path: Path) -> Fluxes:
         return read_709_fluxes(stream)
 
 
-@dispatch(str)  # type: ignore[no-redef]
-def read_709_fluxes(text: str) -> Fluxes:
+@read_709_fluxes.register
+def _(text: str) -> Fluxes:
     """Read 709-group fluxes from text.
 
     Parameters

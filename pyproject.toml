@@ -23,10 +23,9 @@ classifiers = [
 dependencies = [
     "duckdb (>=1.0.0)",
     "mckit-nuclides (>=0.3.2)",
-    "multipledispatch (>=0.6.0)",
     "numpy (>=2.3.1)",
     "polars[all] (>=1.12.0)",
-    "pyarrow (>=18.0.0)",         # this is not used directly, but is required by duckdb
+    "pyarrow (>=18.0.0)", # this is not used directly, but is required by duckdb
     "msgspec (>=0.19.0)",
 ]
 
