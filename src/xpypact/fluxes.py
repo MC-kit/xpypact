@@ -366,7 +366,7 @@ def read_arb_fluxes(
 
 
 @read_arb_fluxes.register
-def _(path: Path) -> Fluxes:
+def _(path: Path) -> Fluxes:  # type: ignore[misc]
     """Read arbitrary fluxes from Path.
 
     Parameters
@@ -383,7 +383,7 @@ def _(path: Path) -> Fluxes:
 
 
 @read_arb_fluxes.register
-def _(text: str) -> Fluxes:
+def _(text: str) -> Fluxes:  # type: ignore[misc]
     """Read arbitrary fluxes from text.
 
     Parameters
@@ -418,7 +418,7 @@ def read_709_fluxes(
 
 
 @read_709_fluxes.register
-def _(path: Path) -> Fluxes:
+def _(path: Path) -> Fluxes:  # type: ignore[misc]
     """Read 709-group fluxes from path.
 
     Parameters
@@ -435,7 +435,7 @@ def _(path: Path) -> Fluxes:
 
 
 @read_709_fluxes.register
-def _(text: str) -> Fluxes:
+def _(text: str) -> Fluxes:  # type: ignore[misc]
     """Read 709-group fluxes from text.
 
     Parameters

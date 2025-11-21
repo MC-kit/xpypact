@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 @pytest.fixture(scope="module")
 def arb_flux_1(data: Path) -> Fluxes:
     path = data / "arb_flux_1"
-    arb_fluxes: Fluxes = read_arb_fluxes(path)
+    arb_fluxes: Fluxes = read_arb_fluxes(path)  # type: ignore[arg-type]
     assert arb_fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
     assert arb_fluxes.norm == 1.0, "Wrong norm"
     assert arb_fluxes.energy_bins.size == 3, "Wrong energies"
@@ -43,7 +43,7 @@ def arb_flux_1(data: Path) -> Fluxes:
 @pytest.fixture(scope="module")
 def arb_flux_2(data: Path) -> Fluxes:
     path = data / "arb_flux_2"
-    arb_fluxes: Fluxes = read_arb_fluxes(path)
+    arb_fluxes: Fluxes = read_arb_fluxes(path)  # type: ignore[arg-type]
     assert arb_fluxes.comment == "total flux=1.014956e+10", "Wrong comment"
     assert arb_fluxes.norm == 1.0, "Wrong norm"
     assert arb_fluxes.energy_bins.size == 8, "Wrong energies"
@@ -114,11 +114,11 @@ def test_test_reading_arbitrary_fluxes_2(
 @pytest.fixture(scope="module")
 def fluxes_1(data: Path) -> Fluxes:
     path = data / "fluxes_1"
-    fluxes = read_709_fluxes(path)
+    fluxes = read_709_fluxes(path)  # type: ignore[arg-type]
     assert is_709_fluxes(fluxes)
     assert fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
     assert fluxes.norm == 1.0
-    return fluxes  # type: ignore[no-any-return]
+    return fluxes
 
 
 @pytest.mark.parametrize(
@@ -149,19 +149,19 @@ def test_print_arbitrary_fluxes(data: Path, arb_flux_1: Fluxes) -> None:
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=3)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     stream = StringIO()
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=1)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     stream = StringIO()
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=10)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     assert are_fluxes_equal(read_flux, arb_flux_1)
 
@@ -173,7 +173,7 @@ def test_print_arbitrary_fluxes_with_different_widths(arb_flux_2: Fluxes, max_co
     actual = stream.getvalue()
     has_empty_lines = "\n\n" in actual
     assert not has_empty_lines, "Empty lines are found in output"
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_2
 
 
@@ -196,13 +196,13 @@ def test_print_709_fluxes(fluxes_1: Fluxes) -> None:
     stream = StringIO()
     print_709_fluxes(fluxes_1, stream, max_columns=3)
     actual = stream.getvalue()
-    read_flux = read_709_fluxes(actual)
+    read_flux = read_709_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == fluxes_1
 
 
 def test_read_709_fluxes(data: Path) -> None:
     text = (data / "fluxes_1").read_text(encoding="utf8")
-    fluxes = read_709_fluxes(text)
+    fluxes = read_709_fluxes(text)  # type: ignore[arg-type]
     assert fluxes.fluxes.size == 709
 
 
