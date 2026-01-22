@@ -61,6 +61,7 @@ style = [
   { include-group = "pre_commit" },
   { include-group = "pyright" },
   { include-group = "ruff" },
+  { include-group = "sql" },
 ]
 pre_commit = [
   "pre-commit>=4.3",
