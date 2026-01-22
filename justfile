@@ -1,3 +1,17 @@
+# Examples: msgspec
+
+# Disable showing recipe lines before execution.
+set quiet
+
+# Enable unstable features.
+set unstable
+
+# Configure the shell for Windows.
+set windows-shell := ["pwsh.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command"]
+
+# We don't want to install any dev dependencies by default.
+# export UV_NO_DEV := "true"
+
 alias t := test
 alias c := check
 set dotenv-load := true
@@ -10,6 +24,7 @@ log := "warn"
 
 export JUST_LOG := log
 
+# List all targets.
 @_default:
   just --list
 
