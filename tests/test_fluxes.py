@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from copy import copy, deepcopy
 from functools import reduce
@@ -25,11 +25,14 @@ from xpypact.fluxes import (
     read_arb_fluxes,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 @pytest.fixture(scope="module")
-def arb_flux_1(data) -> Fluxes:
+def arb_flux_1(data: Path) -> Fluxes:
     path = data / "arb_flux_1"
-    arb_fluxes: Fluxes = read_arb_fluxes(path)
+    arb_fluxes: Fluxes = read_arb_fluxes(path)  # type: ignore[arg-type]
     assert arb_fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
     assert arb_fluxes.norm == 1.0, "Wrong norm"
     assert arb_fluxes.energy_bins.size == 3, "Wrong energies"
@@ -38,9 +41,9 @@ def arb_flux_1(data) -> Fluxes:
 
 
 @pytest.fixture(scope="module")
-def arb_flux_2(data) -> Fluxes:
+def arb_flux_2(data: Path) -> Fluxes:
     path = data / "arb_flux_2"
-    arb_fluxes: Fluxes = read_arb_fluxes(path)
+    arb_fluxes: Fluxes = read_arb_fluxes(path)  # type: ignore[arg-type]
     assert arb_fluxes.comment == "total flux=1.014956e+10", "Wrong comment"
     assert arb_fluxes.norm == 1.0, "Wrong norm"
     assert arb_fluxes.energy_bins.size == 8, "Wrong energies"
@@ -48,8 +51,8 @@ def arb_flux_2(data) -> Fluxes:
     return arb_fluxes
 
 
-def test_flux_constructor():
-    ebins = np.linspace(0, 20, 10)
+def test_flux_constructor() -> None:
+    ebins = np.linspace(0, 20, 10, dtype=float)
     bins = np.ones(9, dtype=float)
     flux = Fluxes(ebins, bins, "test comment", 2.0)
     assert flux.total == 9.0
@@ -75,11 +78,13 @@ def test_flux_constructor():
         (1, 1e6, 1e7, 90),
     ],
 )
-def test_reading_arbitrary_fluxes_1(arb_flux_1, nbin, expected_e0, expected_e1, expected_flux):
+def test_reading_arbitrary_fluxes_1(
+    arb_flux_1: Fluxes, nbin: int, expected_e0: float, expected_e1: float, expected_flux: float
+) -> None:
     assert_bin(arb_flux_1, nbin, expected_e0, expected_e1, expected_flux)
 
 
-def test_eq_and_copy(arb_flux_1, arb_flux_2):
+def test_eq_and_copy(arb_flux_1: Fluxes, arb_flux_2: Fluxes) -> None:
     def assert_one(_: Any, f: Any) -> Any:
         """Check if equivalence to itself and copies works."""
         t = f  # to make ruff happy for PLR0124
@@ -100,14 +105,16 @@ def test_eq_and_copy(arb_flux_1, arb_flux_2):
         (6, 7.800000e06, 1.410000e07, 2.870000e03),
     ],
 )
-def test_test_reading_arbitrary_fluxes_2(arb_flux_2, nbin, expected_e0, expected_e1, expected_flux):
+def test_test_reading_arbitrary_fluxes_2(
+    arb_flux_2: Fluxes, nbin: int, expected_e0: float, expected_e1: float, expected_flux: float
+) -> None:
     assert_bin(arb_flux_2, nbin, expected_e0, expected_e1, expected_flux)
 
 
 @pytest.fixture(scope="module")
-def fluxes_1(data):
+def fluxes_1(data: Path) -> Fluxes:
     path = data / "fluxes_1"
-    fluxes = read_709_fluxes(path)
+    fluxes = read_709_fluxes(path)  # type: ignore[arg-type]
     assert is_709_fluxes(fluxes)
     assert fluxes.comment == "total flux=9.100000e+01", "Wrong comment"
     assert fluxes.norm == 1.0
@@ -122,33 +129,39 @@ def fluxes_1(data):
         (708, 9.6000e8, 1.0000e9, 0.0),
     ],
 )
-def test_reading_fluxes_1(fluxes_1, nbin, expected_e0, expected_e1, expected_flux):
+def test_reading_fluxes_1(
+    fluxes_1: Fluxes,
+    nbin: int,
+    expected_e0: float,
+    expected_e1: float,
+    expected_flux: float,
+) -> None:
     assert_bin(fluxes_1, nbin, expected_e0, expected_e1, expected_flux)
 
 
-def test_fispact_conversion(arb_flux_1, fluxes_1):
+def test_fispact_conversion(arb_flux_1: Fluxes, fluxes_1: Fluxes) -> None:
     assert_almost_equal(arb_flux_1.total, fluxes_1.total, decimal=5)
 
 
-def test_print_arbitrary_fluxes(data, arb_flux_1):
+def test_print_arbitrary_fluxes(data: Path, arb_flux_1: Fluxes) -> None:
     original_text = (data / "arb_flux_1").read_text()
     stream = StringIO()
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=3)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     stream = StringIO()
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=1)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     stream = StringIO()
     print_arbitrary_fluxes(arb_flux_1, stream, max_columns=10)
     actual = stream.getvalue()
     assert_fluxes_text_equal(actual, original_text)
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_1
     assert are_fluxes_equal(read_flux, arb_flux_1)
 
@@ -160,11 +173,11 @@ def test_print_arbitrary_fluxes_with_different_widths(arb_flux_2: Fluxes, max_co
     actual = stream.getvalue()
     has_empty_lines = "\n\n" in actual
     assert not has_empty_lines, "Empty lines are found in output"
-    read_flux = read_arb_fluxes(actual)
+    read_flux = read_arb_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == arb_flux_2
 
 
-def test_define_arb_flux_fail():
+def test_define_arb_flux_fail() -> None:
     data = np.linspace(1, 10, 4)
     with pytest.raises(
         ValueError,
@@ -173,27 +186,33 @@ def test_define_arb_flux_fail():
         define_arb_bins_and_fluxes(data)
 
 
-def test_print_709_fluxes_fail(arb_flux_1):
+def test_print_709_fluxes_fail(arb_flux_1: Fluxes) -> None:
     with pytest.raises(ValueError, match=r"Expected 709-group fluxes\.") as exc_info:
         print_709_fluxes(arb_flux_1, StringIO(), max_columns=3)
     assert str(exc_info.value) == "Expected 709-group fluxes."
 
 
-def test_print_709_fluxes(fluxes_1):
+def test_print_709_fluxes(fluxes_1: Fluxes) -> None:
     stream = StringIO()
     print_709_fluxes(fluxes_1, stream, max_columns=3)
     actual = stream.getvalue()
-    read_flux = read_709_fluxes(actual)
+    read_flux = read_709_fluxes(actual)  # type: ignore[arg-type]
     assert read_flux == fluxes_1
 
 
-def test_read_709_fluxes(data):
+def test_read_709_fluxes(data: Path) -> None:
     text = (data / "fluxes_1").read_text(encoding="utf8")
-    fluxes = read_709_fluxes(text)
+    fluxes = read_709_fluxes(text)  # type: ignore[arg-type]
     assert fluxes.fluxes.size == 709
 
 
-def assert_bin(fluxes: Fluxes, _bin: int, expected_e0, expected_e1, expected_flux) -> None:
+def assert_bin(
+    fluxes: Fluxes,
+    _bin: int,
+    expected_e0: float,
+    expected_e1: float,
+    expected_flux: float,
+) -> None:
     actual_e0 = fluxes.energy_bins[_bin]
     assert_almost_equal(actual_e0, expected_e0)
     actual_e1 = fluxes.energy_bins[_bin + 1]

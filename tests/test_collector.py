@@ -13,10 +13,12 @@ from xpypact.collector import FullDataCollector
 from xpypact.dao.duckdb.implementation import save
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from xpypact.inventory import Inventory
 
 
-def test_collector(inventory_with_gamma) -> None:
+def test_collector(inventory_with_gamma: Inventory) -> None:
     collector = FullDataCollector()
     assert collector.rundata.height == 0
     collector.append(inventory_with_gamma, 1, 1)
@@ -40,10 +42,11 @@ def test_collector(inventory_with_gamma) -> None:
     assert timestep_nuclides.select("dose").item() == pytest.approx(2.4815e-20, rel=1e-4)
 
     gbins = collector.get_gbins()
+    assert gbins is not None
     assert gbins.height == 25
 
 
-def test_collector_without_gamma(inventory_without_gamma) -> None:
+def test_collector_without_gamma(inventory_without_gamma: Inventory) -> None:
     collector = FullDataCollector()
     assert collector.rundata.height == 0
     collector.append(inventory_without_gamma, 1, 1)
@@ -65,13 +68,16 @@ def test_collector_without_gamma(inventory_without_gamma) -> None:
     assert gbins is None
 
 
-def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, tmp_path) -> None:
+def test_one_cell_json(
+    one_cell: Inventory, one_cell_time_step7_gamma_spectrum: list[tuple[int, float]], tmp_path: Path
+) -> None:
     """Check gamma spectrum from the last time step in the one-cell JSON."""
     collector = FullDataCollector()
     collector.append(one_cell, material_id=1, case_id=54)
     collector.append(one_cell, material_id=2, case_id=54)
 
     spectra = collector.get_timestep_gamma_as_spectrum()
+    assert spectra is not None
     for material_id in (1, 2):
         actual = (
             spectra.filter(
@@ -117,7 +123,7 @@ def test_one_cell_json(one_cell: Inventory, one_cell_time_step7_gamma_spectrum, 
         collected.save_to_parquets(tmp_path, override=False)
 
 
-def test_polars_filter():
+def test_polars_filter() -> None:
     """Trying to reproduce the unexpected Polars behavior in the above test."""
     initial = pl.DataFrame(
         {

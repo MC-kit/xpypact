@@ -62,6 +62,10 @@ export JUST_LOG := log
 [group: 'dev']
 @check: pre-commit test
 
+# Check style includeing mypy and pylint and test
+[group: 'dev']
+@check-full: check mypy pylint pyright
+ 
 # Bump project version
 [group: 'dev']
 @bump *args="patch":
@@ -78,15 +82,19 @@ export JUST_LOG := log
 # update dependencies
 [group: 'dev']
 @up:
-  uv sync --upgrade
+  uv sync --upgrade --all-extras
   pre-commit run -a 
   pytest
-
 
 # show dependencies
 [group: 'dev']
 @tree *args:
   uv tree --outdated {{args}}
+
+# run pyupgrade
+[group: 'dev']
+@pyupgrade *args="--py314-plus":  # this check python version on moving to the python-3.14
+  uvx pyupgrade {{args}}  # presumably, code is updated by ruff, just to check sometimes
 
 # test up to the first fail
 [group: 'test']
@@ -122,8 +130,9 @@ export JUST_LOG := log
 
 # coverage to html
 [group: 'test']
-coverage-html: coverage
-  @uv run --no-dev --group coverage coverage html
+@coverage-html: coverage
+  uv run --no-dev --group coverage coverage html
+  open htmlcov/index.html
 
 # check correct typing at runtime
 [group: 'test']
@@ -145,11 +154,20 @@ typeguard *args:
 # Run mypy
 [group: 'lint']
 @mypy:
-  uv run --no-dev --group mypy mypy src docs/source/conf.py
+  uv run --no-dev --group mypy mypy src tests docs/source/conf.py
 
 [group: 'lint']
 @pylint:
-  uv run --no-dev --group lint pylint --recursive=y src 
+  uv run --no-dev --group lint pylint --recursive=y src tests
+
+[group: 'lint']
+@pyright:
+  uv run --no-dev --group pyright pyright src tests
+
+# Lint with ty
+[group: 'lint']
+@ty:
+  uvx ty check 
 
 # Check rst-texts
 [group: 'docs']

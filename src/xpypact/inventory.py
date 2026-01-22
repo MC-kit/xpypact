@@ -24,12 +24,13 @@ if TYPE_CHECKING:
 FLOAT_ZERO = 0.0
 
 
-class RunDataCorrected(ms.Struct):
+class RunDataCorrected(ms.Struct):  # pylint: disable=too-few-public-methods
     """Common data for an FISPACT inventory.
 
-    Note:
-        Correction - dose_rate_type and dose_rate_distance are duplicated
-        the FISPACT time steps. This information is extracted to this header.
+    Note
+    ----
+    Correction - dose_rate_type and dose_rate_distance are duplicated
+    the FISPACT time steps. This information is extracted to this header.
     """
 
     timestamp: str
@@ -45,8 +46,9 @@ class InventoryError(ValueError):
     def __str__(self) -> str:
         """Use the class __doc__ as a message.
 
-        Returns:
-            The __doc__ of the exception class.
+        Returns
+        -------
+        The __doc__ of the exception class.
         """
         return cast("str", self.__class__.__doc__)  # pragma: no cover
 
@@ -68,8 +70,9 @@ class Inventory(ms.Struct):
     def meta_info(self) -> RunDataCorrected:
         """Create corrected Inventory header.
 
-        Returns:
-            RunDataCorrected: with common data for the inventory.
+        Returns
+        -------
+        RunDataCorrected: with common data for the inventory.
         """
         ts = self.inventory_data[-1]  # The dose_rate in the first timestep can be empty.
         return RunDataCorrected(
@@ -83,16 +86,18 @@ class Inventory(ms.Struct):
     def extract_times(self) -> NDArrayFloat:
         """Create vector of elapsed time for all the time steps in the inventory.
 
-        Returns:
-            Vector with elapsed times.
+        Returns
+        -------
+        Vector with elapsed times.
         """
         return extract_times(self.inventory_data)
 
     def extract_nuclides(self) -> set[NuclideInfo]:
         """Extract.
 
-        Returns:
-            Set of nuclides present in this inventory.
+        Returns
+        -------
+        Set of nuclides present in this inventory.
         """
         nuclides: set[NuclideInfo] = set()
         for ts in self:
@@ -123,8 +128,9 @@ class Inventory(ms.Struct):
     ]:
         """Scan the time steps and nuclides in these steps.
 
-        Returns:
-            Iterator over all the nuclides collected in the Inventory.
+        Returns
+        -------
+        Iterator over all the nuclides collected in the Inventory.
         """
         return (
             (
@@ -151,8 +157,9 @@ class Inventory(ms.Struct):
     def iterate_time_step_gamma(self) -> Iterator[tuple[int, int, float]]:
         """Scan the time steps and gamma spectrum.
 
-        Returns:
-            Iterator over all the gamma bins presented in the Inventory.
+        Returns
+        -------
+        Iterator over all the gamma bins presented in the Inventory.
         """
         return (
             (
@@ -168,8 +175,9 @@ class Inventory(ms.Struct):
     def __post_init__(self) -> None:
         """Define time steps durations and elapsed time.
 
-        Raises:
-            InventoryNonMonotonicTimesError: if time sequences in JSON are not in order
+        Raises
+        ------
+        InventoryNonMonotonicTimesError: if time sequences in JSON are not in order
         """
         number = 1
         prev_irradiation_time = prev_cooling_time = prev_elapsed_time = 0.0
@@ -193,27 +201,32 @@ class Inventory(ms.Struct):
     def __iter__(self) -> Iterator[TimeStep]:
         """Iterate over time steps.
 
-        Returns:
-            Iterator over the time steps.
+        Returns
+        -------
+        Iterator over the time steps.
         """
         return iter(self.inventory_data)
 
     def __len__(self) -> int:
         """Length, delegated to time steps.
 
-        Returns:
-            int: length of the time steps list.
+        Returns
+        -------
+        int: length of the time steps list.
         """
         return len(self.inventory_data)
 
     def __getitem__(self, item: int) -> TimeStep:
         """List interface delegated to the time steps.
 
-        Args:
-            item: an item index or slice
+        Parameters
+        ----------
+        item
+            an item index or slice
 
-        Returns:
-            Selected item or items.
+        Returns
+        -------
+        Selected item or items.
         """
         return self.inventory_data[item]
 
@@ -221,11 +234,14 @@ class Inventory(ms.Struct):
 def extract_times(time_steps: Iterable[TimeStep]) -> NDArrayFloat:
     """Create vector of elapsed time for all the time steps.
 
-    Args:
-        time_steps: list of time steps
+    Parameters
+    ----------
+    time_steps
+        list of time steps
 
-    Returns:
-        Vector with elapsed times.
+    Returns
+    -------
+    Vector with elapsed times.
     """
     return np.fromiter((x.elapsed_time for x in time_steps), dtype=float)
 
@@ -235,11 +251,14 @@ def extract_times(time_steps: Iterable[TimeStep]) -> NDArrayFloat:
 def from_json(text: str) -> Inventory:
     """Construct Inventory instance from JSON text.
 
-    Args:
-        text: Text source.
+    Parameters
+    ----------
+    text
+        Text source.
 
-    Returns:
-        The loaded Inventory instance.
+    Returns
+    -------
+    The loaded Inventory instance.
     """
     return ms.json.decode(text, type=Inventory)
 
@@ -248,11 +267,14 @@ def from_json(text: str) -> Inventory:
 def _(stream: io.IOBase) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON stream.
 
-    Args:
-        stream: IO stream source.
+    Parameters
+    ----------
+    stream
+        IO stream source.
 
-    Returns:
-        The loaded Inventory instance.
+    Returns
+    -------
+    The loaded Inventory instance.
     """
     return from_json(stream.read())
 
@@ -261,11 +283,14 @@ def _(stream: io.IOBase) -> Inventory:  # type: ignore[misc]
 def _(path: Path) -> Inventory:  # type: ignore[misc]
     """Construct Inventory instance from JSON path.
 
-    Args:
-        path: path to source.
+    Parameters
+    ----------
+    path
+        path to source.
 
-    Returns:
-        The loaded Inventory instance.
+    Returns
+    -------
+    The loaded Inventory instance.
     """
     return from_json(path.read_text(encoding="utf8"))
 
@@ -289,10 +314,13 @@ class RunData(ms.Struct, frozen=True, gc=False):
     def from_json(cls, json_dict: dict[str, str]) -> RunData:
         """Construct RunData instance from JSON.
 
-        Args:
-            json_dict: source dictionary
+        Parameters
+        ----------
+        json_dict
+            source dictionary
 
-        Returns:
-            The loaded instance of RunData
+        Returns
+        -------
+        The loaded instance of RunData
         """
         return ms.convert(json_dict, cls)

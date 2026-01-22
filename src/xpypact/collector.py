@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from xpypact.inventory import Inventory
     from xpypact.nuclide import NuclideInfo
 
+# pylint: disable=invalid-name
 
 RunDataSchema = OrderedDict(
     material_id=pl.UInt32,
@@ -125,8 +126,9 @@ class FullDataCollector(ms.Struct):
             material_id: identified #1 to distinguish multiple inventories
             case_id: identifier #2 ...
 
-        Returns:
-            self - for chaining
+        Returns
+        -------
+        self - for chaining
         """
         with self.lock:
             self.nuclides.update(inventory.extract_nuclides())
@@ -268,8 +270,9 @@ class FullDataCollector(ms.Struct):
     def get_nuclides_as_df(self) -> pl.DataFrame:
         """Retrieve collected nuclides.
 
-        Returns:
-            table of collected nuclides
+        Returns
+        -------
+        table of collected nuclides
         """
         nuclides = sorted(self.nuclides, key=lambda x: x.zai)
         return pl.DataFrame(
@@ -289,8 +292,9 @@ class FullDataCollector(ms.Struct):
     def get_gbins(self) -> pl.DataFrame | None:
         """Retrieve gbins.
 
-        Returns:
-            Polars table with gbins: g [0..N], boundary[g]
+        Returns
+        -------
+        Polars table with gbins: g [0..N], boundary[g]
         """
         if self.gbins_boundaries is None:
             return None
@@ -306,8 +310,9 @@ class FullDataCollector(ms.Struct):
         In FISPACT JSON gamma emission is presented in MeV/s,
         but we need intensities in photon/s to represent gamma source.
 
-        Returns:
-            time_step_gamma with rates in photon/s
+        Returns
+        -------
+        time_step_gamma with rates in photon/s
         """
         if self.timestep_gamma.is_empty():  # pragma: no cover
             return None
@@ -332,7 +337,7 @@ class FullDataCollector(ms.Struct):
         )
         return ql.collect()
 
-    class Result(ms.Struct):
+    class Result(ms.Struct):  # pylint: disable=too-few-public-methods
         """Finished collected data.
 
         The only function of this class is to save
@@ -350,12 +355,16 @@ class FullDataCollector(ms.Struct):
         def save_to_parquets(self, out: Path, *, override: bool = False) -> None:
             """Save collectd data as parquet files.
 
-            Args:
-                out: directory where to save
-                override: override existing files, default - raise exception
+            Parameters
+            ----------
+            out
+                directory where to save
+            override
+                override existing files, default - raise exception
 
-            Raises:
-                FileExistError: if destination file exists and override is not specified.
+            Raises
+            ------
+            FileExistError: if destination file exists and override is not specified.
             """
             collected = ms.structs.asdict(self)
             out.mkdir(parents=True, exist_ok=True)
