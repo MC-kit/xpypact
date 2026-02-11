@@ -99,9 +99,10 @@ GammaSchema = OrderedDict(
 class FullDataCollector(ms.Struct):
     """Class to collect inventory over multiple inventories method.
 
-    Note:
-        we assume that all the gamma boundaries are the same over all
-        JSON files to be appended.
+    Note
+    ----
+    we assume that all the gamma boundaries are the same over all
+    JSON files to be appended.
     """
 
     lock = threading.RLock()
@@ -121,10 +122,14 @@ class FullDataCollector(ms.Struct):
     def append(self, inventory: Inventory, material_id: int, case_id: int) -> FullDataCollector:
         """Append inventory to this collector.
 
-        Args:
-            inventory: what to append
-            material_id: identified #1 to distinguish multiple inventories
-            case_id: identifier #2 ...
+        Parameters
+        ----------
+        inventory
+            what to append
+        material_id
+            identified #1 to distinguish multiple inventories
+        case_id
+            identifier #2 ...
 
         Returns
         -------
