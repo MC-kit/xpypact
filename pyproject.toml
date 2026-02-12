@@ -4,7 +4,7 @@ requires = [ "uv-build>=0.9.2,<0.10" ]
 
 [project]
 name = "xpypact"
-version = "0.13.0"
+version = "0.13.1.dev1"
 description = "\"Python workflow framework for FISPACT.\""
 readme = "README.rst"
 keywords = [ "activation", "duckdb", "FISPACT", "nuclide", "polars" ]
