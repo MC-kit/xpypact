@@ -2846,14 +2846,14 @@ wheels = [
 
 [[package]]
 name = "pytest-durations"
-version = "1.6.1"
+version = "1.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/90/59/1e73dd71c87aa47bcf37e4f5c25596e94d5628bee15bdbeaaae1585a26e4/pytest_durations-1.6.1.tar.gz", hash = "sha256:bc43fbabb1fef6bb75766d35a6bf142c1e153fef01677ccd4705cc376bf2be34", size = 11630, upload-time = "2025-08-29T06:49:54.554Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/90/fc7a8b7ed69ab4f8b9f08940afcc909085b7f5ae8530335829ad7e45814e/pytest_durations-1.6.2.tar.gz", hash = "sha256:7b197199251b16da06f6facd1ed66922438e732e555b7528e9bfa94a5f361d02", size = 12829, upload-time = "2026-03-13T15:30:30.851Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c8/a2/1d1914f3ff2c85003962b3f07f7b908fc9fd745584e9a51d392a65e261f6/pytest_durations-1.6.1-py3-none-any.whl", hash = "sha256:af7e0f6b883e7897c8dc1cb294016c6144c25f93a8930d48aec4b40ef461c51e", size = 13521, upload-time = "2025-08-29T06:49:53.386Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/8c/470f3732de17b99519abedc71b127e1c10f85a7ac1a62332f61d4f908cc2/pytest_durations-1.6.2-py3-none-any.whl", hash = "sha256:4f5c05367858be9251f170a627695f56680456aa583ce041e6246977b55a89b6", size = 14423, upload-time = "2026-03-13T15:30:29.703Z" },
 ]
 
 [[package]]
