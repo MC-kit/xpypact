@@ -24,7 +24,6 @@ log := "warn"
 
 export JUST_LOG := log
 
-# List all targets.
 @_default:
   just --list
 
@@ -38,6 +37,11 @@ export JUST_LOG := log
 @build: venv
   uv build
 
+# check distribution with twine
+[group: 'dev']
+@check-dist: build
+  uvx twine check dist/*
+
 # clean reproducible files
 [group: 'dev']
 @clean:
@@ -47,7 +51,6 @@ export JUST_LOG := log
       ".cache"
       ".eggs"
       ".mypy_cache"
-      ".nox"
       ".pytest_cache"
       ".ruff_cache"
       ".venv"
@@ -61,6 +64,7 @@ export JUST_LOG := log
   for d in "${dirs_to_clean[@]}"; do
       find . -type d -wholename "$d" -exec rm -rf {} +
   done
+  coverage erase
 
 
 # install package
@@ -119,40 +123,38 @@ export JUST_LOG := log
 # test with clean cache
 [group: 'test']
 @test-cache-clear *args:
-  pytest -vv --emoji --cache-clear {{args}}
+  pytest --cache-clear {{args}}
 
 # test fast
 [group: 'test']
 @test-fast *args:
-  pytest -vv --emoji -m "not slow" {{args}}
+  pytest -m "not slow" {{args}}
 
 # run all the tests
 [group: 'test']
 @test *args:
-  pytest -vv --emoji {{args}}
+  uv run --no-dev --group test pytest {{args}}
 
 # run documentation tests 
 [group: 'test']
 @xdoctest *args:
-  uv run --no-dev --group test --group test python -m xdoctest --silent --style google -c all src tools {{args}}
+  uv run --no-dev --group test python -m xdoctest --silent -c all src tools {{args}}
 
 # create coverage data
 [group: 'test']
 @coverage:
-  uv run --no-dev --group test coverage run --parallel -m pytest
-  uv run --no-dev --group coverage coverage combine
-  uv run --no-dev --group coverage coverage report --show-missing --skip-covered
+  uv run --no-dev --group test pytest --cov --cov-report=term-missing:skip-covered
 
 # coverage to html
 [group: 'test']
-@coverage-html: coverage
-  uv run --no-dev --group coverage coverage html
+@coverage-html:
+  uv run --no-dev --group test pytest --cov --cov-report html:htmlcov 
   open htmlcov/index.html
 
 # check correct typing at runtime
 [group: 'test']
 typeguard *args:
-  @uv run --no-dev --group test --group typeguard pytest -vv --emoji --typeguard-packages=src {{args}}
+  @uv run --no-dev --group test --group typeguard pytest --typeguard-packages=src {{args}}
 
 
 # ruff check and format
@@ -173,7 +175,7 @@ typeguard *args:
 
 [group: 'lint']
 @pylint:
-  uv run --no-dev --group lint pylint --recursive=y src tests
+  uv run --no-dev --group lint pylint --recursive=y --output-format colorized src tests
 
 [group: 'lint']
 @pyright:
