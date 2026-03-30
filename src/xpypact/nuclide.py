@@ -12,7 +12,7 @@ from mckit_nuclides.nuclides import get_nuclide_mass
 Avogadro = 6.02214076e23
 """Mol-1,  `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?na>`_."""
 
-eV = 1.602176634e-19  # noqa: N816
+eV = 1.602176634e-19
 """J/eV, `CODATA <https://pml.nist.gov/cgi-bin/cuu/Value?evj>`_."""
 
 MeV = 1e6 * eV
