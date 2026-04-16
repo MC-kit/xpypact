@@ -4262,7 +4262,7 @@ analyze = [
     { name = "jupyterlab", specifier = ">=4.2.5" },
     { name = "jupytext", specifier = ">=1.16.4" },
 ]
-coverage = [{ name = "coverage", extras = ["toml"], specifier = ">=7.9.2" }]
+coverage = [{ name = "coverage", extras = ["toml"], specifier = ">=7.13.5" }]
 dev = [
     { name = "mypy", specifier = ">=1.2" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
