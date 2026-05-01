@@ -39,7 +39,7 @@ urls.repository = "https://github.com/MC-kit/xpypact"
 [dependency-groups]
 dev = [ { include-group = "style" }, { include-group = "test" } ]
 test = [
-  "pytest>=9",
+  "pytest>=9.0.3",
   "pytest-cov>=7.1",
   "pytest-durations>=1.5",
   "pytest-mock>=3.14",
