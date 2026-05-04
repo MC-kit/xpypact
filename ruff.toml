@@ -29,6 +29,7 @@ exclude = [
   "node_modules",
   "notebooks",
   "site-packages",
+  "tests/data",
   "venv",
   "wrk",
 ]
