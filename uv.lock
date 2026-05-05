@@ -915,21 +915,25 @@ wheels = [
 
 [[package]]
 name = "fastexcel"
-version = "0.20.1"
+version = "0.20.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/2d/77/392ccdd44c7db3be5706ede5fe2c3cb3c7e98d4d5206a1dcbc75b20f6f0c/fastexcel-0.20.1.tar.gz", hash = "sha256:1ac5e9190a8f3ff690cd0fe3e302eb8e295a297c09ea4735d81d6e02fc4dfd99", size = 60860, upload-time = "2026-04-24T10:06:22.265Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/96/24314765a3204081a55ecc96e83dfdbd2ef82aa80a521ac3005b2c91e941/fastexcel-0.20.2.tar.gz", hash = "sha256:a4be10eb0f4dd819d2b36950b3f26bf87260b53e54150ac02b78e524c7063902", size = 60862, upload-time = "2026-05-04T12:28:36.01Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/49/03e2fc728b2893e84dbf14bce60c89022a3abec008cad255435765228833/fastexcel-0.20.1-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:db5b708555c42d05dddde9b4f61bfe0be4743bc754af8673cccc7c4508da8609", size = 3432790, upload-time = "2026-04-24T10:06:11.4Z" },
-    { url = "https://files.pythonhosted.org/packages/db/08/55bfe83a4a2248eea61d78d8c4b26508c0c392796d09a87aee0615d3f709/fastexcel-0.20.1-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:cdc26fc3d2a7689cb29f1e55851e12085f33a3ed6f4571580e7fd130e2b1bcf9", size = 3260465, upload-time = "2026-04-24T10:06:13.138Z" },
-    { url = "https://files.pythonhosted.org/packages/a0/9b/71a6f9a1e22cf4c064239abe575aa5b677c84f317129118ea467f1360eb1/fastexcel-0.20.1-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8b04b8ed447ee23bc03a907489a01f3e8e87f2c410f6eeb2991c5f9fd5bd3b9d", size = 3625469, upload-time = "2026-04-24T10:06:04.99Z" },
-    { url = "https://files.pythonhosted.org/packages/c6/d8/ac91a54bfba4f12b2efe5cd1b3dbb42243912213f6f77006d69e8c98c6ff/fastexcel-0.20.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bc95675d345f2c178d2546aae5841debff01f9edc283ab0416d0375906164f8f", size = 3790036, upload-time = "2026-04-24T10:06:06.512Z" },
-    { url = "https://files.pythonhosted.org/packages/35/4f/5f4301f8665d3d33df1364a7fbb435aa8da228333d38f90075ac17f794cc/fastexcel-0.20.1-cp310-abi3-win_amd64.whl", hash = "sha256:3a5b2539ecc6122dcc2488a06875f5f494edcc5a6413fe7d04b586f242de7707", size = 3275411, upload-time = "2026-04-24T10:06:17.766Z" },
-    { url = "https://files.pythonhosted.org/packages/ad/49/7ff029f28b13d54c528cbd51b65ac42a4ec97c3a481bd5b956e3a041ea4c/fastexcel-0.20.1-cp310-abi3-win_arm64.whl", hash = "sha256:fa1ef0f26950e8fa558bff663726d4c45eed5ce1b21ec008fcfc3f6089f47426", size = 2990828, upload-time = "2026-04-24T10:06:19.071Z" },
-    { url = "https://files.pythonhosted.org/packages/d3/79/fa2c8173ac0ed6757348df0d49bd9e0fd40b53b1e8d376ca295e82fe55cb/fastexcel-0.20.1-cp314-cp314t-macosx_10_12_x86_64.whl", hash = "sha256:cdb9c5cd454a6cd8a5dd9bfdebb5d978887d62f6322f55b3d4a32303aded807c", size = 3427582, upload-time = "2026-04-24T10:06:14.447Z" },
-    { url = "https://files.pythonhosted.org/packages/fd/cb/eb266cd2393a89693c113ae954cb4e152f92f188e6f659e91b7ed3605103/fastexcel-0.20.1-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:c315fe844dce2dae83b249ee4f974903d906db01b7db822944ef93003759ba94", size = 3253910, upload-time = "2026-04-24T10:06:15.9Z" },
-    { url = "https://files.pythonhosted.org/packages/c4/05/5fb41d3f48396ee5e53500fb877fecca526bbdc3a9a3296f6889e8418813/fastexcel-0.20.1-cp314-cp314t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c6927f2306f60235a807de1d0f0cf0e1554026a68b0f7c08cdd6de0bbbfef4ab", size = 3620600, upload-time = "2026-04-24T10:06:07.899Z" },
-    { url = "https://files.pythonhosted.org/packages/85/2d/44e1cdacd3a849b5777c7d8e17f84ebe4b202393c2b030c1264f16a5f026/fastexcel-0.20.1-cp314-cp314t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1d2d667bfc8e7b9e6fcfbabf7665fd08da2b918a3015e8d84dd0af7bb01ba26d", size = 3784766, upload-time = "2026-04-24T10:06:09.931Z" },
-    { url = "https://files.pythonhosted.org/packages/95/da/178a9d0022d16229c4e9e0be14772a70da5b58c15e2d0b958dabcd84d2a6/fastexcel-0.20.1-cp314-cp314t-win_amd64.whl", hash = "sha256:85e353ce2ffb71e34f79d81bb4d6057e8c748ab35a77f24269da5193d421ac1f", size = 3271620, upload-time = "2026-04-24T10:06:20.776Z" },
+    { url = "https://files.pythonhosted.org/packages/29/29/acc5b2eb95fb4eaeb3486b6f034f2d9754dcc0cc0b5dbc79b2fa9a31f66b/fastexcel-0.20.2-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:2a240b9f4b6af42cafc247c1b8c956cf32f5393a3956ad0ed49e07b2b5bf0e09", size = 3432179, upload-time = "2026-05-04T12:28:24.611Z" },
+    { url = "https://files.pythonhosted.org/packages/3f/2b/f78a2df2d93ec4a23d7fc94ed967bf004d5115e1f4d2da389bb888d2cc32/fastexcel-0.20.2-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:6c7e58cf83c873743c18006e3866d5c2b69c34df7a4a253a72e81169853ddf0e", size = 3260476, upload-time = "2026-05-04T12:28:26.191Z" },
+    { url = "https://files.pythonhosted.org/packages/36/9c/a8f45e5c195a70a408893b348595bae4c113091dddba7d1b029e9c980b8e/fastexcel-0.20.2-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cdab3cc439c18c4ee14c4ec2b321e1d927cae84f557525f390a3c28517f6e721", size = 3625132, upload-time = "2026-05-04T12:28:12.173Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/01/da0ae9b3ee86daca5ac9f0a7b05477cf0c1624321d95f1e52492a772dba5/fastexcel-0.20.2-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:15d41bcc4433bb3ab778426ecaeaf3a5f38d949555c631a83e958c57bb0a116e", size = 3789901, upload-time = "2026-05-04T12:28:13.884Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/15/80c614c8b07c631c7c2acd015e7f2e1cd683cd04279e5615b39c36a0e43b/fastexcel-0.20.2-cp310-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:441f9b7e97b4fd1c9487e5c0a0d9cad7aa4097a39e65fcd494551f5ec3e5d02f", size = 3792388, upload-time = "2026-05-04T12:28:15.448Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/80/4548305ce4d70a0ecf38205988e5caeb9347dae7e5d06bcd2b939586fc52/fastexcel-0.20.2-cp310-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:8b15f21baef3e4914071e34f176d8692dd79e3464c10f8373047aab1384cfaae", size = 3960316, upload-time = "2026-05-04T12:28:16.821Z" },
+    { url = "https://files.pythonhosted.org/packages/22/b3/7de6b49406fda63c9fee817d5fc70fe3f52c24431605f1de2f7b0f3a0938/fastexcel-0.20.2-cp310-abi3-win_amd64.whl", hash = "sha256:ce28748390ae6a7d286ba29d8ee2badcfb6478d32ed700db6c2030de32a16e7b", size = 3275637, upload-time = "2026-05-04T12:28:30.45Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/3b/c251f38596d630e87280c191f53803e7409e7723e95e53a477f6760c7298/fastexcel-0.20.2-cp310-abi3-win_arm64.whl", hash = "sha256:c3e58f5053bc05b0ee8fa735056cea7af6e1c41c39fc4b2b06cc86c1025d140b", size = 2990952, upload-time = "2026-05-04T12:28:32.434Z" },
+    { url = "https://files.pythonhosted.org/packages/37/d3/fcc1ba752415327f0fd5a1b52060e66f1c0bf8b7b90bbba781b91750ce7e/fastexcel-0.20.2-cp314-cp314t-macosx_10_12_x86_64.whl", hash = "sha256:e5b677d669cc7c099998ef27d9442b78d7190916d3b40418bda619cdc4ebae2c", size = 3427401, upload-time = "2026-05-04T12:28:27.741Z" },
+    { url = "https://files.pythonhosted.org/packages/80/bc/e492c343c096e93e269c157fc11def297430047f1ee09db4f8a39bcdc1a0/fastexcel-0.20.2-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:9692ac135ede4d6fc45b25cc22f1c6bd1eb8750bda14097b7f319450c33d3124", size = 3253915, upload-time = "2026-05-04T12:28:29.053Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/ef/bd7b98149b50e01fdaa3b146b025ce50b8e983f35522f8e69bd94d2711a4/fastexcel-0.20.2-cp314-cp314t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:675d7eab2110bd8d5520b98d5eb3f3e15173b69a5f64b43412f917e9717e9aa0", size = 3621364, upload-time = "2026-05-04T12:28:18.457Z" },
+    { url = "https://files.pythonhosted.org/packages/4c/e0/f67911db6515df326900e8ac1ae17cc08233ca5fb8f71c633f57a50cf786/fastexcel-0.20.2-cp314-cp314t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:db049d51e5323459f534ce9a65869f997bebd4dde75ef1d3b3af53dd64b8b9ca", size = 3784924, upload-time = "2026-05-04T12:28:19.955Z" },
+    { url = "https://files.pythonhosted.org/packages/34/82/fabe2d1de28e89a90bb2c884c37d862b5d85063fd41fffcb56b2980d0b51/fastexcel-0.20.2-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:e5b23f69898f6a32c2f279d8f72eb8ac93c336bf7f453a9b8930cab9dc494520", size = 3791264, upload-time = "2026-05-04T12:28:21.612Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/34/b3ed819dd6d35d71c6640ff857c6362d42f19e8b15354e64b06f355df3a4/fastexcel-0.20.2-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:c3058d034e75967b6f01e0c82767adeb40cbf4533b6bc54e3b93f77f5f80dec4", size = 3953234, upload-time = "2026-05-04T12:28:23.224Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/51/1d9a72473cc213d5647d8cf7c2393ef995b3453ac5e4b544ba652d1428dd/fastexcel-0.20.2-cp314-cp314t-win_amd64.whl", hash = "sha256:d71e2a1fce006cb8bc1ae06da6ff5e5fe83e6496be5aef01b623b15aa0d0f82d", size = 3271344, upload-time = "2026-05-04T12:28:34.443Z" },
 ]
 
 [[package]]
@@ -1456,7 +1460,7 @@ wheels = [
 
 [[package]]
 name = "jupyter-server"
-version = "2.17.0"
+version = "2.18.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1478,9 +1482,9 @@ dependencies = [
     { name = "traitlets" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/ac/e040ec363d7b6b1f11304cc9f209dac4517ece5d5e01821366b924a64a50/jupyter_server-2.17.0.tar.gz", hash = "sha256:c38ea898566964c888b4772ae1ed58eca84592e88251d2cfc4d171f81f7e99d5", size = 731949, upload-time = "2025-08-21T14:42:54.042Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/b0/666586d557a71a58cd9960b154fb9aee0ed81dd62a50371195ab95731909/jupyter_server-2.18.1.tar.gz", hash = "sha256:f62be526369b791625e03bd658070563c1a4e9a0a2f439ea1f9dbacea5f7191a", size = 752024, upload-time = "2026-05-05T09:17:51.101Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/80/a24767e6ca280f5a49525d987bf3e4d7552bf67c8be07e8ccf20271f8568/jupyter_server-2.17.0-py3-none-any.whl", hash = "sha256:e8cb9c7db4251f51ed307e329b81b72ccf2056ff82d50524debde1ee1870e13f", size = 388221, upload-time = "2025-08-21T14:42:52.034Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/45/bfe3779fd06714a379128f2c4eaf7c99414f0eb081f9f34c135f6b3d511c/jupyter_server-2.18.1-py3-none-any.whl", hash = "sha256:db0374d52a975f88a92a7f20de44e08ef5be9763ba7e99630baf16c46ac8dbf0", size = 391844, upload-time = "2026-05-05T09:17:48.521Z" },
 ]
 
 [[package]]
@@ -3386,15 +3390,15 @@ sphinx = [
 
 [[package]]
 name = "rstcheck-core"
-version = "1.2.2"
+version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/b7/324827abb8c6d07bdfb91b728624bbb249cf8333e5b9190672a97424e4e9/rstcheck_core-1.2.2.tar.gz", hash = "sha256:9e4842efcc32fe6dbe1767bf1f96225495369c82a2b5e0ed2969082f1ed56c9e", size = 53629, upload-time = "2025-06-01T13:04:36.102Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/1e/f61bd8f3ebf3a049e1a5b13aed463cea968a18ac8d41e7fa86813abba801/rstcheck_core-1.3.0.tar.gz", hash = "sha256:6238ff6e531e003171e2ffefeb7b18a55fd70a00d69affe25a9bc11b194dd750", size = 54829, upload-time = "2026-05-04T10:46:29.168Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/35/eb1f8de49e57eefa3428c2f868a003755c2d438afebeb8c7e97b448f0287/rstcheck_core-1.2.2-py3-none-any.whl", hash = "sha256:2af6be0f91c8bed88f05ae9695331dc0f329ac379e98d469f4ff4536ef95e718", size = 27294, upload-time = "2025-06-01T13:04:34.518Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/c7/ea5a20fba2f60fb35bdae56d06907b257a546265e4aba1eb46e9e3229e8e/rstcheck_core-1.3.0-py3-none-any.whl", hash = "sha256:3e71d97e4ef2294d710e67d3f15e8f1f54b33272a662eabdfca22a9d9e88c6c2", size = 28349, upload-time = "2026-05-04T10:46:27.89Z" },
 ]
 
 [[package]]
@@ -3900,7 +3904,7 @@ wheels = [
 
 [[package]]
 name = "virtualenv"
-version = "21.3.0"
+version = "21.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "distlib" },
@@ -3908,9 +3912,9 @@ dependencies = [
     { name = "platformdirs" },
     { name = "python-discovery" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3f/8b/6331f7a7fe70131c301106ec1e7cf23e2501bf7d4ca3636805801ca191bb/virtualenv-21.3.0.tar.gz", hash = "sha256:733750db978ec95c2d8eb4feadaa57091002bce404cb39ba69899cf7bd28944e", size = 7614069, upload-time = "2026-04-27T17:05:58.927Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ec/0d/915c02c94d207b85580eb09bffab54438a709e7288524094fe781da526c2/virtualenv-21.3.1.tar.gz", hash = "sha256:c2305bc1fddeec40699b8370d13f8d431b0701f00ce895061ce493aeded4426b", size = 7613791, upload-time = "2026-05-05T01:34:31.402Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4b/eb/03bfb1299d4c4510329e470f13f9a4ce793df7fcb5a2fd3510f911066f61/virtualenv-21.3.0-py3-none-any.whl", hash = "sha256:4d28ee41f6d9ec8f1f00cd472b9ffbcedda1b3d3b9a575b5c94a2d004fd51bd7", size = 7594690, upload-time = "2026-04-27T17:05:55.468Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/4f/f71e641e504111a5a74e3a20bc52d01bd86788b22699dd3fee1c63253cf6/virtualenv-21.3.1-py3-none-any.whl", hash = "sha256:d1a71cf58f2f9228fff23a1f6ec15d39785c6b32e03658d104974247145edd35", size = 7594539, upload-time = "2026-05-05T01:34:28.98Z" },
 ]
 
 [[package]]

@@ -79,33 +79,6 @@ style = [
 ]
 typeguard = [ "typeguard>=4.1.5" ]
 
-[tool.coverage]
-[tool.coverage.paths]
-source = [ "src", ".nox/*/site-packages" ]
-[tool.coverage.report]
-exclude_lines = [
-  # Don't complain about missing debug-only code:
-  "def __repr__",
-  "if __name__ == .__main__.:",
-  "if 0:",
-  "if self.debug",
-  "if TYPE_CHECKING:",
-  "pragma: no cover",
-  "raise AssertionError",
-  "raise NotImplementedError",
-]
-fail_under = 100
-ignore_errors = true
-omit = [ "**/__init__.py", "**/types.py", "*_tab.py" ]
-show_missing = true
-skip_covered = true
-sort = "Cover"
-[tool.coverage.run]
-branch = true
-omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
-parallel = true
-source = [ "src" ]
-
 # MyPy config
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
@@ -144,6 +117,33 @@ ignore_missing_imports = true
 module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
+
+[tool.coverage]
+[tool.coverage.paths]
+source = [ "src", ".nox/*/site-packages" ]
+[tool.coverage.report]
+exclude_lines = [
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if __name__ == .__main__.:",
+  "if 0:",
+  "if self.debug",
+  "if TYPE_CHECKING:",
+  "pragma: no cover",
+  "raise AssertionError",
+  "raise NotImplementedError",
+]
+fail_under = 100
+ignore_errors = true
+omit = [ "**/__init__.py", "**/types.py", "*_tab.py" ]
+show_missing = true
+skip_covered = true
+sort = "Cover"
+[tool.coverage.run]
+branch = true
+omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
+parallel = true
+source = [ "src" ]
 
 [tool.xdoctest]
 quiet = true
