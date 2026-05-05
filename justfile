@@ -1,11 +1,11 @@
 # Examples: msgspec
 # Disable showing recipe lines before execution.
 
-set quiet := true
+set quiet
 
 # Enable unstable features.
 
-set unstable := true
+set unstable
 
 # Configure the shell for Windows.
 
@@ -17,7 +17,7 @@ set windows-shell := ["pwsh.exe", "-NoProfile", "-NonInteractive", "-ExecutionPo
 alias t := test
 alias c := check
 
-set dotenv-load := true
+set dotenv-load
 
 default_python := "3.13"
 TITLE := `uv version`
