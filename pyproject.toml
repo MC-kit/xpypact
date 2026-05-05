@@ -9,7 +9,6 @@ description = "Python workflow framework for FISPACT."
 readme = "README.rst"
 keywords = [ "activation", "duckdb", "FISPACT", "nuclide", "polars" ]
 license = { text = "MIT" }
-authors = [ { name = "dvp2015", email = "dmitri_portnov@yahoo.com" } ]
 requires-python = ">=3.12,<3.15"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -31,10 +30,14 @@ dependencies = [
   "polars[all]>=1.37",
   "pyarrow>=18",           # this is not used directly, but is required by duckdb
 ]
-urls.Changelog = "https://github.com/MC-kit/xpypact/releases"
-urls.documentation = "https://xpypact.readthedocs.io"
-urls.homepage = "https://github.com/MC-kit/xpypact"
-urls.repository = "https://github.com/MC-kit/xpypact"
+[[project.authors]]
+name = "dvp2015"
+email = "dmitri_portnov@yahoo.com"
+[project.urls]
+Changelog = "https://github.com/MC-kit/xpypact/releases"
+documentation = "https://xpypact.readthedocs.io"
+homepage = "https://github.com/MC-kit/xpypact"
+repository = "https://github.com/MC-kit/xpypact"
 
 [dependency-groups]
 dev = [ { include-group = "style" }, { include-group = "test" } ]
@@ -77,13 +80,10 @@ style = [
 typeguard = [ "typeguard>=4.1.5" ]
 
 [tool.coverage]
-run.branch = true
-run.omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
-run.parallel = true
-run.source = [ "src" ]
-paths.source = [ "src", ".nox/*/site-packages" ]
-# Regexes for lines to exclude from consideration
-report.exclude_lines = [
+[tool.coverage.paths]
+source = [ "src", ".nox/*/site-packages" ]
+[tool.coverage.report]
+exclude_lines = [
   # Don't complain about missing debug-only code:
   "def __repr__",
   "if __name__ == .__main__.:",
@@ -94,17 +94,21 @@ report.exclude_lines = [
   "raise AssertionError",
   "raise NotImplementedError",
 ]
-report.fail_under = 100
-report.ignore_errors = true
-report.omit = [ "**/__init__.py", "**/types.py", "*_tab.py" ]
-report.show_missing = true
-report.skip_covered = true
-report.sort = "Cover"
+fail_under = 100
+ignore_errors = true
+omit = [ "**/__init__.py", "**/types.py", "*_tab.py" ]
+show_missing = true
+skip_covered = true
+sort = "Cover"
+[tool.coverage.run]
+branch = true
+omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
+parallel = true
+source = [ "src" ]
 
 # MyPy config
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
-
 [tool.mypy]
 python_version = "3.13"
 cache_dir = ".cache/mypy"
@@ -113,7 +117,6 @@ follow_imports = "silent"
 pretty = true
 strict = true
 warn_unused_configs = true
-
 [[tool.mypy.overrides]]
 module = [
   "cyclopts",
@@ -137,7 +140,6 @@ module = [
   "xdoctest",
 ]
 ignore_missing_imports = true
-
 [[tool.mypy.overrides]]
 module = [ "tomllib" ]
 allow_redefinition = true
