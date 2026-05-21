@@ -23,7 +23,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
-  "duckdb>=1",
+  "duckdb>=1.5.3",
   "mckit-nuclides>=0.3.2",
   "msgspec>=0.19",
   "numpy>=2.4",
