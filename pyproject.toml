@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
   "duckdb>=1",
-  "mckit-nuclides>=0.3.2",
+  "mckit-nuclides>=0.6.0",
   "msgspec>=0.19",
   "numpy>=2.4",
   "polars[numpy]>=1.37",
