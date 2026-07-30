@@ -65,7 +65,7 @@ pre_commit = [
   { include-group = "sql" },
 ]
 pyright = [ "pyright>=1.1.406" ]
-ruff = [ "ruff>=0.0.259" ]
+ruff = [ "ruff>=0.16.0" ]
 sql = [
   "sqlfluff>=3.4.1",
 ]
