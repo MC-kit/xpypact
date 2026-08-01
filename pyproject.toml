@@ -27,7 +27,7 @@ dependencies = [
   "mckit-nuclides>=0.3.2",
   "msgspec>=0.19",
   "numpy>=2.4",
-  "polars[numpy]>=1.37",
+  "polars[numpy]>=1.42.1",
   "pyarrow>=18",           # this is not used directly, but is required by duckdb
 ]
 [[project.authors]]
