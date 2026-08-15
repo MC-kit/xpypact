@@ -4380,7 +4380,7 @@ dev = [
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
     { name = "pyright", specifier = ">=1.1.406" },
-    { name = "pytest", specifier = ">=9" },
+    { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1" },
     { name = "pytest-durations", specifier = ">=1.5" },
     { name = "pytest-mock", specifier = ">=3.14" },
@@ -4425,7 +4425,7 @@ style = [
     { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
 ]
 test = [
-    { name = "pytest", specifier = ">=9" },
+    { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1" },
     { name = "pytest-durations", specifier = ">=1.5" },
     { name = "pytest-mock", specifier = ">=3.14" },
