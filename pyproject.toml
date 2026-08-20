@@ -50,7 +50,7 @@ test = [
   "xdoctest>=1.2",
 ]
 docs = [
-  "rstcheck[sphinx,toml]>=6.2.5",
+  "rstcheck[sphinx,toml]>=6.3.0",
   "sphinx>=9.1",
   "sphinx-autobuild>=2025.8.25",
   "sphinx-autodoc-typehints>=3.2",
