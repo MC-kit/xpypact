@@ -185,7 +185,7 @@ class Fluxes:
         if self.fluxes.size != self.energy_bins.size - 1:
             msg = (
                 "Incompatible sizes of bins and fluxes, "
-                f"{self.fluxes.size} and {self.energy_bins.size}",
+                f"{self.fluxes.size} and {self.energy_bins.size}"
             )
             raise ValueError(msg)
 
