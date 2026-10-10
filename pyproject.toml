@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.11.11,<0.12" ]
+requires = [ "uv-build>=0.13" ]
 
 [project]
 name = "xpypact"
@@ -9,7 +9,7 @@ description = "Python workflow framework for FISPACT."
 readme = "README.rst"
 keywords = [ "activation", "duckdb", "FISPACT", "nuclide", "polars" ]
 license = { text = "MIT" }
-requires-python = ">=3.12,<3.15"
+requires-python = ">=3.12"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
@@ -20,6 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
@@ -45,50 +46,59 @@ test = [
   "pytest>=9",
   "pytest-cov>=7.1",
   "pytest-durations>=1.5",
-  "pytest-mock>=3.14",
+  "pytest-mock>=3.15",
   "pytest-xdist[psutil]>=3.8",
-  "xdoctest>=1.2",
+  "xdoctest>=1.3",
 ]
 docs = [
   "rstcheck[sphinx,toml]>=6.2.5",
   "sphinx>=9.1",
   "sphinx-autobuild>=2025.8.25",
-  "sphinx-autodoc-typehints>=3.2",
-  "sphinx-togglebutton>=0.3.2",
+  "sphinx-autodoc-typehints>=3.10",
+  "sphinx-togglebutton>=0.4",
 ]
-analyze = [ "jupyterlab>=4.2.5", "jupytext>=1.16.4" ]
-coverage = [ "coverage[toml]>=7.9.2" ]
-lint = [ "pylint", "pylint-per-file-ignores" ]
+analyze = [
+  "duckdb>=1.5.5,<2",
+  "marimo>=0.23.14",
+  "polars>=1.43,<2",
+  "pyarrow>=25,<26",
+  "rich>=15",
+  "sqlglot>=28.10.1,<29",
+]
 mypy = [ "mypy>=1.2", "pep8-naming>=0.12.1", "types-setuptools>=80.9.0.20250529" ]
 pre_commit = [
   "pre-commit>=4.3",
   { include-group = "sql" },
 ]
+pylint = [ "pylint", "pylint-per-file-ignores>=3.2.1" ]
 pyright = [ "pyright>=1.1.406" ]
 ruff = [ "ruff>=0.0.259" ]
 sql = [
   "sqlfluff>=3.4.1",
 ]
 style = [
-  { include-group = "lint" },
+  "basedpyright>=1.39.9",
+  "pyrefly>=1.1.1",
   { include-group = "mypy" },
   { include-group = "pre_commit" },
+  { include-group = "pylint" },
   { include-group = "pyright" },
   { include-group = "ruff" },
   { include-group = "sql" },
 ]
-typeguard = [ "typeguard>=4.1.5" ]
+ty = [ "ty>=0.0.84" ]
+typeguard = [ "typeguard>=4.5" ]
 
 # MyPy config
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
-python_version = "3.13"
-cache_dir = ".cache/mypy"
 files = "src/**/*.py"
 follow_imports = "silent"
-pretty = true
+python_version = "3.14"
 strict = true
+pretty = true
+cache_dir = ".cache/mypy"
 warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = [
@@ -118,17 +128,15 @@ module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
 
-[tool.coverage]
 [tool.coverage.paths]
-source = [ "src", ".nox/*/site-packages" ]
+source = [ "src" ]
 [tool.coverage.report]
 exclude_lines = [
-  # Don't complain about missing debug-only code:
   "def __repr__",
   "if __name__ == .__main__.:",
   "if 0:",
-  "if self.debug",
   "if TYPE_CHECKING:",
+  "if self.debug",
   "pragma: no cover",
   "raise AssertionError",
   "raise NotImplementedError",
@@ -145,21 +153,20 @@ omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
 parallel = true
 source = [ "src" ]
 
-[tool.xdoctest]
-quiet = true
-options = ""
+[tool.marimo.runtime]
+pythonpath = [ "notebooks", "notebooks/nb_common" ]
 
-[tool.jupytext]
-# https://jupytext.readthedocs.io/en/latest/config.html
-# Pair ipynb notebooks to py:percent text notebooks
-formats = "ipynb,py:percent"
+[tool.xdoctest]
+options = ""
+quiet = true
 
 [tool.creosote]
-paths = [ "src" ]
 deps-file = "pyproject.toml"
+paths = [ "src" ]
 exclude-deps = [ "duckdb", "pyarrow" ]
 sections = [ "project.dependencies" ]
+venvs = [ ".venv" ]
 
 [tool.rstcheck]
+ignore_messages = '(Unknown directive type \"cyclopts|todo|(auto(module|class|function))\"\.)'
 report_level = "ERROR"
-ignore_messages = '(Unknown directive type "(todo.*|automodule)".$)'

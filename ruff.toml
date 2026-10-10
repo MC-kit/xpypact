@@ -35,6 +35,7 @@ exclude = [
 select = [ "ALL" ]
 ignore = [
   "COM812",
+  "CPY001",  # Missing copyright notice at top of file
   "D203",
   "D211",
   "D213",

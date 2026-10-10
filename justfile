@@ -1,14 +1,12 @@
 # Examples: msgspec
-# Disable showing recipe lines before execution.
 
+# Disable showing recipe lines before execution.
 set quiet
 
 # Enable unstable features.
-
 set unstable
 
 # Configure the shell for Windows.
-
 set windows-shell := ["pwsh.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command"]
 
 # We don't want to install any dev dependencies by default.
@@ -16,10 +14,9 @@ set windows-shell := ["pwsh.exe", "-NoProfile", "-NonInteractive", "-ExecutionPo
 
 alias t := test
 alias c := check
-
 set dotenv-load
 
-default_python := "3.13"
+default_python := "3.14"
 TITLE := `uv version`
 VERSION := `uv version --short`
 log := "warn"
@@ -28,9 +25,10 @@ export JUST_LOG := log
 @_default:
     just --list
 
+# show version
 [group('dev')]
 @version:
-    uv version 
+    uv version
 
 # create venv, if not exists
 [group('dev')]
@@ -70,6 +68,22 @@ export JUST_LOG := log
         echo "Remove $d"
         find . -type d -name "$d" -exec rm -rf {} +
     done
+    dirs_to_clean=(
+        "__pycache__"
+    )
+    for d in "${dirs_to_clean[@]}"; do
+        find . -type d -wholename "$d" -exec rm -rf {} +
+    done
+    files_to_clean=(
+        "*.so"
+        "*.so.*"
+        "*.dll"
+        "*.dylib"
+    )
+    for f in "${files_to_clean[@]}"; do
+        find src/mckit -type f -name "$f" -exec rm -f {} +
+    done
+    # pixi clean
     coverage erase
     #pyreverse files
     find . -type f -name "*.puml" -delete
@@ -89,7 +103,7 @@ export JUST_LOG := log
 
 # Check style includeing mypy and pylint and test
 [group('dev')]
-@check-full: check mypy pylint pyright
+@check-full: check ty basedpyright pyrefly pylint
 
 # Bump project version
 [group('dev')]
@@ -101,7 +115,6 @@ export JUST_LOG := log
 [group('dev')]
 @up-tools:
     pre-commit autoupdate
-    uv self update
     pre-commit run -a 
 
 # update dependencies
@@ -154,7 +167,7 @@ export JUST_LOG := log
 # coverage to html
 [group('test')]
 @coverage-html:
-    uv run --no-dev --group test pytest --cov --cov-report html:htmlcov 
+    uv run --no-dev --group test pytest --cov --cov-report html:htmlcov
     open htmlcov/index.html
 
 # check correct typing at runtime
@@ -190,6 +203,14 @@ typeguard *args:
 [group('style')]
 @ty:
     uv run --no-dev --group style ty check 
+
+[group('style')]
+@basedpyright:
+    basedpyright
+
+[group('style')]
+@pyrefly *args="check":
+    pyrefly {{ args }}
 
 # Draw UML diagrams
 [group('style')]
