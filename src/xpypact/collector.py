@@ -99,9 +99,10 @@ GammaSchema = OrderedDict(
 class FullDataCollector(ms.Struct):
     """Class to collect inventory over multiple inventories method.
 
-    Note:
-        we assume that all the gamma boundaries are the same over all
-        JSON files to be appended.
+    Note
+    ----
+    we assume that all the gamma boundaries are the same over all
+    JSON files to be appended.
     """
 
     lock = threading.RLock()
@@ -121,10 +122,14 @@ class FullDataCollector(ms.Struct):
     def append(self, inventory: Inventory, material_id: int, case_id: int) -> FullDataCollector:
         """Append inventory to this collector.
 
-        Args:
-            inventory: what to append
-            material_id: identified #1 to distinguish multiple inventories
-            case_id: identifier #2 ...
+        Parameters
+        ----------
+        inventory
+            what to append
+        material_id
+            identified #1 to distinguish multiple inventories
+        case_id
+            identifier #2 ...
 
         Returns
         -------
@@ -316,12 +321,14 @@ class FullDataCollector(ms.Struct):
         """
         if self.timestep_gamma.is_empty():  # pragma: no cover
             return None
+        if self.gbins_boundaries is None:  # pragma: no cover
+            return None
 
         mids = pl.DataFrame(
             (
                 (g + 1, m)
                 for g, m in enumerate(
-                    0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),  # type: ignore[index]
+                    0.5 * (self.gbins_boundaries[:-1] + self.gbins_boundaries[1:]),
                 )
             ),
             schema={"g": pl.UInt8, "mid": pl.Float32},

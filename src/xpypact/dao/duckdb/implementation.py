@@ -35,7 +35,7 @@ _TABLES = [
 
 # noinspection SqlNoDataSourceInspection
 class DuckDBDAO(ms.Struct):
-    """Implementation of DataAccessInterface for DuckDB."""
+    """Implementation of DataAccessInterface (to be defined) for DuckDB."""
 
     con: db.DuckDBPyConnection
 
@@ -71,7 +71,7 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            FISPACT run data ad RelObj
+        FISPACT run data ad RelObj
         """
         return self.con.table("rundata")
 
@@ -80,7 +80,7 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            time nuclide
+        time nuclide
         """
         return self.con.table("nuclide")
 
@@ -89,7 +89,7 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            time step table
+        time step table
         """
         return self.con.table("time_step_times")
 
@@ -98,7 +98,7 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            time step table
+        time step table
         """
         return self.con.table("timestep")
 
@@ -107,7 +107,7 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            time step x nuclides table
+        time step x nuclides table
         """
         return self.con.table("timestep_nuclide")
 
@@ -116,19 +116,21 @@ class DuckDBDAO(ms.Struct):
 
         Returns
         -------
-            gbins table
+        gbins table
         """
         return self.con.table("gbins")
 
     def load_gamma(self, time_step_number: int | None = None) -> db.DuckDBPyRelation:
         """Load time step x gamma table.
 
-        Args:
-            time_step_number: filter for time_step_number
+        Parameters
+        ----------
+        time_step_number
+        filter for time_step_number
 
         Returns
         -------
-            time step x gamma table
+        time step x gamma table
         """
         sql = "select * from timestep_gamma"
         if time_step_number is not None:
@@ -142,9 +144,12 @@ def save(
 ) -> None:
     """Save collected inventories to a DuckDB database.
 
-    Args:
-        cursor: separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
-        collector_result: collected inventories as Polars frames
+    Parameters
+    ----------
+    cursor
+        separate multi-threaded cursor to access DuckDB, use con.cursor() in caller
+    collector_result
+        collected inventories as Polars frames
     """
     collected = ms.structs.asdict(collector_result)
     for name, df in collected.items():
@@ -155,11 +160,12 @@ def save(
 def create_indices(con: db.DuckDBPyConnection) -> db.DuckDBPyConnection:
     """Create primary key like indices on tables after loading.
 
-    Note:
-        indexes are not used and, even more, are harmful in DuckDB.
-        This is provided to use the indexes only for testing and debugging the database.
-        The test is, that in a valid database with the loaded content
-        the indexes should be created successfully.
+    Note
+    ----
+    indexes are not used and, even more, are harmful in DuckDB.
+    This is provided to use the indexes only for testing and debugging the database.
+    The test is, that in a valid database with the loaded content
+    the indexes should be created successfully.
     """
     return con.execute(
         """
