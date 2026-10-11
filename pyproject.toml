@@ -72,7 +72,7 @@ pre_commit = [
 ]
 pylint = [ "pylint", "pylint-per-file-ignores>=3.2.1" ]
 pyright = [ "pyright>=1.1.406" ]
-ruff = [ "ruff>=0.0.259" ]
+ruff = [ "ruff>=0.16.5" ]
 sql = [
   "sqlfluff>=3.4.1",
 ]
