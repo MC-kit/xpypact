@@ -20,7 +20,8 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  # "Programming Language :: Python :: 3.15",  # TODO @dvp: wait for pyarrow, polars
+  "Programming Language :: Python :: 3.15",
+  # "Programming Language :: Python :: 3.15",  # TODO @dvp: wait for duckdb wheels
   "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
@@ -28,8 +29,7 @@ dependencies = [
   "mckit-nuclides>=0.3.2",
   "msgspec>=0.19",
   "numpy>=2.4",
-  "polars[numpy]>=1.37",
-  "pyarrow>=18",           # this is not used directly, but is required by duckdb
+  "polars[numpy,pyarrow]>=2",
 ]
 [[project.authors]]
 name = "dvp2015"
@@ -58,12 +58,12 @@ docs = [
   "sphinx-togglebutton>=0.4",
 ]
 analyze = [
-  "duckdb>=1.5.5,<2",
+  "duckdb>=1.5.5",
   "marimo>=0.23.14",
-  "polars>=1.43,<2",
-  "pyarrow>=25,<26",
+  "polars>=2",
+  "pyarrow>=26",
   "rich>=15",
-  "sqlglot>=28.10.1,<29",
+  "sqlglot>=30",
 ]
 mypy = [ "mypy>=1.2", "pep8-naming>=0.12.1", "types-setuptools>=80.9.0.20250529" ]
 pre_commit = [
@@ -102,12 +102,7 @@ cache_dir = ".cache/mypy"
 warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = [
-  "cyclopts",
-  "dask.*",
   "duckdb",
-  "eliot",
-  "eliot.*",
-  "loguru",
   "mckit_nuclides.*",
   "msgspec",
   "numpy",
@@ -115,19 +110,9 @@ module = [
   "pandas",
   "polars",
   "pytest",
-  "rich.*",
-  "scipy.constants",
-  "scipy.sparse",
-  "tomli",
-  "tomllib",
   "xdoctest",
 ]
 ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = [ "tomllib" ]
-allow_redefinition = true
-disable_error_code = "no-redef"
 
 [tool.coverage.paths]
 source = [ "src" ]
