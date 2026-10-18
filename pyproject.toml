@@ -67,7 +67,7 @@ analyze = [
 ]
 mypy = [ "mypy>=1.2", "pep8-naming>=0.12.1", "types-setuptools>=80.9.0.20250529" ]
 pre_commit = [
-  "pre-commit>=4.3",
+  "pre-commit>=4.6.2",
   { include-group = "sql" },
 ]
 pylint = [ "pylint", "pylint-per-file-ignores>=3.2.1" ]
